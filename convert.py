@@ -22,6 +22,13 @@ def directive_wrap(out, text, **kwargs):
   paragraph_wrap(out, text, **kw)
 
 
+def code(out, lines):
+  out.writeln('::\n')
+  for line in lines:
+    out.writeln('   ', line)
+  out.writeln('')
+
+
 def get_header(title, level):
   header_levels = {
     0: '#',
@@ -39,6 +46,56 @@ def get_header(title, level):
     rv = '\n' + rv
   return rv + '\n'
 
+
+def convert_table(rows, out):
+  # Get Column Count
+  col_count = None
+  for row in rows:
+    count = len(row)
+    if col_count is None:
+      col_count = count
+    elif count != col_count:
+      sys.exit('Invalid Table')
+
+  # Split Lines in Cells, Get Max Row Height
+  row_max = []
+  for row in rows:
+    max_height = 0
+    for cell_i, cell in enumerate(row):
+      lines = cell.split('\n')
+      row[cell_i] = lines
+      max_height = max(max_height, len(lines))
+    row_max.append(max_height)
+
+  # Add Blank Lines to Cells
+  for row_i, row in enumerate(rows):
+    for cell_i, cell in enumerate(row):
+      row[cell_i] += [''] * (row_max[row_i] - len(cell))
+
+  # Get Max Width of Columns
+  col_max = [0] * col_count
+  for row in rows:
+    for i, cell in enumerate(row):
+      col_max[i] = max(col_max[i], max(map(len, cell)) + 2)
+
+  def print_row_div(header=False):
+    for i in col_max:
+      out.write('+' + ('=' if header else '-') * i)
+    out.writeln('+')
+
+  print_row_div()
+  first = True
+  for row_i, row in enumerate(rows):
+    for line_i in range(0, row_max[row_i]):
+      out.write('|')
+      for cell_i, cell in enumerate(row):
+        line = cell[line_i]
+        fill = ' ' * (col_max[cell_i] - len(line) - 2)
+        out.write(' {}{} |'.format(line, fill))
+      out.writeln('')
+    print_row_div(header=first)
+    if first:
+      first = False
 
 def get_style(node):
   if node is None or node.attributes is None:
@@ -240,6 +297,31 @@ class Info:
     return self.get('style', ignore_last=False)
 
 
+def convert_child_nodes(info, doc, node, out):
+  code_lines = []
+  for child in node.childNodes:
+    if child.nodeType == element.Node.ELEMENT_NODE and \
+        child.qname[1] == 'p' and Style(doc, child).monospace:
+      indent = None
+      for grandchild in child.childNodes:
+        if grandchild.nodeType == element.Node.ELEMENT_NODE and \
+            grandchild.qname[1] == 's':
+          indent = grandchild.attributes.get(
+            ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'c'), None)
+          if indent is not None:
+            break
+      indent = 0 if indent is None else int(indent)
+      code_lines.append(('  ' * indent) + get_text(info, doc, child))
+    else:
+      if code_lines:
+        code(out, code_lines)
+        code_lines = []
+      convert_node(info, doc, child, out)
+  if code_lines:
+    code(out, code_lines)
+    code_lines = []
+
+
 def get_text(info, doc, node):
   pout = Out()
   pout.open()
@@ -250,8 +332,19 @@ def get_text(info, doc, node):
       pout.write(str(child))
   rv = pout.out.getvalue()
   pout.close()
-  return rv
+  return rv.rstrip()
 
+
+def gather_table_rows(info, doc, parent_node, rows):
+  for child_node in parent_node.childNodes:
+    kind = child_node.qname[1]
+    if kind == 'table-header-rows':
+      gather_table_rows(info, doc, child_node, rows)
+    elif kind == 'table-row':
+      row = []
+      for cell in child_node.childNodes:
+        row.append(get_text(info, doc, cell))
+      rows.append(row)
 
 def convert_node(info, doc, node, out):
   if node is None:
@@ -300,9 +393,12 @@ def convert_node(info, doc, node, out):
       path = Path('images') / Path(href).name
       if mime == 'image/png' and href:
         out.writeln('.. image:: {}\n'.format(path))
+    elif kind == 'table':
+      rows = []
+      gather_table_rows(info, doc, node, rows)
+      convert_table(rows, out)
     else:
-      for child in node.childNodes:
-        convert_node(info, doc, child, out)
+      convert_child_nodes(info, doc, node, out)
   elif node.nodeType == element.Node.TEXT_NODE:
     out.write(str(node))
 
