@@ -16,23 +16,23 @@ Safety Profile Subset of OpenDDS
 
 The following features of OpenDDS are not available when it is configured for Safety Profile:
 
-DCPSInfoRepo and its associated libraries and tools
+* DCPSInfoRepo and its associated libraries and tools
 
-Transport types: tcp, udp, multicast, shared memory
+* Transport types: tcp, udp, multicast, shared memory
 
-The rtps_udp transport type is available (uses UDP unicast or multicast)
+  * The rtps_udp transport type is available (uses UDP unicast or multicast)
 
-OpenDDS Monitor library and monitoring GUI
+* OpenDDS Monitor library and monitoring GUI
 
 When developing the Safety Profile, the following DDS Compliance Profiles were disabled:
 
-content_subscription
+* content_subscription
 
-ownership_kind_exclusive
+* ownership_kind_exclusive
 
-object_model_profile
+* object_model_profile
 
-persistence_profile
+* persistence_profile
 
 See Section 1.3.3 for more details on compliance profiles.  It is possible that enabling any of these compliance profiles in a Safety Profile build will result in a compile-time or run-time error.
 
@@ -44,11 +44,11 @@ Safety Profile Configurations of ACE
 
 OpenDDS uses ACE as its platform abstraction library, and in OpenDDS's Safety Profile configuration, one of the following safety profile configurations must be enabled in ACE:
 
-FACE Safety Base (always uses the memory pool)
+* FACE Safety Base (always uses the memory pool)
 
-FACE Safety Extended with Memory Pool
+* FACE Safety Extended with Memory Pool
 
-FACE Safety Extended with Standard C++ Dynamic Allocation
+* FACE Safety Extended with Standard C++ Dynamic Allocation
 
 OpenDDS's configure script will automatically configure ACE.  Pass the command line argument “--safety-profile=base” to select the Safety Base profile.  Otherwise a “--safety-profile” (no equals sign) configuration will default to Safety Extended with Memory Pool.
 
@@ -68,19 +68,19 @@ Running ACE and OpenDDS Tests
 
 After configuring and building OpenDDS Safety Profile, note that there are two sub-directories of the top level that each contain some binary artifacts:
 
-build/host has the build-time code generators tao_idl and opendds_idl
+* build/host has the build-time code generators tao_idl and opendds_idl
 
-build/target has the run-time libraries for safety profile ACE and OpenDDS and the OpenDDS tests
+* build/target has the run-time libraries for safety profile ACE and OpenDDS and the OpenDDS tests
 
 Therefore, testing needs to be relative to the build/target sub-directory.  Source-in the generated file ``build/target/setenv.sh`` to get all of the needed environment variables.
 
 ACE tests are not built by default, but once this environment is set up all it takes to build them is generating makefiles and running make:
 
-``cd $ACE_ROOT/tests``
+* ``cd $ACE_ROOT/tests``
 
-``$ACE_ROOT/bin/mwc.pl -type gnuace``
+* ``$ACE_ROOT/bin/mwc.pl -type gnuace``
 
-``make``
+* ``make``
 
 Run ACE tests by changing to the $ACE_ROOT/tests directory and using run_test.pl.  Pass any “-Config XYZ” options required for your configuration (use run_test.pl -h to see the available Config options).
 

@@ -72,11 +72,11 @@ Setting up an OpenDDS Java Project
 
 These instructions assume you have completed the installation steps in the ``$DDS_ROOT/java/INSTALL`` document, including having the various environment variables defined.
 
-Start with an empty directory that will be used for your IDL and the code generated from it. ``$DDS_ROOT/java/tests/messenger/messenger_idl/`` is set up this way.
+* Start with an empty directory that will be used for your IDL and the code generated from it. ``$DDS_ROOT/java/tests/messenger/messenger_idl/`` is set up this way.
 
-Create an IDL file describing the data structure you will be using with OpenDDS. See ``Messenger.idl`` for an example. This file will contain at least struct/union annotated with ``@topic``. For the sake of these instructions, we will call the file ``Foo.idl``.
+* Create an IDL file describing the data structure you will be using with OpenDDS. See ``Messenger.idl`` for an example. This file will contain at least struct/union annotated with ``@topic``. For the sake of these instructions, we will call the file ``Foo.idl``.
 
-The C++ generated classes will be packaged in a shared library to be loaded at run-time by the JVM. This requires the packaged classes to be exported for external visibility. ACE provides a utility script for generating the correct export macros. The script usage is shown here:
+* The C++ generated classes will be packaged in a shared library to be loaded at run-time by the JVM. This requires the packaged classes to be exported for external visibility. ACE provides a utility script for generating the correct export macros. The script usage is shown here:
 
 Unix:
 
@@ -92,7 +92,7 @@ Windows:
     %ACE_ROOT%\bin\generate_export_file.pl Foo > Foo_Export.h
     
 
-Create an MPC file, Foo.mpc, from this template:
+* Create an MPC file, Foo.mpc, from this template:
 
 ::
 
@@ -117,7 +117,7 @@ Create an MPC file, Foo.mpc, from this template:
 
 You can leave out the specific {...} block if you do not need to create a jar file. In this case you can directly use the Java .class files which will be generated under the classes subdirectory of the current directory.
 
-Run MPC to generate platform-specific build files.
+* Run MPC to generate platform-specific build files.
 
 Unix:
 
@@ -135,7 +135,7 @@ CompilerType can be any supported MPC type (such as “vs2019”)
 
 Make sure this is running ActiveState Perl or Strawberry Perl.
 
-Compile the generated C++ and Java code
+* Compile the generated C++ and Java code
 
 Unix:
 
@@ -174,7 +174,7 @@ You can change the locations of these libraries (including the ``.jar`` file) by
 
 where ``PROJECT_ROOT`` can be any environment variable defined at build-time.
 
-You now have all of the Java and C++ code needed to compile and run a Java OpenDDS application. The generated ``.jar`` file needs to be added to your ``classpath``, along with the ``.jar`` files that come from OpenDDS (in the lib directory). The generated C++ library needs to be available for loading at run-time:
+* You now have all of the Java and C++ code needed to compile and run a Java OpenDDS application. The generated ``.jar`` file needs to be added to your ``classpath``, along with the ``.jar`` files that come from OpenDDS (in the lib directory). The generated C++ library needs to be available for loading at run-time:
 
 Unix:
 
@@ -186,7 +186,8 @@ Add the directory containing ``Foo.dll`` (or ``Food.dll``) to the ``PATH``. If y
 
 See the publisher and subscriber directories in ``$DDS_ROOT/java/tests/messenger/`` for examples of publishing and subscribing applications using the OpenDDS Java bindings.
 
-If you make subsequent changes to ``Foo.idl``, start by re-running MPC (step #5 above). This is needed because certain changes to ``Foo.idl`` will affect which files are generated and need to be compiled.
+* If you make subsequent changes to ``Foo.idl``, start by re-running MPC (step #5 above). This is needed because certain changes to ``Foo.idl`` will affect which files are generated and need to be compiled.
+
 
 **************************
 A Simple Message Publisher

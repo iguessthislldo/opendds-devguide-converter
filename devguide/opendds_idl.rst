@@ -73,13 +73,13 @@ Table 8-1 opendds_idl Command Line Options
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 | ``--unknown-annotations VAL``    | For IDL version 4, control the reaction to unknown annotations. The options are:                                                                   | ``warn-once``                                            |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  | ``warn-once, the default, warn once per annotation with the same name.``                                                                           |                                                          |
+|                                  | * ``warn-once, the default, warn once per annotation with the same name.``                                                                         |                                                          |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  | ``warn-all, warn for every use of an unknown annotation.``                                                                                         |                                                          |
+|                                  | * ``warn-all, warn for every use of an unknown annotation.``                                                                                       |                                                          |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  | ``error, similar to warn-all, but causes the compiler to exit with an error status when finished.``                                                |                                                          |
+|                                  | * ``error, similar to warn-all, but causes the compiler to exit with an error status when finished.``                                              |                                                          |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  | ``ignore, ignore all unknown annotations.``                                                                                                        |                                                          |
+|                                  | * ``ignore, ignore all unknown annotations.``                                                                                                      |                                                          |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 | ``--no-dcps-data-type-warnings`` | Don't warn about ``#pragma DCPS_DATA_TYPE``                                                                                                        | ``Warnings are issued, use annotations to silence them`` |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
@@ -105,11 +105,11 @@ Contrast this with using ``opendds_idl`` for IDL-to-C++11.  In this case, ``open
 
 Starting with a user-written file ``Foo.idl``, running “``opendds_idl -Lc++11 ````<other options> Foo.idl``” generates these output files:
 
-``FooTypeSupport.idl``IDL local interfaces for *TypeSupport, *DataWriter, *DataReader
+* ``FooTypeSupport.idl``* IDL local interfaces for *TypeSupport, *DataWriter, *DataReader
 
-``FooC.h``IDL-to-C++11 language mapping
+* ``FooC.h``* IDL-to-C++11 language mapping
 
-``FooTypeSupportImpl.h and .cpp``Additional source code needed for OpenDDS
+* ``FooTypeSupportImpl.h and .cpp``* Additional source code needed for OpenDDS
 
 FooTypeSupport.idl is the same as it was when using the classic mapping.  After it’s generated by ``opendds_idl``, it needs to be processed by ``tao_idl`` to generate ``FooTypeSupportC.h``, ``FooTypeSupportC.inl``, and ``FooTypeSupportC.cpp``.
 
@@ -117,23 +117,23 @@ Unlike when using the classic mapping, ``Foo.idl`` is not processed by ``tao_idl
 
 ``Foo.idl`` can contain the following IDL features:
 
-modules, typedefs, and constants
+* modules, typedefs, and constants
 
-basic types
+* basic types
 
-constructed types: enums, structs and unions
+* constructed types: enums, structs and unions
 
-Note that setting a union value through a modifier method automatically sets the discriminator.  In cases where there are multiple possible values for the discriminator, a 2-argument modifier method is provided.  Using this is preferred to using _d().
+  * Note that setting a union value through a modifier method automatically sets the discriminator.  In cases where there are multiple possible values for the discriminator, a 2-argument modifier method is provided.  Using this is preferred to using _d().
 
-If you chose to use the _d() method of the generated union types, note the following requirement from the specification: “The _d discriminator modifier can only be used to set the discriminant to a value within the same union member.”  OpenDDS treats this as a precondition (it is not checked within the implementation).
+  * If you chose to use the _d() method of the generated union types, note the following requirement from the specification: “The _d discriminator modifier can only be used to set the discriminant to a value within the same union member.”  OpenDDS treats this as a precondition (it is not checked within the implementation).
 
-strings (narrow and wide), sequences, and arrays
+* strings (narrow and wide), sequences, and arrays
 
-Bounded strings and sequences are supported, but bounds checks are not currently enforced.  Due to this limitation, distinct types are not used for bounded instantiations.
+  * Bounded strings and sequences are supported, but bounds checks are not currently enforced.  Due to this limitation, distinct types are not used for bounded instantiations.
 
-annotations – see section 2.1.1
+* annotations – see section 2.1.1
 
-#includes of IDL files that are also used with the IDL-to-C++11 mapping
+* #includes of IDL files that are also used with the IDL-to-C++11 mapping
 
 When using MPC to generate projects, the ``opendds_cxx11`` base project should be used to inherit the correct settings for code generation.  If the generated code will be part of a shared library, use the ``-Wb,export_include`` option (in addition to ``-Wb,export_macro``) so that the generated headers have an ``#include`` for the export header.
 

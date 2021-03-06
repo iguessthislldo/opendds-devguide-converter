@@ -6,14 +6,14 @@ import odf
 from odf import text, element
 from odf.opendocument import load
 
-indent = '  '
-
 doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 
 # TODO:
 # - Figure Links (bookmarks?)
 # - Section Links
 # - Footnotes
+# - List in "Building OpenDDS with Security on Windows"
+# - ``...`` within code blocks in "Setting up an OpenDDS Java Project" onwards in java file
 
 # Tasks
 # - Replace Section Numbers with Names
@@ -23,7 +23,7 @@ doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 #     script to mess up, like the "Note" in
 #     "Building With a Feature Enabled or Disabled".
 #   - Find places that should be monospace, but are not.
-#     Inproper Ex: "Extensions to the DDS Specification"
+#     Improper Ex: "Extensions to the DDS Specification"
 #     Proper ex: "Conditions"
 #   - Quotes around monospace text. See "Persistence Profile" section
 # - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
@@ -106,10 +106,18 @@ def write_table(rows, out):
       first = False
 
 
-def write_list(items, numbered, out):
-  bullet = '#. ' if numbered else '* '
-  for item in items:
-    out.writeln(item)
+def write_list(list_info, out):
+  bullet = '#. ' if list_info['numbered'] else '* '
+  indent = ' ' * len(bullet)
+  for item in list_info['items']:
+    if item:
+      out.writeln(bullet + item[0])
+      for line in item[1:]:
+        if line:
+          out.write(indent)
+        out.writeln(line)
+      out.writeln('')
+  out.writeln('')
 
 
 # Style =======================================================================
@@ -407,13 +415,23 @@ def gather_table_rows(info, parent_node, rows):
       dump_node_exit(info, child_node, 'Unexpected type in table: ' + kind)
 
 
-def gather_list_items(info, parent_node, items):
+start_value = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'start-value')
+
+def gather_list_items(info, parent_node):
+  list_level = info.get('list_level', 0, ignore_last=False)
+  list_level += 1
+  info.push(list_level=list_level)
+  rv = dict(numbered=False, items=[])
   for child_node in parent_node.childNodes:
     kind = child_node.qname[1]
     if kind == 'list-item':
-      items.append(get_text(info, child_node))
+      if start_value in child_node.attributes:
+        rv['numbered'] = True
+      rv['items'].append(get_text(info, child_node).split('\n'))
     else:
       dump_node_exit(info, child_node, 'not a list-item!')
+  info.pop()
+  return rv
 
 
 outline_level = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'outline-level')
@@ -483,6 +501,11 @@ def convert_node(info, node, out):
       # Use it?
       out.write(' ')
 
+    # TODO: One of the problems with this is "Table 7-7 [datawriterqos/*] Configuration Options"
+    # Can inserts newlines into monospaced lines
+    # elif kind == 'line-break':
+    #   out.writeln('')
+
     elif kind == 'p' and style is None:
       if style_name(node) == 'Footnote':
         # TODO this needs to be written outside a table
@@ -531,21 +554,16 @@ def convert_node(info, node, out):
         convert_child_nodes(info, node, out)
       else:
         # Normal Lists
-        items = []
-        gather_list_items(info, node, items)
-        for item in items:
-          out.writeln(item + '\n')
+        write_list(gather_list_items(info, node), out)
 
     elif kind == 'list-item':
       convert_child_nodes(info, node, out)
 
     else:
       passthrough = {
-        # Definitely Passthrough
         'section', # ROOT OF CONTENT, VERY IMPORTANT!
-        'soft-page-break',
-        'line-break',
         'list-header',
+        'line-break', # TODO, see above
 
         # TODO: Handle?
         'bookmark-ref',
@@ -563,6 +581,7 @@ def convert_node(info, node, out):
         'note-body',
         'span',
         'p',
+        'soft-page-break',
       }
       if kind in passthrough:
         convert_child_nodes(info, node, out)

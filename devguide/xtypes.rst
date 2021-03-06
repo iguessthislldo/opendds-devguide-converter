@@ -21,11 +21,11 @@ Extensibility
 
 There are 3 kinds of extensibility for types: Appendable, Mutable, and Final
 
-*Appendable* denotes a constructed type which may have additional members added onto or removed from the end.
+* *Appendable* denotes a constructed type which may have additional members added onto or removed from the end.
 
-*Mutable* denotes a constructed type that allows for members to be added, removed, and reordered so long as the keys and the required members of the sender and receiver remain. Mutable extensibility is accomplished by assigning a stable identifier to each member.
+* *Mutable* denotes a constructed type that allows for members to be added, removed, and reordered so long as the keys and the required members of the sender and receiver remain. Mutable extensibility is accomplished by assigning a stable identifier to each member.
 
-*Final* denotes a constructed type that can not add, remove, or reorder members,. This can be considered a non-extensible constructed type, with behavior similar to that of a type created before XTypes.
+* *Final* denotes a constructed type that can not add, remove, or reorder members,. This can be considered a non-extensible constructed type, with behavior similar to that of a type created before XTypes.
 
 Extensibility is set by the user in the IDL with the annotations: @appendable, @mutable, @final
 
@@ -42,9 +42,9 @@ Assignability between the type of a writer and reader is checked as part of disc
 
 In order for two constructed types to be assignable they must
 
-Have the same extensibility.
+* Have the same extensibility.
 
-Have the same set of keys.
+* Have the same set of keys.
 
 Each member of a constructed type has an identifier.  This identifier may be assigned automatically or explicitly.
 
@@ -57,11 +57,11 @@ Communication with a non-XTypes DDS (either an older OpenDDS or another DDS impl
 
 Additionally, the XTypes-enabled participant needs to be set up as follows:
 
-Types cannot use Mutable extensibility
+* Types cannot use Mutable extensibility
 
-Data Writers must have their Data Representation QoS policy set to DDS::XCDR_DATA_REPRESENTATION
+* Data Writers must have their Data Representation QoS policy set to DDS::XCDR_DATA_REPRESENTATION
 
-Data Readers must include DDS::XCDR_DATA_REPRESENTATION in the list of data representations in their Data Representation QoS (This is true by default)
+* Data Readers must include DDS::XCDR_DATA_REPRESENTATION in the list of data representations in their Data Representation QoS (This is true by default)
 
 The “Data Representation" section below shows how to change the data representation.
 
@@ -233,11 +233,11 @@ Data Representation
 
 Data representation is the way a data sample can be encoded for transmission.  Data representation can be XML, XCDR1, or XCDR2.
 
-XML is unsupported and should not be used
+* XML is unsupported and should not be used
 
-XCDR1 with appendable extensibility should not be used
+* XCDR1 with appendable extensibility should not be used
 
-XCDR2 is completely supported and preferred
+* XCDR2 is completely supported and preferred
 
 XCDR2 is a more robust version of XCDR1 and should be used in preference to XCDR1 unless there is a reason to do otherwise.
 
@@ -418,26 +418,28 @@ OpenDDS implements the XTypes specification version 1.3 at the Basic Conformance
 Annotations
 ===========
 
-@bit_bound
+* @bit_bound
 
-@optional
+* @optional
 
-@default_literal
+* @default_literal
 
-@must_understand
+* @must_understand
 
-@external
+* @external
 
-@verbatim
+* @verbatim
+
 
 Type System
 ===========
 
-IDL map type
+* IDL map type
 
-IDL bitmask type
+* IDL bitmask type
 
-Struct and union inheritance
+* Struct and union inheritance
+
 
 **********************************
 Differences from the specification
@@ -445,17 +447,17 @@ Differences from the specification
 
 Spec issues tracked in OMG's Jira database can be viewed at https://issues.omg.org/issues/lists/dds-xtypes-rtf
 
-Inconsistent topic status isn’t set for reader/reader or writer/writer in non-XTypes use cases
+* Inconsistent topic status isn’t set for reader/reader or writer/writer in non-XTypes use cases
 
-DDSXTY14-29: Define the encoding and extensibility used by Type Lookup Service
+* DDSXTY14-29: Define the encoding and extensibility used by Type Lookup Service
 
-DDSXTY14-33: Enums must have the same "bit bound" to be assignable
+* DDSXTY14-33: Enums must have the same "bit bound" to be assignable
 
-DDSXTY14-27: Default data representation is XCDR2
+* DDSXTY14-27: Default data representation is XCDR2
 
-DDSSEC12-86: Type Lookup Service when using DDS Security
+* DDSSEC12-86: Type Lookup Service when using DDS Security
 
-DDSXTY14-35: Anonymous types in Strongly Connected Components
+* DDSXTY14-35: Anonymous types in Strongly Connected Components
 
-DDSXTY14-40: Meaning of ignore_member_names in TypeConsistencyEnforcement
+* DDSXTY14-40: Meaning of ignore_member_names in TypeConsistencyEnforcement
 

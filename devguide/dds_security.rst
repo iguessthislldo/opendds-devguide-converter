@@ -13,25 +13,26 @@ Prerequisites
 
 OpenDDS includes an implementation of the OMG DDS Security 1.1 specification.  Building OpenDDS with security enabled requires the following dependencies:
 
-Xerces-C++ v3.x
+* Xerces-C++ v3.x
 
-OpenSSL v1.0.2+ or v1.1 (1.1 is preferred)
+* OpenSSL v1.0.2+ or v1.1 (1.1 is preferred)
 
-Google Test (only required if building OpenDDS tests)
+* Google Test (only required if building OpenDDS tests)
 
-If you are using OpenDDS from a git repository, Google Test is provided as a git submodule. Make sure to enable submodules with the ``--recursive`` option to git clone.
+  * If you are using OpenDDS from a git repository, Google Test is provided as a git submodule. Make sure to enable submodules with the ``--recursive`` option to git clone.
 
-CMake (required if building OpenDDS tests and building Google Test and other dependencies from source).
+* CMake (required if building OpenDDS tests and building Google Test and other dependencies from source).
 
 General Notes on Using OpenDDS Configure Script with DDS Security
 
-DDS Security is disabled by default, enable it with ``--security``
+* DDS Security is disabled by default, enable it with ``--security``
 
-OpenDDS tests are disabled by default, enable them with ``--tests``
+* OpenDDS tests are disabled by default, enable them with ``--tests``
 
-Disabling tests skips the Google Test and CMake dependencies
+  * Disabling tests skips the Google Test and CMake dependencies
 
-If tests are enabled, the configure script can run CMake and build Google Test
+  * If tests are enabled, the configure script can run CMake and build Google Test
+
 
 Building OpenDDS with Security on Windows
 =========================================
@@ -42,15 +43,15 @@ Microsoft vcpkg is a “C++ Library Manager for Windows, Linux, and macOS” whi
 
 As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and later versions; if using an earlier version of Visual Studio, skip down to the manual setup instructions later in this section.
 
-If OpenDDS tests will be built, install CMake or put the one that comes with Visual Studio on the PATH (see Common7\IDE\CommonExtensions\Microsoft\CMake).
+* * * * If OpenDDS tests will be built, install CMake or put the one that comes with Visual Studio on the PATH (see Common7\IDE\CommonExtensions\Microsoft\CMake).
 
-If you need to obtain and install vcpkg, navigate to `https://github.com/Microsoft/vcpkg <#https://github.com/Microsoft/vcpkg>`_ and follow the instructions to obtain vcpkg by cloning the repository and bootstrapping it.
+      * If you need to obtain and install vcpkg, navigate to `https://github.com/Microsoft/vcpkg <#https://github.com/Microsoft/vcpkg>`_ and follow the instructions to obtain vcpkg by cloning the repository and bootstrapping it.
 
-Fetch and build the dependencies; by default, vcpkg targets x86 so be sure to specify the x64 target if required by specifying it when invoking vcpkg install, as shown here:``vcpkg install openssl:x64-windows xerces-c:x64-windows``
+      * Fetch and build the dependencies; by default, vcpkg targets x86 so be sure to specify the x64 target if required by specifying it when invoking vcpkg install, as shown here:``vcpkg install openssl:x64-windows xerces-c:x64-windows``
 
-Configure OpenDDS by passing the openssl and xerces3 switches. As a convenience, it can be helpful to set an environment variable to store the path since it is the same location for both dependencies.``set VCPKG_INSTALL=c:\path\to\vcpkg\installed\x64-windowsconfigure --security --openssl=%VCPKG_INSTALL% --xerces3=%VCPKG_INSTALL%``
+      * Configure OpenDDS by passing the openssl and xerces3 switches. As a convenience, it can be helpful to set an environment variable to store the path since it is the same location for both dependencies.``set VCPKG_INSTALL=c:\path\to\vcpkg\installed\x64-windowsconfigure --security --openssl=%VCPKG_INSTALL% --xerces3=%VCPKG_INSTALL%``
 
-Compile with msbuild or by launching Visual Studio from this command prompt so it inherits the correct environment variables and building from there.
+      * Compile with msbuild or by launching Visual Studio from this command prompt so it inherits the correct environment variables and building from there.
 
 ``msbuild /m DDS_TAOv2_all.sln``
 
@@ -64,19 +65,19 @@ Note: for all of the build steps listed here, check that each package targets th
 
 Compiling OpenSSL (see: https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows)
 
-Install Perl and add it to the Path environment variable. For this guide, ActiveState is used.
+* Install Perl and add it to the Path environment variable. For this guide, ActiveState is used.
 
-Install Netwide Assembler (NASM). Click through the latest stable release and there is a win32 and win64 directory containing executable installers. The installer does not update the Path environment variable, so a manual entry ``(%LOCALAPPDATA%\bin\NASM)`` is necessary.
+* Install Netwide Assembler (NASM). Click through the latest stable release and there is a win32 and win64 directory containing executable installers. The installer does not update the Path environment variable, so a manual entry ``(%LOCALAPPDATA%\bin\NASM)`` is necessary.
 
-Download the required version of OpenSSL by cloning the repository.
+* Download the required version of OpenSSL by cloning the repository.
 
-Open a Developer Command Prompt (32-bit or 64-bit depending on the desired target architecture) and change into the freshly cloned openssl directory.
+* Open a Developer Command Prompt (32-bit or 64-bit depending on the desired target architecture) and change into the freshly cloned openssl directory.
 
-Run the configure script and specify a required architecture (``perl Configure VC-WIN32 or perl Configure VC-WIN64A``).
+* Run the configure script and specify a required architecture (``perl Configure VC-WIN32 or perl Configure VC-WIN64A``).
 
-Run ``nmake``.
+* Run ``nmake``.
 
-Run ``nmake install``.
+* Run ``nmake install``.
 
 Note: if the default OpenSSL location is desired, which will be searched by OpenDDS, open the Developer Command Prompt as an administrator before running the install. It will write to “C:\Program Files” or “C:\Program Files (x86)” depending on the architecture.
 
@@ -84,22 +85,22 @@ Compiling Xerces-C++ 3
 
 (see: https://xerces.apache.org/xerces-c/build-3.html)
 
-Download/extract the Xerces source files.
+* Download/extract the Xerces source files.
 
-Create a cmake build directory and change into it (from within the Xerces source tree).
+* Create a cmake build directory and change into it (from within the Xerces source tree).
 
 ::
 
     mkdir build
     cd build
 
-Run cmake with the appropriate generator. In this case Visual Studio 2017 with 64-bit is being used so:
+* Run cmake with the appropriate generator. In this case Visual Studio 2017 with 64-bit is being used so:
 
 ::
 
     cmake -G "Visual Studio 15 2017 Win64" ..
 
-Run cmake again with the build switch and install target (this should be done in an administrator command-prompt to install in the default location as mentioned above).
+* Run cmake again with the build switch and install target (this should be done in an administrator command-prompt to install in the default location as mentioned above).
 
 ::
 
@@ -107,19 +108,19 @@ Run cmake again with the build switch and install target (this should be done in
 
 Configuring and Building OpenDDS:
 
-Change into the OpenDDS root folder and run configure with security enabled.
+* Change into the OpenDDS root folder and run configure with security enabled.
 
-If the default location was used for OpenSSL and Xerces, configure should automatically find the dependencies:
+  * If the default location was used for OpenSSL and Xerces, configure should automatically find the dependencies:
 
 ::
 
     configure --security
 
-If a different location was used (assuming environment variables ``NEW_SSL_ROOT`` and ``NEW_XERCES_ROOT`` point to their respective library directories):
+* * If a different location was used (assuming environment variables ``NEW_SSL_ROOT`` and ``NEW_XERCES_ROOT`` point to their respective library directories):
 
 ``configure --security --openssl=%NEW_SSL_ROOT%   --xerces3=%NEW_XERCES_ROOT% ``
 
-Compile with msbuild (or by opening the solution file in Visual Studio and building from there).
+* Compile with msbuild (or by opening the solution file in Visual Studio and building from there).
 
 ``msbuild /m DDS_TAOv2_all.sln``
 
@@ -150,25 +151,25 @@ Terms and Background Info
 
 DDS Security uses current industry standards and best-practices in security. As such, this document makes use of several security concepts which may warrant additional research by OpenDDS users.
 
-+--------------------------------------------------+-----------------------------------------------------------------------------------------+
-| Term Group                                       | References                                                                              |
-+==================================================+=========================================================================================+
-| Public Key Cryptography (including Private Keys) | https://en.wikipedia.org/wiki/Public-key_cryptography                                   |
-|                                                  |                                                                                         |
-|                                                  | RSA – https://en.wikipedia.org/wiki/RSA_(algorithm)                                     |
-|                                                  |                                                                                         |
-|                                                  | Elliptic Curve Cryptography - https://en.wikipedia.org/wiki/Elliptic_curve_cryptography |
-+--------------------------------------------------+-----------------------------------------------------------------------------------------+
-| Public Key Certificate                           | https://en.wikipedia.org/wiki/Public_key_certificate                                    |
-|                                                  |                                                                                         |
-|                                                  | Certificate Authority – https://en.wikipedia.org/wiki/Certificate_authority             |
-|                                                  |                                                                                         |
-|                                                  | X.509 – https://en.wikipedia.org/wiki/X.509                                             |
-|                                                  |                                                                                         |
-|                                                  | PEM - https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail                    |
-+--------------------------------------------------+-----------------------------------------------------------------------------------------+
-| Signed Documents                                 | https://en.wikipedia.org/wiki/Digital_signature                                         |
-+--------------------------------------------------+-----------------------------------------------------------------------------------------+
++--------------------------------------------------+-------------------------------------------------------------------------------------------+
+| Term Group                                       | References                                                                                |
++==================================================+===========================================================================================+
+| Public Key Cryptography (including Private Keys) | * https://en.wikipedia.org/wiki/Public-key_cryptography                                   |
+|                                                  |                                                                                           |
+|                                                  | * RSA – https://en.wikipedia.org/wiki/RSA_(algorithm)                                     |
+|                                                  |                                                                                           |
+|                                                  | * Elliptic Curve Cryptography - https://en.wikipedia.org/wiki/Elliptic_curve_cryptography |
++--------------------------------------------------+-------------------------------------------------------------------------------------------+
+| Public Key Certificate                           | * https://en.wikipedia.org/wiki/Public_key_certificate                                    |
+|                                                  |                                                                                           |
+|                                                  | * Certificate Authority – https://en.wikipedia.org/wiki/Certificate_authority             |
+|                                                  |                                                                                           |
+|                                                  | * X.509 – https://en.wikipedia.org/wiki/X.509                                             |
+|                                                  |                                                                                           |
+|                                                  | * PEM - https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail                    |
++--------------------------------------------------+-------------------------------------------------------------------------------------------+
+| Signed Documents                                 | * https://en.wikipedia.org/wiki/Digital_signature                                         |
++--------------------------------------------------+-------------------------------------------------------------------------------------------+
 Table 14-1
 
 *******************************
@@ -180,11 +181,11 @@ Per-Domain Artifacts
 
 These are shared by all participants within the secured DDS Domain:
 
-Identity CA Certificate
+* Identity CA Certificate
 
-Permissions CA Certificate (may be same as Identity CA)
+* Permissions CA Certificate (may be same as Identity CA)
 
-Governance Document
+* Governance Document
 
 - Signed by Permissions CA using its private key
 
@@ -193,11 +194,11 @@ Per-Participant Artifacts
 
 These are specific to the individual Domain Participants within the DDS Domain:
 
-Identity Certificate and its Private Key
+* Identity Certificate and its Private Key
 
 - Issued by Identity CA (or a CA that it authorized to act on its behalf)
 
-Permissions Document
+* Permissions Document
 
 - Contains a “subject name” which matches the participant certificate’s Subject
 
@@ -209,13 +210,14 @@ Required OpenDDS Configuration
 
 The following configuration steps are required to enable OpenDDS Security features:
 
-Select RTPS Discovery and the RTPS-UDP Transport; because DDS Security only works with these configurations, both must be specified for any security-enabled participant.
+* Select RTPS Discovery and the RTPS-UDP Transport; because DDS Security only works with these configurations, both must be specified for any security-enabled participant.
 
-Enable OpenDDS security-features, which can be done two ways:
+* Enable OpenDDS security-features, which can be done two ways:
 
-Via API: ``“TheServiceParticipant->set_security(true);”`` or
+  * Via API: ``“TheServiceParticipant->set_security(true);”`` or
 
-Via config file: ``“DCPSSecurity=1”`` in the ``[common]`` section.
+  * Via config file: ``“DCPSSecurity=1”`` in the ``[common]`` section.
+
 
 DDS Security Configuration via PropertyQosPolicy
 ================================================
@@ -648,39 +650,39 @@ DDS Security Implementation Status
 
 The following DDS Security features are not implemented in OpenDDS.
 
-Optional parts of the DDS Security v1.1 specification
+* Optional parts of the DDS Security v1.1 specification
 
-Ability to write a custom plugin in C or in Java (C++ is supported)
+  * Ability to write a custom plugin in C or in Java (C++ is supported)
 
-Logging Plugin support
+  * Logging Plugin support
 
-Built-in Logging Plugin
+  * Built-in Logging Plugin
 
-Data Tagging
+  * Data Tagging
 
-Use of RTPS KeyHash for encrypted messages
+* Use of RTPS KeyHash for encrypted messages
 
-OpenDDS doesn't use KeyHash, so it meets the spec requirements of not leaking secured data through KeyHash
+  * OpenDDS doesn't use KeyHash, so it meets the spec requirements of not leaking secured data through KeyHash
 
-Immutability of Publisher’s Partition QoS (see OMG Issue DDSSEC12-49)
+* Immutability of Publisher’s Partition QoS (see OMG Issue DDSSEC12-49)
 
-Use of multiple plugin configurations (with different Domain Participants)
+* Use of multiple plugin configurations (with different Domain Participants)
 
-CRL (RFC 5280) and OCSP (RFC 2560) support
+* CRL (RFC 5280) and OCSP (RFC 2560) support
 
-Certain plugin operations not used by built-in plugins may not be invoked by middleware
+* Certain plugin operations not used by built-in plugins may not be invoked by middleware
 
-Origin Authentication
+* Origin Authentication
 
-PKCS#11 for certificates, keys, passwords
+* PKCS#11 for certificates, keys, passwords
 
-Relay as a permissions “action” (Publish and Subscribe are supported)
+* Relay as a permissions “action” (Publish and Subscribe are supported)
 
-Legacy matching behavior of permissions based on Partition QoS (9.4.1.3.2.3.1.4 in spec)
+* Legacy matching behavior of permissions based on Partition QoS (9.4.1.3.2.3.1.4 in spec)
 
-128-bit AES keys (256-bit is supported)
+* 128-bit AES keys (256-bit is supported)
 
-Configuration of Built-In Crypto’s key reuse (within the DataWriter) and blocks-per-session
+* Configuration of Built-In Crypto’s key reuse (within the DataWriter) and blocks-per-session
 
-Signing (without encrypting) at the payload level, see OMG Issue DDSSEC12-59
+* Signing (without encrypting) at the payload level, see OMG Issue DDSSEC12-59
 

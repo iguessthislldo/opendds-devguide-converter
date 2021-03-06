@@ -44,9 +44,9 @@ Multiple keys are specified with separate ``@key`` annotations. In the above exa
 
 ``@key`` can be applied to a structure field of the following types:
 
-Any primitive, such as booleans, integers, characters, and strings.
+* Any primitive, such as booleans, integers, characters, and strings.
 
-Other structures that have a defined key or set of keys. For example:
+* Other structures that have a defined key or set of keys. For example:
 
 ::
 
@@ -68,7 +68,7 @@ Other structures that have a defined key or set of keys. For example:
 
 In this example, every type from the key marked on the topic type down to what primitive data types to use as the key is annotated with ``@key``. That isn’t strictly necessary though, as the next section shows.
 
-Other structures that don’t have any defined keys. In the following example, it’s implied that all the fields in InnerStruct are keys.
+* Other structures that don’t have any defined keys. In the following example, it’s implied that all the fields in InnerStruct are keys.
 
 ::
 
@@ -101,9 +101,10 @@ If none of the fields in a struct are marked with ``@key`` or ``@key(TRUE)``, th
          // Now just value.a and value.b are the keys
     };
 
-Unions can also be used as keys if their discriminator is marked as a key. There is an example of a keyed union topic type in the next section, but keep in mind a union being used as a key doesn’t have to be a topic type.
+* Unions can also be used as keys if their discriminator is marked as a key. There is an example of a keyed union topic type in the next section, but keep in mind a union being used as a key doesn’t have to be a topic type.
 
-Arrays of any of the previous data types. @key can’t be applied to sequences, even if the base type would be valid in an array. Also @key, when applied to arrays, it makes every element in the array part of the key. They can’t be applied to individual array elements.
+* Arrays of any of the previous data types. @key can’t be applied to sequences, even if the base type would be valid in an array. Also @key, when applied to arrays, it makes every element in the array part of the key. They can’t be applied to individual array elements.
+
 
 Union Topic Types
 -----------------
@@ -135,15 +136,15 @@ Topic Types vs. Nested Types
 
 In addition to ``@topic``, the set of IDL types OpenDDS can use can also be controlled using ``@nested`` and ``@default_nested``. Types that are “nested” are the opposite of topic types; they can’t be used for the top-level type of a topic, but they can be nested inside the top-level type (at any level of nesting). All types are nested by default in OpenDDS to reduce the code generated for type support, but there a number of ways to change this:
 
-The type can be annotated with ``@topic`` (see section 2.1.1.1), or with ``@nested(FALSE)``, which is equivalent to ``@topic``.
+* The type can be annotated with ``@topic`` (see section 2.1.1.1), or with ``@nested(FALSE)``, which is equivalent to ``@topic``.
 
-The enclosing module can be annotated with ``@default_nested(FALSE)``.
+* The enclosing module can be annotated with ``@default_nested(FALSE)``.
 
-The global default for ``opendds_idl`` can be changed by adding`` --no-default-nested````, ``in which case it would be as if all valid types were marked with ``@topic``. If desired for IDL compatibility with other DDS implementations or based on preference, this can be done through the build system:
+* The global default for ``opendds_idl`` can be changed by adding`` --no-default-nested````, ``in which case it would be as if all valid types were marked with ``@topic``. If desired for IDL compatibility with other DDS implementations or based on preference, this can be done through the build system:
 
-When using MPC, add ``dcps_ts_flags += --no-default-nested`` to the project.
+  * When using MPC, add ``dcps_ts_flags += --no-default-nested`` to the project.
 
-When using CMake, this can be done by setting either the ``OPENDDS_DEFAULT_NESTED`` global variable to ``FALSE`` or adding ``--no-default-nested`` to the ``OPENDDS_IDL_OPTIONS`` parameter for ``OPENDDS_TARGET_SOURCES``. See ``docs/cmake.md`` in the source for more information about using OpenDDS with CMake.
+  * When using CMake, this can be done by setting either the ``OPENDDS_DEFAULT_NESTED`` global variable to ``FALSE`` or adding ``--no-default-nested`` to the ``OPENDDS_IDL_OPTIONS`` parameter for ``OPENDDS_TARGET_SOURCES``. See ``docs/cmake.md`` in the source for more information about using OpenDDS with CMake.
 
 In cases where the module default is not nested, you can reverse this by using ``@nested`` or ``@nested(TRUE)`` for structures/unions and ``@default_nested`` or ``@default_nested(TRUE)`` for modules. NOTE: the ``@topic`` annotation doesn’t take a boolean argument, so ``@topic(FALSE)`` would cause an error in the OpenDDS IDL Compiler.
 
@@ -161,11 +162,11 @@ The OpenDDS IDL is first processed by the TAO IDL compiler.
 
 In addition, we need to process the IDL file with the OpenDDS IDL compiler to generate the serialization and key support code that OpenDDS requires to marshal and demarshal the Message, as well as the type support code for the data readers and writers. This IDL compiler is located in ``$DDS_ROOT/bin```` ``and generates three files for each IDL file processed. The three files all begin with the original IDL file name and would appear as follows:
 
-``<filename>TypeSupport.idl``
+* ``<filename>TypeSupport.idl``
 
-``<filename>TypeSupportImpl.h``
+* ``<filename>TypeSupportImpl.h``
 
-``<filename>TypeSupportImpl.cpp``
+* ``<filename>TypeSupportImpl.cpp``
 
 For example, running ``opendds_idl`` as follows
 
@@ -178,9 +179,9 @@ generates ``MessengerTypeSupport.idl``, ``MessengerTypeSupportImpl.h``, and ``Me
 
 Typically, you do not directly invoke the TAO or OpenDDS IDL compilers as above, but let your build system do it for you.  Two different build systems are supported for projects that use OpenDDS:
 
-MPC, the “Make Project Creator” which is used to build OpenDDS itself and the majority of its included tests and example
+* MPC, the “Make Project Creator” which is used to build OpenDDS itself and the majority of its included tests and example
 
-CMake, a build system that’s commonly used across the industry (cmake.org)
+* CMake, a build system that’s commonly used across the industry (cmake.org)
 
 Even if you will eventually use some custom build system that’s not one of the two listed above, start by building an example OpenDDS application using one of the supported build systems and then migrate the code generator command lines, compiler options, etc., to the custom build system.
 
@@ -359,21 +360,21 @@ The example code uses *conditions* and *wait* sets so the publisher waits for th
 
 The basic steps involved in waiting for the subscriber are:
 
-Get the status condition from the data writer we created
+* Get the status condition from the data writer we created
 
-Enable the Publication Matched status in the condition
+* Enable the Publication Matched status in the condition
 
-Create a wait set
+* Create a wait set
 
-Attach the status condition to the wait set
+* Attach the status condition to the wait set
 
-Get the publication matched status
+* Get the publication matched status
 
-If the current count of matches is one or more, detach the condition from the wait set and proceed to publication
+* If the current count of matches is one or more, detach the condition from the wait set and proceed to publication
 
-Wait on the wait set (can be bounded by a specified period of time)
+* Wait on the wait set (can be bounded by a specified period of time)
 
-Loop back around to step 5
+* Loop back around to step 5
 
 Here is the corresponding code:
 
@@ -805,11 +806,11 @@ Reading Multiple Samples
 
 The DDS specification provides a number of operations for reading and writing data samples. In the examples above we used the ``take_next_sample()`` operation, to read the next sample and “take” ownership of it from the reader. The Message Data Reader also has the following take operations.
 
-``take()````—``Take a sequence of up to max_samples values from the reader
+* ``take()````—``Take a sequence of up to max_samples values from the reader
 
-``take_instance()````—``Take a sequence of values for a specified instance
+* ``take_instance()````—``Take a sequence of values for a specified instance
 
-``take_next_instance()````—``Take a sequence of samples belonging to the same instance, without specifying the instance.
+* ``take_next_instance()````—``Take a sequence of samples belonging to the same instance, without specifying the instance.
 
 There are also “read” operations corresponding to each of these “take” operations that obtain the same values, but leave the samples in the reader and simply mark them as read in the ``SampleInfo``.
 

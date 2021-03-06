@@ -52,36 +52,38 @@ Unlike the OpenDDS Middleware which is compiled from source code by the develope
 Prerequisites
 =============
 
-Java Runtime Environment (JRE)
+* Java Runtime Environment (JRE)
 
-Eclipse IDE
+* Eclipse IDE
+
 
 Installation
 ============
 
-From Eclipse, open the Help menu and select Install New Software.
+#. From Eclipse, open the Help menu and select Install New Software.
 
 .. image:: images/100000000000018A00000158B458ED5B89A62234.png
 
 Figure 11-3 Eclipse Software Installation Dialog
 
-Click the hyperlink for Available Software Sites.
+* Click the hyperlink for Available Software Sites.
 
-The standard ``eclipse.org`` sites (Eclipse Project Updates and Galileo) should be enabled. If they are disabled, enable them now.
+* The standard ``eclipse.org`` sites (Eclipse Project Updates and Galileo) should be enabled. If they are disabled, enable them now.
 
-Add a new Site entry named OpenDDS with URL http://www.opendds.org/modeling/eclipse_44
+* Add a new Site entry named OpenDDS with URL http://www.opendds.org/modeling/eclipse_44
 
-Click OK to close the Preferences dialog and return to the Install dialog.
+* Click OK to close the Preferences dialog and return to the Install dialog.
 
-In the “Work with” combo box, select the new entry for OpenDDS.
+* In the “Work with” combo box, select the new entry for OpenDDS.
 
-Select the “OpenDDS Modeling SDK” and click Next.
+* Select the “OpenDDS Modeling SDK” and click Next.
 
-Review the “Install Details” list and click Next. Review the license, select Accept (if you do accept it), and click Finish.
+* Review the “Install Details” list and click Next. Review the license, select Accept (if you do accept it), and click Finish.
 
-Eclipse will download the OpenDDS plug-ins and various plug-ins from ``eclipse.org`` that they depend on. There will be a security warning because the OpenDDS plug-ins are not signed. There also may be a prompt to accept a certificate from ``eclipse.org``.
+* Eclipse will download the OpenDDS plug-ins and various plug-ins from ``eclipse.org`` that they depend on. There will be a security warning because the OpenDDS plug-ins are not signed. There also may be a prompt to accept a certificate from ``eclipse.org``.
 
-Eclipse will prompt the user to restart in order to use the newly installed software.
+* Eclipse will prompt the user to restart in order to use the newly installed software.
+
 
 Getting Started
 ===============
@@ -96,11 +98,12 @@ Developing Applications
 
 In order to build an application using the OpenDDS Modeling SDK, one must understand a few key concepts. The concepts concern:
 
-The support library
+#. The support library
 
-Generated model code
+#. Generated model code
 
-Application code
+#. Application code
+
 
 Modeling Support Library
 ========================
@@ -123,9 +126,10 @@ The ``OpenDDS::Model::Service`` class is responsible for the creation of OpenDDS
 
 In order to properly instantiate these entities, it must know:
 
-The relationships among the entities
+* The relationships among the entities
 
-The transport configuration used by entities
+* The transport configuration used by entities
+
 
 Generated Code
 ==============
@@ -163,23 +167,23 @@ For each DCPS library in your model, the OpenDDS Modeling SDK generates a class 
 
 The model class contains an inner class, named Elements, defining enumerated identifiers for each DCPS entity modeled in the library and each type referenced by the library's Topics. This Elements class contains enumeration definitions for each of:
 
-DomainParticipants
+* DomainParticipants
 
-Types
+* Types
 
-Topics
+* Topics
 
-Content Filtered Topics
+* Content Filtered Topics
 
-Multi Topics
+* Multi Topics
 
-Publishers
+* Publishers
 
-Subscribers
+* Subscribers
 
-Data Writers
+* Data Writers
 
-Data Readers
+* Data Readers
 
 In addition, the DCPS model class captures the relationships between these entities. These relationships are used by the Service class when instantiating DCPS entities.
 

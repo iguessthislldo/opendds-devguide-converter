@@ -8,11 +8,11 @@ Introduction
 
 The Content-Subscription Profile of DDS consists of three features which enable a data reader’s behavior to be influenced by the content of the data samples it receives. These three features are:
 
-Content-Filtered Topic
+* Content-Filtered Topic
 
-Query Condition
+* Query Condition
 
-Multi Topic
+* Multi Topic
 
 The content-filtered topic and multi topic interfaces inherit from the ``TopicDescription`` interface (and not from the ``Topic`` interface, as the names may suggest).
 
@@ -26,13 +26,13 @@ Content-Filtered Topic
 
 The domain participant interface contains operations for creating and deleting a content-filtered topic. Creating a content-filtered topic requires the following parameters:
 
-NameAssigns a name to this content-filtered topic which could later be used with the ``lookup_topicdescription()`` operation.
+* NameAssigns a name to this content-filtered topic which could later be used with the ``lookup_topicdescription()`` operation.
 
-Related topicSpecifies the topic that this content-filtered topic is based on. This is the same topic that matched data writers will use to publish data samples.
+* Related topicSpecifies the topic that this content-filtered topic is based on. This is the same topic that matched data writers will use to publish data samples.
 
-Filter expressionAn SQL-like expression (see section 5.2.1) which defines the subset of samples published on the related topic that should be received by the content-filtered topic’s data readers.
+* Filter expressionAn SQL-like expression (see section 5.2.1) which defines the subset of samples published on the related topic that should be received by the content-filtered topic’s data readers.
 
-Expression parametersThe filter expression can contain parameter placeholders. This argument provides initial values for those parameters. The expression parameters can be changed after the content-filtered topic is created (the filter expression cannot be changed).
+* Expression parametersThe filter expression can contain parameter placeholders. This argument provides initial values for those parameters. The expression parameters can be changed after the content-filtered topic is created (the filter expression cannot be changed).
 
 Once the content-filtered topic has been created, it is used by the subscriber’s ``create_datareader()`` operation to obtain a content-filtering data reader. This data reader is functionally equivalent to a normal data reader except that incoming data samples which do not meet the filter expression’s criteria are dropped.
 
@@ -47,19 +47,19 @@ The formal grammar for filter expressions is defined in Annex A of the DDS speci
 
 Filter expressions are combinations of one or more predicates. Each predicate is a logical expression taking one of two forms:
 
-``<arg1> <RelOp> ````<arg2>``
+* ``<arg1> <RelOp> ````<arg2>``
 
-``arg1`` and ``arg2`` are arguments which may be either a literal value (integer, character, floating-point, string, or enumeration), a parameter placeholder of the form ``%n`` (where n is a zero-based index into the parameter sequence), or a field reference.
+* * ``arg1`` and ``arg2`` are arguments which may be either a literal value (integer, character, floating-point, string, or enumeration), a parameter placeholder of the form ``%n`` (where n is a zero-based index into the parameter sequence), or a field reference.
 
-At least one of the arguments must be a field reference, which is the name of an IDL struct field, optionally followed by any number of ‘.’ and another field name to represent nested structures.
+  * At least one of the arguments must be a field reference, which is the name of an IDL struct field, optionally followed by any number of ‘.’ and another field name to represent nested structures.
 
-``RelOp`` is a relational operator from the list: ``=``, ``>``, ``>=``, ``<``, ``<=``, ``<>``, and ‘``like``’.  ‘l``ike``’ is a wildcard match using ``%`` to match any number of characters and _ to match a single character.
+  * ``RelOp`` is a relational operator from the list: ``=``, ``>``, ``>=``, ``<``, ``<=``, ``<>``, and ‘``like``’.  ‘l``ike``’ is a wildcard match using ``%`` to match any number of characters and _ to match a single character.
 
-Examples of this form of predicate include: ``a = 'z'``, ``b <> 'str'``, ``c < d``, ``e = 'enumerator'``, ``f >= 3.14e3``, ``27 > g``, ``h <> i``, ``j.k.l like %0``
+  * Examples of this form of predicate include: ``a = 'z'``, ``b <> 'str'``, ``c < d``, ``e = 'enumerator'``, ``f >= 3.14e3``, ``27 > g``, ``h <> i``, ``j.k.l like %0``
 
-<arg1> [NOT] BETWEEN <arg2> AND <arg3>
+* <arg1> [NOT] BETWEEN <arg2> AND <arg3>
 
-In this form, argument 1 must be a field reference and arguments 2 and 3 must each be a literal value or parameter placeholder.
+* * In this form, argument 1 must be a field reference and arguments 2 and 3 must each be a literal value or parameter placeholder.
 
 Any number of predicates can be combined through the use of parenthesis and the Boolean operators ``AND``, ``OR``, and ``NOT`` to form a filter expression.
 
@@ -113,11 +113,11 @@ The query condition interface inherits from the read condition interface, theref
 
 The ``DataReader`` interface contains operations for creating (``create_querycondition``) and deleting (``delete_readcondition``) a query condition. Creating a query condition requires the following parameters:
 
-Sample, view, and instance state masksThese are the same state masks that would be passed to ``create_readcondition()``, ``read()``, or ``take()``.
+* Sample, view, and instance state masksThese are the same state masks that would be passed to ``create_readcondition()``, ``read()``, or ``take()``.
 
-Query expressionAn SQL-like expression (see 5.3.1) describing a subset of samples which cause the condition to be triggered. This same expression is used to filter the data set returned from a ``read_w_condition()`` or ``take_w_condition()`` operation. It may also impose a sort order (``ORDER BY``) on that data set.
+* Query expressionAn SQL-like expression (see 5.3.1) describing a subset of samples which cause the condition to be triggered. This same expression is used to filter the data set returned from a ``read_w_condition()`` or ``take_w_condition()`` operation. It may also impose a sort order (``ORDER BY``) on that data set.
 
-Query parametersThe query expression can contain parameter placeholders. This argument provides initial values for those parameters. The query parameters can be changed after the query condition is created (the query expression cannot be changed).
+* Query parametersThe query expression can contain parameter placeholders. This argument provides initial values for those parameters. The query parameters can be changed after the query condition is created (the query expression cannot be changed).
 
 A particular query condition can be used with a wait set (``attach_condition``), with a data reader (``read_w_condition``, ``take_w_condition``, ``read_next_instance_w_condition``, ``take_next_instance_w_condition``), or both. When used with a wait set, the ``ORDER BY`` clause has no effect on triggering the wait set. When used with a data reader’s ``read*()`` or ``take*()`` operation, the resulting data set will only contain samples which match the query expression and they will be ordered by the ``ORDER BY`` fields, if an ``ORDER BY`` clause is present.
 
@@ -126,11 +126,12 @@ Query Expressions
 
 Query expressions are a superset of filter expressions (see section 5.2.1). Following the filter expression, the query expression can optionally have an ``ORDER BY`` keyword followed by a comma-separated list of field references. If the ``ORDER BY`` clause is present, the filter expression may be empty. The following strings are examples of query expressions:
 
-m > 100 ORDER BY n
+* m > 100 ORDER BY n
 
-ORDER BY p.q, r, s.t.u
+* ORDER BY p.q, r, s.t.u
 
-NOT v LIKE 'z%'
+* NOT v LIKE 'z%'
+
 
 Query Condition Example
 =======================
@@ -174,13 +175,13 @@ The multi topic’s topic expression (see section 5.4.1) describes how the disti
 
 The domain participant interface contains operations for creating and deleting a multi topic. Creating a multi topic requires the following parameters:
 
-NameAssigns a name to this multi topic which could later be used with the ``lookup_topicdescription()`` operation.
+* NameAssigns a name to this multi topic which could later be used with the ``lookup_topicdescription()`` operation.
 
-Type nameSpecifies the resulting type of the multi topic. This type must have its type support registered before creating the multi topic.
+* Type nameSpecifies the resulting type of the multi topic. This type must have its type support registered before creating the multi topic.
 
-Topic expression (also known as subscription expression)An SQL-like expression (see section 5.4.1) which defines the mapping of constituent topic fields to resulting type fields. It can also specify a filter (``WHERE`` clause).
+* Topic expression (also known as subscription expression)An SQL-like expression (see section 5.4.1) which defines the mapping of constituent topic fields to resulting type fields. It can also specify a filter (``WHERE`` clause).
 
-Expression parametersThe topic expression can contain parameter placeholders. This argument provides initial values for those parameters. The expression parameters can be changed after the multi topic is created (the topic expression cannot be changed).
+* Expression parametersThe topic expression can contain parameter placeholders. This argument provides initial values for those parameters. The expression parameters can be changed after the multi topic is created (the topic expression cannot be changed).
 
 Once the multi topic has been created, it is used by the subscriber’s ``create_datareader()`` operation to obtain a multi topic data reader. This data reader is used by the application to receive the constructed samples of the resulting type. The manner in which these samples are constructed is described below in section 5.4.2.2.
 
@@ -193,27 +194,28 @@ Topic expressions use a syntax that is very similar to a complete SQL query:
 
     SELECT <aggregation> FROM <selection> [WHERE <condition>]
 
-The aggregation can be either a “``*``” or a comma separated list of field specifiers. Each field specifier has the following syntax:
+* The aggregation can be either a “``*``” or a comma separated list of field specifiers. Each field specifier has the following syntax:
 
-<constituent_field> [[AS] <resulting_field>]]
+* * <constituent_field> [[AS] <resulting_field>]]
 
-``constituent_field`` is a field reference (see section 5.2.1) to a field in one of the constituent topics (which topic is not specified).
+  * ``constituent_field`` is a field reference (see section 5.2.1) to a field in one of the constituent topics (which topic is not specified).
 
-The optional resulting_field is a field reference to a field in the resulting type. If present, the ``resulting_field`` is the destination for the constituent_field in the constructed sample. If absent, the ``constituent_field`` data is assigned to a field with the same name in the resulting type. The optional “``AS``” has no effect.
+  * The optional resulting_field is a field reference to a field in the resulting type. If present, the ``resulting_field`` is the destination for the constituent_field in the constructed sample. If absent, the ``constituent_field`` data is assigned to a field with the same name in the resulting type. The optional “``AS``” has no effect.
 
-If a “``*``” is used as the aggregation, each field in the resulting type is assigned the value from a same-named field in one of the constituent topic types.
+  * If a “``*``” is used as the aggregation, each field in the resulting type is assigned the value from a same-named field in one of the constituent topic types.
 
-The selection lists one or more constituent topic names. Topic names are separated by a “join” keyword (all 3 join keywords are equivalent):
+* The selection lists one or more constituent topic names. Topic names are separated by a “join” keyword (all 3 join keywords are equivalent):
 
-<topic> [{NATURAL INNER | NATURAL | INNER NATURAL}  JOIN <topic>]...
+* * <topic> [{NATURAL INNER | NATURAL | INNER NATURAL}  JOIN <topic>]...
 
-Topic names must contain only letters, digits, and dashes (but may not start with a digit).
+  * Topic names must contain only letters, digits, and dashes (but may not start with a digit).
 
-The natural join operation is commutative and associative, thus the order of topics has no impact.
+  * The natural join operation is commutative and associative, thus the order of topics has no impact.
 
-The semantics of the natural join are that any fields with the same name are treated as “join keys” for the purpose of combining data from the topics in which those keys appear. The join operation is described in more detail in the subsequent sections of this chapter.
+  * The semantics of the natural join are that any fields with the same name are treated as “join keys” for the purpose of combining data from the topics in which those keys appear. The join operation is described in more detail in the subsequent sections of this chapter.
 
-The condition has the exact same syntax and semantics as the filter expression (see section 5.2.1). Field references in the condition must match field names in the resulting types, not field names in the constituent topic types.
+* The condition has the exact same syntax and semantics as the filter expression (see section 5.2.1). Field references in the condition must match field names in the resulting types, not field names in the constituent topic types.
+
 
 Usage Notes
 ===========
@@ -227,9 +229,9 @@ A join key is any field name that occurs in the struct for more than one constit
 
 The DDS specification requires that join key fields have the same type. Additionally, OpenDDS imposes two requirements on how the IDL must define DCPS data keys to work with multi topics:
 
-Each join key field must also be a DCPS data key for the types of its constituent topics.
+#. Each join key field must also be a DCPS data key for the types of its constituent topics.
 
-The resulting type must contain each of the join keys, and those fields must be DCPS data keys for the resulting type.
+#. The resulting type must contain each of the join keys, and those fields must be DCPS data keys for the resulting type.
 
 The example in section 5.4.3.1 meets both of these requirements. Note that it is not necessary to list the join keys in the aggregation (``SELECT`` clause).
 
@@ -240,15 +242,16 @@ Although many concepts in multi topic are borrowed from the domain of relational
 
 Specifically, the arrival of a sample on constituent topic “``A``” with type “``TA``”  results in the following steps in the multi topic data reader (this is a simplification of the actual algorithm):
 
-A sample of the resulting type is constructed, and fields from ``TA`` which exist in the resulting type and are in the aggregation (or are join keys) are copied from the incoming sample to the constructed sample.
+#. A sample of the resulting type is constructed, and fields from ``TA`` which exist in the resulting type and are in the aggregation (or are join keys) are copied from the incoming sample to the constructed sample.
 
-Each topic “``B``” which has at least one join key in common with ``A`` is considered for a join operation. The join reads ``READ_SAMPLE_STATE`` samples on topic ``B`` with key values matching those in the constructed sample. The result of the join may be zero, one, or many samples. Fields from ``TB`` are copied to the resulting sample as described in step 1.
+#. Each topic “``B``” which has at least one join key in common with ``A`` is considered for a join operation. The join reads ``READ_SAMPLE_STATE`` samples on topic ``B`` with key values matching those in the constructed sample. The result of the join may be zero, one, or many samples. Fields from ``TB`` are copied to the resulting sample as described in step 1.
 
-Join keys of topic “``B``” (connecting it to other topics) are then processed as described in step 2, and this continues to all other topics that are connected by join keys.
+#. Join keys of topic “``B``” (connecting it to other topics) are then processed as described in step 2, and this continues to all other topics that are connected by join keys.
 
-Any constituent topics that were not visited in steps 2 or 3 are processed as “cross joins” (also known as cross-product joins). These are joins with no key constraints.
+#. Any constituent topics that were not visited in steps 2 or 3 are processed as “cross joins” (also known as cross-product joins). These are joins with no key constraints.
 
-If any constructed samples result, they are inserted into the multi topic data reader’s internal data structures as if they had arrived via the normal mechanisms. Application listeners and conditions are notified.
+#. If any constructed samples result, they are inserted into the multi topic data reader’s internal data structures as if they had arrived via the normal mechanisms. Application listeners and conditions are notified.
+
 
 Use with Subscriber Listeners
 -----------------------------

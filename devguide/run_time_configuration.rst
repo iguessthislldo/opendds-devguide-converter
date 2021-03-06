@@ -10,11 +10,11 @@ OpenDDS includes a file-based configuration framework for configuring global opt
 
 OpenDDS configuration is concerned with three main areas:
 
-Common Configuration Options – configure the behavior of DCPS entities at a global level.  This allows separately deployed processes in a computing environment to share common settings for the specified behavior (e.g. all readers and writers should use RTPS discovery).
+* Common Configuration Options – configure the behavior of DCPS entities at a global level.  This allows separately deployed processes in a computing environment to share common settings for the specified behavior (e.g. all readers and writers should use RTPS discovery).
 
-Discovery Configuration Options – configure the behavior of the discovery mechanism(s).  OpenDDS supports multiple approaches for discovering and associating writers and readers as detailed in Section 7.3.
+* Discovery Configuration Options – configure the behavior of the discovery mechanism(s).  OpenDDS supports multiple approaches for discovering and associating writers and readers as detailed in Section 7.3.
 
-Transport Configuration Options – configure the Extensible Transport Framework (ETF) which abstracts the transport layer from the DCPS layer of OpenDDS.  Each pluggable transport can be configured separately.
+* Transport Configuration Options – configure the Extensible Transport Framework (ETF) which abstracts the transport layer from the DCPS layer of OpenDDS.  Each pluggable transport can be configured separately.
 
 The configuration file for OpenDDS is a human-readable ini-style text file.  Table 7-1 shows a list of the available configuration section types as they relate to the area of OpenDDS that they configure.
 
@@ -527,9 +527,9 @@ If your OpenDDS deployment uses multiple domains, the following configuration ap
 
 Some important implementation notes regarding DDSI-RTPS discovery in OpenDDS are as follows:
 
-Domain IDs should be between 0 and 231 (inclusive) due to the way UDP ports are assigned to domain IDs. In each OpenDDS process, up to 120 domain participants are supported in each domain.
+#. Domain IDs should be between 0 and 231 (inclusive) due to the way UDP ports are assigned to domain IDs. In each OpenDDS process, up to 120 domain participants are supported in each domain.
 
-OpenDDS's multicast transport (7.4.5.4) does not work with RTPS Discovery due to the way GUIDs are assigned (a warning will be issued if this is attempted).
+#. OpenDDS's multicast transport (7.4.5.4) does not work with RTPS Discovery due to the way GUIDs are assigned (a warning will be issued if this is attempted).
 
 The OMG DDSI-RTPS specification details several properties that can be adjusted from their defaults that influence the behavior of DDSI-RTPS discovery. Those properties, along with options specific to OpenDDS’s RTPS Discovery implementation, are listed in Table 7-5.
 
@@ -872,19 +872,19 @@ Transport Configuration
 
 Beginning with OpenDDS 3.0, a new transport configuration design has been implemented. The basic goals of this design were to:
 
-Allow simple deployments to ignore transport configuration and deploy using intelligent defaults (with no transport code required in the publisher or subscriber).
+* Allow simple deployments to ignore transport configuration and deploy using intelligent defaults (with no transport code required in the publisher or subscriber).
 
-Enable flexible deployment of applications using only configuration files and command line options.
+* Enable flexible deployment of applications using only configuration files and command line options.
 
-Allow deployments that mix transports within individual data writers and writers. Publishers and subscribers negotiate the appropriate transport implementation to use based on the details of the transport configuration, QoS settings, and network reachability.
+* Allow deployments that mix transports within individual data writers and writers. Publishers and subscribers negotiate the appropriate transport implementation to use based on the details of the transport configuration, QoS settings, and network reachability.
 
-Support a broader range of application deployments in complex networks.
+* Support a broader range of application deployments in complex networks.
 
-Support optimized transport development (such as collocated and shared memory transports - note that these are not currently implemented).
+* Support optimized transport development (such as collocated and shared memory transports - note that these are not currently implemented).
 
-Integrate support for the ``RELIABILITY`` QoS policy with the underlying transport.
+* Integrate support for the ``RELIABILITY`` QoS policy with the underlying transport.
 
-Whenever possible, avoid dependence on the ACE Service Configurator and its configuration files.
+* Whenever possible, avoid dependence on the ACE Service Configurator and its configuration files.
 
 Unfortunately, implementing these new capabilities involved breaking of backward compatibility with OpenDDS transport configuration code and files from previous releases. See ``$DDS_ROOT/docs/OpenDDS_3.0_Transition.txt`` for information on how to convert your existing application to use the new transport configuration design.
 
@@ -935,11 +935,11 @@ The simplest way to provide a transport configuration for your application is to
 
 This file does the following (starting from the bottom up):
 
-Defines a transport instance named ``mytcp`` with a transport type of tcp and the local address specified as ``myhost``, which is the host name corresponding to the network interface we want to use.
+* Defines a transport instance named ``mytcp`` with a transport type of tcp and the local address specified as ``myhost``, which is the host name corresponding to the network interface we want to use.
 
-Defines a transport configuration named ``myconfig`` that uses the transport instance ``mytcp`` as its only transport.
+* Defines a transport configuration named ``myconfig`` that uses the transport instance ``mytcp`` as its only transport.
 
-Makes the transport configuration named ``myconfig`` the global transport configuration for all entities in this process.
+* Makes the transport configuration named ``myconfig`` the global transport configuration for all entities in this process.
 
 A process using this configuration file utilizes our customized transport configuration for all Data Readers and Writers created by it (unless we specifically bind another configuration in the code as described in 7.4.2.3).
 
@@ -1000,9 +1000,9 @@ Assuming ``hosta`` and ``hostb`` are the host names assigned to the two network 
 
 OpenDDS provides two mechanisms to assign configurations to entities:
 
-Via source code by attaching a configuration to an entity (reader, writer, publisher, subscriber, or domain participant)
+* Via source code by attaching a configuration to an entity (reader, writer, publisher, subscriber, or domain participant)
 
-Via configuration file by associating a configuration with a domain
+* Via configuration file by associating a configuration with a domain
 
 Here is the source code mechanism (using a domain participant):
 
@@ -1175,11 +1175,12 @@ TCP/IP Reconnection Options
 
 When a TCP/IP connection gets closed OpenDDS attempts to reconnect. The reconnection process is (a successful reconnect ends this sequence):
 
-Upon detecting a lost connection immediately attempt reconnect.
+* Upon detecting a lost connection immediately attempt reconnect.
 
-If that fails, then wait ``conn_retry_initial_delay`` milliseconds and attempt reconnect.
+* If that fails, then wait ``conn_retry_initial_delay`` milliseconds and attempt reconnect.
 
-While we have not tried more than ``conn_retry_attempts``, wait (previous wait time * ``conn_retry_backoff_multiplier``) milliseconds and attempt to reconnect.
+* While we have not tried more than ``conn_retry_attempts``, wait (previous wait time * ``conn_retry_backoff_multiplier``) milliseconds and attempt to reconnect.
+
 
 UDP/IP Transport Configuration Options
 --------------------------------------
@@ -1243,9 +1244,9 @@ The ``nak_max`` configuration option limits the maximum number of times a missin
 
 Currently, there are a couple of requirements above and beyond those already mandated by the ETF when using this transport:
 
-*At most*, one DDS domain may be used per multicast group;
+* *At most*, one DDS domain may be used per multicast group;
 
-A given participant may only have a single ``multicast`` transport attached per multicast group; if you wish to send and receive samples on the same multicast group in the same process, independent participants must be used.
+* A given participant may only have a single ``multicast`` transport attached per multicast group; if you wish to send and receive samples on the same multicast group in the same process, independent participants must be used.
 
 ``multicast`` exists as an independent library and therefore needs to be linked and configured like other transport libraries. When using a dynamic library build, OpenDDS automatically loads the library when it is referenced in a configuration file. When the ``multicast`` library is built statically, your application must link directly against the library. Additionally, your application must also include the proper header for service initialization: ``<dds/DCPS/transport/multicast/Multicast.h>``.
 
@@ -1330,11 +1331,11 @@ To extend our examples to a mixed transport configuration as shown in Section , 
 
 Some implementation notes related to using the ``rtps_udp`` transport protocol are as follows:
 
-``WRITER_DATA_LIFECYCLE`` (8.7.2.2.7) notes that the same Data sub-message should dispose and unregister an instance. OpenDDS may use two Data sub-messages.
+* ``WRITER_DATA_LIFECYCLE`` (8.7.2.2.7) notes that the same Data sub-message should dispose and unregister an instance. OpenDDS may use two Data sub-messages.
 
-RTPS transport instances can not be shared by different Domain Participants.
+* RTPS transport instances can not be shared by different Domain Participants.
 
-Transport auto-selection (negotiation) is partially supported with RTPS such that the ``rtps_udp`` transport goes through a handshaking phase only in reliable mode.
+* Transport auto-selection (negotiation) is partially supported with RTPS such that the ``rtps_udp`` transport goes through a handshaking phase only in reliable mode.
 
 Table 7-17 RTPS_UDP Configuration Options
 
@@ -1414,11 +1415,11 @@ Configuring Discovery for a Set of Similar Domains
 
 Domain range sections are similar to domain sections and use the same configuration properties with 3 notable differences.
 
-Domain ranges must have a beginning and end domain, such as ``[DomainRange/1-5]``.
+* Domain ranges must have a beginning and end domain, such as ``[DomainRange/1-5]``.
 
-Domain ranges use the ``DiscoveryTemplate`` property rather than the ``DiscoveryConfig`` property to denote the corresponding ``[rtps_discovery]`` section.
+* Domain ranges use the ``DiscoveryTemplate`` property rather than the ``DiscoveryConfig`` property to denote the corresponding ``[rtps_discovery]`` section.
 
-Domain ranges can have an optional ``Customization`` property that maps to a named ``[Customization]`` section
+* Domain ranges can have an optional ``Customization`` property that maps to a named ``[Customization]`` section
 
 See section 7.5.4 for a ``[DomainRange]`` example.
 
@@ -1458,11 +1459,12 @@ Adding Customizations
 
 ``[Customization]`` sections can modify the InteropMulticastOverride property in [rtps_discovery] sections and the multicast_group_address property in ``[transport_template]`` sections.
 
-``InteropMulticastOverride=AddDomainId`` adds the domain id to the last octet of the ``InteropMulticastOverride`` address
+* ``InteropMulticastOverride=AddDomainId`` adds the domain id to the last octet of the ``InteropMulticastOverride`` address
 
-``multicast_group_address=add_domain_id_to_ip_addr ``adds the domain ID to the last octet of the multicast group address
+* ``multicast_group_address=add_domain_id_to_ip_addr ``adds the domain ID to the last octet of the multicast group address
 
-``multicast_group_address=add_domain_id_to_port`` uses the domain ID in the port calculation for the multicast group address
+* ``multicast_group_address=add_domain_id_to_port`` uses the domain ID in the port calculation for the multicast group address
+
 
 Example Config.ini
 ==================
@@ -1516,19 +1518,20 @@ Logging in the DCPS layer of OpenDDS is controlled by the ``DCPSDebugLevel`` con
 
 The *level* defaults to a value of 0 and has values of 0 to 10 as defined below:
 
-0 - logs that indicate serious errors that are not indicated by return codes (almost none).
+* 0 - logs that indicate serious errors that are not indicated by return codes (almost none).
 
-1 - logs that should happen once per process or are warnings
+* 1 - logs that should happen once per process or are warnings
 
-2 - logs that should happen once per DDS entity
+* 2 - logs that should happen once per DDS entity
 
-4 - logs that are related to administrative interfaces
+* 4 - logs that are related to administrative interfaces
 
-6 - logs that should happen every Nth sample write/read
+* 6 - logs that should happen every Nth sample write/read
 
-8 - logs that should happen once per sample write/read
+* 8 - logs that should happen once per sample write/read
 
-10 - logs that may happen more than once per sample write/read
+* 10 - logs that may happen more than once per sample write/read
+
 
 Transport Layer Logging
 =======================

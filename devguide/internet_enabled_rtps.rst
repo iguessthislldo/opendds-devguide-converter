@@ -40,25 +40,26 @@ Usage
 
 The RtpsRelay itself is an OpenDDS application.  The source code is located in ``tools/rtpsrelay``.  Each RtpsRelay process has a set of ports for exchanging RTPS messages with the participants called the "vertical" ports and a set of ports for exchanging RTPS messages with other relays called the “horizontal” ports.
 
-``-VerticalAddress ADDRESSDetermines the base network address used for receiving RTPS messages from the participants.  By default, the relay listens on 0.0.0.0:4444 for SPDP messages, 0.0.0.0:4445 for SEDP messages, and 0.0.0.0.4446 for data messages.``
+* ``-VerticalAddress ADDRESSDetermines the base network address used for receiving RTPS messages from the participants.  By default, the relay listens on 0.0.0.0:4444 for SPDP messages, 0.0.0.0:4445 for SEDP messages, and 0.0.0.0.4446 for data messages.``
 
-``-HorizontalAddress ADDRESS``Determines the base network address used for receiving RTPS message from other relays.  By default, the relay listens on the first IP network and uses port 11444 for SPDP messages, 11445 for SEDP messages, and 11446 for data messages.
+* ``-HorizontalAddress ADDRESS``Determines the base network address used for receiving RTPS message from other relays.  By default, the relay listens on the first IP network and uses port 11444 for SPDP messages, 11445 for SEDP messages, and 11446 for data messages.
 
-``-RelayDomain DOMAIN``Sets the DDS domain used by the Relay Participant.  The default is 0.
+* ``-RelayDomain DOMAIN``Sets the DDS domain used by the Relay Participant.  The default is 0.
 
-``-ApplicationDomain DOMAIN``Sets the DDS domain used by the Application Participant.  The default is 1.
+* ``-ApplicationDomain DOMAIN``Sets the DDS domain used by the Application Participant.  The default is 1.
 
-``-Lifespan SECONDS``RtpsRelay will only forward a datagram to a client if it has received a datagram from the client in this amount of time.  The default is 60 seconds.
+* ``-Lifespan SECONDS``RtpsRelay will only forward a datagram to a client if it has received a datagram from the client in this amount of time.  The default is 60 seconds.
 
-``-UserData STRING``Set the contents of the Application Participant’s UserData QoS policy to the provided string.
+* ``-UserData STRING``Set the contents of the Application Participant’s UserData QoS policy to the provided string.
 
-``-IdentityCA PATH-PermissionsCA PATH-IdentityCertificate PATH-IdentityKey PATH-Governance PATH-Permissions PATH``Provide paths to the DDS Security documents.
+* ``-IdentityCA PATH-PermissionsCA PATH-IdentityCertificate PATH-IdentityKey PATH-Governance PATH-Permissions PATH``Provide paths to the DDS Security documents.
 
-``-````StatisticsInterval```` ````SECONDS``Set the minimum sampling interval for collecting statistics. The default is 60 seconds.
+* ``-````StatisticsInterval```` ````SECONDS``Set the minimum sampling interval for collecting statistics. The default is 60 seconds.
 
-``-````PublishRelayStatistics 0|1``Configure the relay to publish usage statistics on DDS topics. The default is 1.
+* ``-````PublishRelayStatistics 0|1``Configure the relay to publish usage statistics on DDS topics. The default is 1.
 
-``-ReportRelayStatistics 0|1``Configure the relay to log usage statistics. The default is 0.
+* ``-ReportRelayStatistics 0|1``Configure the relay to log usage statistics. The default is 0.
+
 
 Deployment Considerations
 =========================

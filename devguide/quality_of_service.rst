@@ -664,11 +664,11 @@ The ``PRESENTATION`` QoS policy controls how changes to instances by publishers 
 
 The scope of these changes (``access_scope``) specifies the level in which an application may be made aware:
 
-``INSTANCE_PRESENTATION_QOS`` (the default) indicates that changes occur to instances independently. Instance access essentially acts as a no-op with respect to coherent_access and ordered_access. Setting either of these values to true has no observable affect within the subscribing application.
+* ``INSTANCE_PRESENTATION_QOS`` (the default) indicates that changes occur to instances independently. Instance access essentially acts as a no-op with respect to coherent_access and ordered_access. Setting either of these values to true has no observable affect within the subscribing application.
 
-``TOPIC_PRESENTATION_QOS`` indicates that accepted changes are limited to all instances within the same data reader or data writer.
+* ``TOPIC_PRESENTATION_QOS`` indicates that accepted changes are limited to all instances within the same data reader or data writer.
 
-``GROUP_PRESENTATION_QOS`` indicates that accepted changes are limited to all instances within the same publisher or subscriber.
+* ``GROUP_PRESENTATION_QOS`` indicates that accepted changes are limited to all instances within the same publisher or subscriber.
 
 Coherent changes (``coherent_access``) allow one or more changes to an instance be made available to an associated data reader as a single change. If a data reader does not receive the entire set of coherent changes made by a publisher, then none of the changes are made available. The semantics of coherent changes are similar in nature to those found in transactions provided by many relational databases. By default, ``coherent_access`` is ``false``.
 
@@ -816,11 +816,11 @@ The following sample code illustrates some policies being set and applied for a 
 
 This code creates a publisher with the following qualities:
 
-``HISTORY`` set to Keep All
+* ``HISTORY`` set to Keep All
 
-``RELIABILITY`` set to Reliable with a maximum blocking time of 10 seconds
+* ``RELIABILITY`` set to Reliable with a maximum blocking time of 10 seconds
 
-The maximum samples per instance resource limit set to 100
+* The maximum samples per instance resource limit set to 100
 
 This means that when 100 samples are waiting to be delivered, the writer can block up to 10 seconds before returning an error code. These same QoS settings on the Data Reader side would mean that up to 100 unread samples are queued by the framework before any are rejected. Rejected samples are dropped and the SampleRejectedStatus is updated.
 

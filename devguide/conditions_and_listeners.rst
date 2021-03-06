@@ -417,13 +417,14 @@ Conditions
 
 The DDS specification defines four types of condition:
 
-Status Condition
+* Status Condition
 
-Read Condition
+* Read Condition
 
-Query Condition
+* Query Condition
 
-Guard Condition
+* Guard Condition
+
 
 Status Condition 
 =================
