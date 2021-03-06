@@ -324,6 +324,9 @@ class Info:
     self.doc = doc
     self.data = []
     self.all_style_prop_groups = {}
+    self.sections = []
+    self.push(section=self.sections, section_level=0, section_number=0)
+    self.section_dict = {}
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -453,6 +456,76 @@ def has_outline_level(node):
   return False
 
 
+def handle_header(info, node, out=None):
+  level = node.attributes.get(outline_level, None)
+  if level is None:
+    dump_node_exit(info, node, 'Header missing outline-level!')
+  level = int(level) - 1
+  name = ''
+  for child in node.childNodes:
+    if child.nodeType == element.Node.ELEMENT_NODE:
+      child_kind = child.qname[1]
+      if child_kind == 'frame':
+        # Hack for "Figure 1-1  DCPS Conceptual Overview" quagmire which is
+        # inside the header node for some unknown reason and otherwise
+        # would get lost in in `name = str(node)``
+        if out:
+          convert_node(info, child, out)
+      elif child_kind == 'span':
+        # Span is part of the title, again for no seeming reason
+        name += str(child)
+      elif child_kind not in ( # Make sure nothing else is in here we can't ignore
+          'bookmark', 'bookmark-start', 'bookmark-end', 'span',
+          'soft-page-break', 'line-break',
+          'reference-mark-start', 'reference-mark-end'):
+        dump_node_exit(info, node, 'Figure 1-1 Hack Assert Failed on ' + repr(child_kind))
+    elif child.nodeType == element.Node.TEXT_NODE:
+      name += str(child)
+  if len(name) == 0:
+    dump_node_exit(info, node, 'Header Name is Blank')
+
+  if out: # in convert_node
+    if level == 0:
+      out.open(name)
+    out.write(get_header(name, level))
+
+  else: # in reference_builder
+    section_level = info.get('section_level', ignore_last=False)
+    section = info.get('section', ignore_last=False)
+    section_number = info.get('section_number', ignore_last=False)
+    if level > section_level:
+      # section.append(name)
+      # section_number = info.get('section_number', ignore_last=False) + 1
+      # info.set(section_number=section_number)
+      new_section = [name]
+      section.append(new_section)
+      section_number = 1
+      info.push(section_level=level, section=new_section, section_number=section_number)
+    elif level < section_level:
+      for i in range(section_level - level):
+        info.pop()
+      section = info.get('section', ignore_last=False)
+      section.append(name)
+      section_number = info.get('section_number', ignore_last=False) + 1
+      info.set(section_number=section_number)
+    else:
+      section.append(name)
+      section_number = info.get('section_number', ignore_last=False) + 1
+      info.set(section_number=section_number)
+    print('  ' * level, section_number, name)
+
+
+def reference_builder(info, node):
+  if node is None:
+    return
+  if node.nodeType == element.Node.ELEMENT_NODE:
+    kind = node.qname[1]
+    if kind == 'h':
+      handle_header(info, node)
+    for child_node in node.childNodes:
+      reference_builder(info, child_node)
+    
+
 def convert_node(info, node, out):
   if node is None:
     return
@@ -472,35 +545,9 @@ def convert_node(info, node, out):
 
   if node.nodeType == element.Node.ELEMENT_NODE:
     kind = node.qname[1]
+
     if kind == 'h':
-      level = node.attributes.get(outline_level, None)
-      if level is None:
-        dump_node_exit(info, node, 'Header missing outline-level!')
-      level = int(level) - 1
-      name = ''
-      for child in node.childNodes:
-        if child.nodeType == element.Node.ELEMENT_NODE:
-          child_kind = child.qname[1]
-          if child_kind == 'frame':
-            # Hack for "Figure 1-1  DCPS Conceptual Overview" quagmire which is
-            # inside the header node for some unknown reason and otherwise
-            # would get lost in in `name = str(node)``
-            convert_node(info, child, out)
-          elif child_kind == 'span':
-            # Span is part of the title, again for no seeming reason
-            name += str(child)
-          elif child_kind not in ( # Make sure nothing else is in here we can't ignore
-              'bookmark', 'bookmark-start', 'bookmark-end', 'span',
-              'soft-page-break', 'line-break',
-              'reference-mark-start', 'reference-mark-end'):
-            dump_node_exit(info, node, 'Figure 1-1 Hack Assert Failed on ' + repr(child_kind))
-        elif child.nodeType == element.Node.TEXT_NODE:
-          name += str(child)
-      if len(name) == 0:
-        dump_node_exit(info, node, 'Header Name is Blank')
-      if level == 0:
-        out.open(name)
-      out.write(get_header(name, level))
+      handle_header(info, node, out)
 
     elif kind == 's':
       # <text:s/>
@@ -566,6 +613,13 @@ def convert_node(info, node, out):
     elif kind == 'list-item':
       convert_child_nodes(info, node, out)
 
+    elif kind in ('bookmark-ref', 'sequence-ref', 'reference-ref'):
+      reference_format_attr = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'reference-format')
+      reference_formats = ("category-and-value", "chapter", "number", "number-all-superior", "page", "text")
+      # print(kind, node.attributes.get(reference_format_attr, None), get_text(info, node))
+
+      convert_child_nodes(info, node, out)
+
     else:
       passthrough = {
         'section', # ROOT OF CONTENT, VERY IMPORTANT!
@@ -573,9 +627,6 @@ def convert_node(info, node, out):
         'line-break', # TODO, see above
 
         # TODO: Handle?
-        'bookmark-ref',
-        'sequence-ref',
-        'reference-ref',
         'bookmark-start',
         'bookmark-end',
         'frame',
@@ -617,6 +668,8 @@ from odf.text import Section
 section = doc.getElementsByType(Section)[0]
 out = Out()
 info = Info(doc)
+reference_builder(info, section)
+print(info.sections)
 convert_node(info, section, out)
 out.close()
 out.write_index()
