@@ -11,7 +11,6 @@ indent = '  '
 doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 
 # TODO:
-# - Lists
 # - Figure Links (bookmarks?)
 # - Section Links
 # - Footnotes
@@ -105,6 +104,12 @@ def write_table(rows, out):
     print_row_div(header=first)
     if first:
       first = False
+
+
+def write_list(items, numbered, out):
+  bullet = '#. ' if numbered else '* '
+  for item in items:
+    out.writeln(item)
 
 
 # Style =======================================================================
@@ -398,6 +403,29 @@ def gather_table_rows(info, parent_node, rows):
       for cell in child_node.childNodes:
         row.append(get_text(info, cell))
       rows.append(row)
+    elif kind not in ('soft-page-break', 'table-column'):
+      dump_node_exit(info, child_node, 'Unexpected type in table: ' + kind)
+
+
+def gather_list_items(info, parent_node, items):
+  for child_node in parent_node.childNodes:
+    kind = child_node.qname[1]
+    if kind == 'list-item':
+      items.append(get_text(info, child_node))
+    else:
+      dump_node_exit(info, child_node, 'not a list-item!')
+
+
+outline_level = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'outline-level')
+
+def has_outline_level(node):
+  if node.nodeType == element.Node.ELEMENT_NODE:
+    if outline_level in node.attributes:
+      return True
+    for child in node.childNodes:
+      if has_outline_level(child):
+        return True
+  return False
 
 
 def convert_node(info, node, out):
@@ -420,18 +448,18 @@ def convert_node(info, node, out):
   if node.nodeType == element.Node.ELEMENT_NODE:
     kind = node.qname[1]
     if kind == 'h':
-      level = node.attributes.get(
-        ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'outline-level'), None)
-      assert(level is not None)
+      level = node.attributes.get(outline_level, None)
+      if level is None:
+        dump_node_exit(info, node, 'Header missing outline-level!')
       level = int(level) - 1
       name = ''
       for child in node.childNodes:
         if child.nodeType == element.Node.ELEMENT_NODE:
           child_kind = child.qname[1]
           if child_kind == 'frame':
-            # Hack for "Figure 1-1  DCPS Conceptual Overview" which is inside the
-            # header node for some unknown reason and otherwise would get lost in in
-            # `name = str(node)``
+            # Hack for "Figure 1-1  DCPS Conceptual Overview" quagmire which is
+            # inside the header node for some unknown reason and otherwise
+            # would get lost in in `name = str(node)``
             convert_node(info, child, out)
           elif child_kind == 'span':
             # Span is part of the title, again for no seeming reason
@@ -495,10 +523,51 @@ def convert_node(info, node, out):
       gather_table_rows(info, node, rows)
       write_table(rows, out)
 
-    else:
-      # if kind not in ('span', 'soft-page-break'):
-      #   print('Other:', kind)
+    elif kind == 'list':
+      if has_outline_level(node):
+        convert_child_nodes(info, node, out)
+      elif len(node.childNodes) == 1 and node.childNodes[0].qname[1] == 'list-header':
+        # Hack for a quagmire in "Policy Example"
+        convert_child_nodes(info, node, out)
+      else:
+        # Normal Lists
+        items = []
+        gather_list_items(info, node, items)
+        for item in items:
+          out.writeln(item + '\n')
+
+    elif kind == 'list-item':
       convert_child_nodes(info, node, out)
+
+    else:
+      passthrough = {
+        # Definitely Passthrough
+        'section', # ROOT OF CONTENT, VERY IMPORTANT!
+        'soft-page-break',
+        'line-break',
+        'list-header',
+
+        # TODO: Handle?
+        'bookmark-ref',
+        'sequence-ref',
+        'reference-ref',
+        'bookmark-start',
+        'bookmark-end',
+        'frame',
+        'sequence',
+        'note',
+        'tab',
+        'note-citation',
+        'bookmark',
+        'text-box',
+        'note-body',
+        'span',
+        'p',
+      }
+      if kind in passthrough:
+        convert_child_nodes(info, node, out)
+      else:
+        dump_node_exit(info, node, 'Unexpected tag in convert_nodes: ' + kind)
 
   elif node.nodeType == element.Node.TEXT_NODE:
     out.write(str(node))

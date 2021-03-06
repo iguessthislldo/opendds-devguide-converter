@@ -76,17 +76,11 @@ Therefore, testing needs to be relative to the build/target sub-directory.  Sour
 
 ACE tests are not built by default, but once this environment is set up all it takes to build them is generating makefiles and running make:
 
-::
+``cd $ACE_ROOT/tests``
 
-    cd $ACE_ROOT/tests
+``$ACE_ROOT/bin/mwc.pl -type gnuace``
 
-::
-
-    $ACE_ROOT/bin/mwc.pl -type gnuace
-
-::
-
-    make
+``make``
 
 Run ACE tests by changing to the $ACE_ROOT/tests directory and using run_test.pl.  Pass any “-Config XYZ” options required for your configuration (use run_test.pl -h to see the available Config options).
 

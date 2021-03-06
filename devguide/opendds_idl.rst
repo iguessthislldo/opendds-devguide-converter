@@ -73,21 +73,13 @@ Table 8-1 opendds_idl Command Line Options
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 | ``--unknown-annotations VAL``    | For IDL version 4, control the reaction to unknown annotations. The options are:                                                                   | ``warn-once``                                            |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  | ::                                                                                                                                                 |                                                          |
+|                                  | ``warn-once, the default, warn once per annotation with the same name.``                                                                           |                                                          |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  |     warn-once, the default, warn once per annotation with the same name.                                                                           |                                                          |
+|                                  | ``warn-all, warn for every use of an unknown annotation.``                                                                                         |                                                          |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  | ::                                                                                                                                                 |                                                          |
+|                                  | ``error, similar to warn-all, but causes the compiler to exit with an error status when finished.``                                                |                                                          |
 |                                  |                                                                                                                                                    |                                                          |
-|                                  |     warn-all, warn for every use of an unknown annotation.                                                                                         |                                                          |
-|                                  |                                                                                                                                                    |                                                          |
-|                                  | ::                                                                                                                                                 |                                                          |
-|                                  |                                                                                                                                                    |                                                          |
-|                                  |     error, similar to warn-all, but causes the compiler to exit with an error status when finished.                                                |                                                          |
-|                                  |                                                                                                                                                    |                                                          |
-|                                  | ::                                                                                                                                                 |                                                          |
-|                                  |                                                                                                                                                    |                                                          |
-|                                  |     ignore, ignore all unknown annotations.                                                                                                        |                                                          |
+|                                  | ``ignore, ignore all unknown annotations.``                                                                                                        |                                                          |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 | ``--no-dcps-data-type-warnings`` | Don't warn about ``#pragma DCPS_DATA_TYPE``                                                                                                        | ``Warnings are issued, use annotations to silence them`` |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
@@ -113,23 +105,11 @@ Contrast this with using ``opendds_idl`` for IDL-to-C++11.  In this case, ``open
 
 Starting with a user-written file ``Foo.idl``, running “``opendds_idl -Lc++11 ````<other options> Foo.idl``” generates these output files:
 
-::
+``FooTypeSupport.idl``IDL local interfaces for *TypeSupport, *DataWriter, *DataReader
 
-    FooTypeSupport.idl
+``FooC.h``IDL-to-C++11 language mapping
 
-IDL local interfaces for *TypeSupport, *DataWriter, *DataReader
-
-::
-
-    FooC.h
-
-IDL-to-C++11 language mapping
-
-::
-
-    FooTypeSupportImpl.h and .cpp
-
-Additional source code needed for OpenDDS
+``FooTypeSupportImpl.h and .cpp``Additional source code needed for OpenDDS
 
 FooTypeSupport.idl is the same as it was when using the classic mapping.  After it’s generated by ``opendds_idl``, it needs to be processed by ``tao_idl`` to generate ``FooTypeSupportC.h``, ``FooTypeSupportC.inl``, and ``FooTypeSupportC.cpp``.
 
