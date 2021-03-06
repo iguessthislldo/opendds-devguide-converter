@@ -6,6 +6,10 @@ import odf
 from odf import text, element
 from odf.opendocument import load
 
+indent = '  '
+
+doc = load("../trunk/OpenDDSDevelopersGuide.odt")
+
 # TODO:
 # - Lists
 # - Figure Links (bookmarks?)
@@ -20,13 +24,14 @@ from odf.opendocument import load
 #     script to mess up, like the "Note" in
 #     "Building With a Feature Enabled or Disabled".
 #   - Find places that should be monospace, but are not.
-#     Ex: "Extensions to the DDS Specification"
+#     Inproper Ex: "Extensions to the DDS Specification"
+#     Proper ex: "Conditions"
 #   - Quotes around monospace text. See "Persistence Profile" section
 # - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
 
-indent = '  '
+# Start of RST Helpers ========================================================
 
-def code(out, lines):
+def write_code(out, lines):
   out.writeln('::\n')
   for line in lines:
     out.writeln('   ', line)
@@ -51,7 +56,7 @@ def get_header(title, level):
   return rv + '\n'
 
 
-def convert_table(rows, out):
+def write_table(rows, out):
   # Get Column Count
   col_count = None
   for row in rows:
@@ -101,11 +106,15 @@ def convert_table(rows, out):
     if first:
       first = False
 
-def get_style(node):
+
+# Style =======================================================================
+
+def style_name(node):
   if node is None or node.attributes is None:
     return None
   return node.attributes.get(
     ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'style-name'), None)
+
 
 class Style:
 
@@ -129,7 +138,7 @@ class Style:
     self.monospace = False
     self.bold = False
     self.italic = False
-    self.name = get_style(node)
+    self.name = style_name(node)
     if self.name is None:
       return
     if self.name == 'Note': # Ignore Italics on Notes
@@ -163,8 +172,6 @@ class Style:
     return '<{} monospace: {} bold: {} italic: {}>'.format(
       repr(self.name), repr(self.monospace), repr(self.bold), repr(self.italic))
 
-doc = load("../trunk/OpenDDSDevelopersGuide.odt")
-
 # Dump ========================================================================
 
 dump_path = Path('dump')
@@ -180,7 +187,7 @@ with (dump_path / 'main.xml').open('w') as f:
 
 # Dump Nodes
 def dump_node(node, indent, f):
-  style = get_style(node)
+  style = style_name(node)
   print(indent + str(node.qname), file=f)
   for k, v in node.attributes.items():
     print(indent + 'ATTRIBUTE:', k, ':', v, file=f)
@@ -342,11 +349,12 @@ class Info:
     return self.get('style', ignore_last=False)
 
 
-def convert_child_nodes(info, doc, node, out):
+def convert_child_nodes(info, node, out):
+  # Detect and Write Code Blocks
   code_lines = []
   for child in node.childNodes:
     if child.nodeType == element.Node.ELEMENT_NODE and \
-        child.qname[1] == 'p' and Style(doc, child).monospace:
+        child.qname[1] == 'p' and Style(info.doc, child).monospace:
       indent = None
       for grandchild in child.childNodes:
         if grandchild.nodeType == element.Node.ELEMENT_NODE and \
@@ -356,23 +364,23 @@ def convert_child_nodes(info, doc, node, out):
           if indent is not None:
             break
       indent = 0 if indent is None else int(indent)
-      code_lines.append(('  ' * indent) + get_text(info, doc, child))
+      code_lines.append(('  ' * indent) + get_text(info, child))
     else:
       if code_lines:
-        code(out, code_lines)
+        write_code(out, code_lines)
         code_lines = []
-      convert_node(info, doc, child, out)
+      convert_node(info, child, out)
   if code_lines:
-    code(out, code_lines)
+    write_code(out, code_lines)
     code_lines = []
 
 
-def get_text(info, doc, node):
+def get_text(info, node):
   pout = Out()
   pout.open()
   for child in node.childNodes:
     if child.nodeType == element.Node.ELEMENT_NODE:
-      convert_node(info, doc, child, pout)
+      convert_node(info, child, pout)
     elif child.nodeType == element.Node.TEXT_NODE:
       pout.write(str(child))
   rv = pout.out.getvalue()
@@ -380,18 +388,19 @@ def get_text(info, doc, node):
   return rv.rstrip()
 
 
-def gather_table_rows(info, doc, parent_node, rows):
+def gather_table_rows(info, parent_node, rows):
   for child_node in parent_node.childNodes:
     kind = child_node.qname[1]
     if kind == 'table-header-rows':
-      gather_table_rows(info, doc, child_node, rows)
+      gather_table_rows(info, child_node, rows)
     elif kind == 'table-row':
       row = []
       for cell in child_node.childNodes:
-        row.append(get_text(info, doc, cell))
+        row.append(get_text(info, cell))
       rows.append(row)
 
-def convert_node(info, doc, node, out):
+
+def convert_node(info, node, out):
   if node is None:
     return
   info.push_node_info(node)
@@ -423,7 +432,7 @@ def convert_node(info, doc, node, out):
             # Hack for "Figure 1-1  DCPS Conceptual Overview" which is inside the
             # header node for some unknown reason and otherwise would get lost in in
             # `name = str(node)``
-            convert_node(info, doc, child, out)
+            convert_node(info, child, out)
           elif child_kind == 'span':
             # Span is part of the title, again for no seeming reason
             name += str(child)
@@ -447,25 +456,25 @@ def convert_node(info, doc, node, out):
       out.write(' ')
 
     elif kind == 'p' and style is None:
-      if get_style(node) == 'Footnote':
+      if style_name(node) == 'Footnote':
         # TODO this needs to be written outside a table
         pass
       else:
         dump_node_exit(info, node,
-          'Paragraph style is None, style name: ' + repr(get_style(node)))
+          'Paragraph style is None, style name: ' + repr(style_name(node)))
 
     elif kind == 'p' and style.name != "Figure":
       if style.name == 'Note':
-        out.writeln('.. note:: ' + get_text(info, doc, node)[len('Note  '):])
+        out.writeln('.. note:: ' + get_text(info, node)[len('Note  '):])
       else:
-        text = get_text(info, doc, node)
+        text = get_text(info, node)
         if text and text[-1] != '\n' and not info.get('ignore_style', ignore_last=False):
           text += '\n\n'
         out.write(text)
 
     elif kind == 'a':
       info.push(ignore_style=True)
-      text = get_text(info, doc, node)
+      text = get_text(info, node)
       link = node.attributes[('http://www.w3.org/1999/xlink', 'href')]
       if text == link:
         out.write(link)
@@ -483,13 +492,13 @@ def convert_node(info, doc, node, out):
 
     elif kind == 'table':
       rows = []
-      gather_table_rows(info, doc, node, rows)
-      convert_table(rows, out)
+      gather_table_rows(info, node, rows)
+      write_table(rows, out)
 
     else:
       # if kind not in ('span', 'soft-page-break'):
       #   print('Other:', kind)
-      convert_child_nodes(info, doc, node, out)
+      convert_child_nodes(info, node, out)
 
   elif node.nodeType == element.Node.TEXT_NODE:
     out.write(str(node))
@@ -512,9 +521,11 @@ body = doc.getElementsByType(Body)[0]
 from odf.text import Section
 section = doc.getElementsByType(Section)[0]
 out = Out()
-convert_node(Info(doc), doc, section, out)
+convert_node(Info(doc), section, out)
 out.close()
 out.write_index()
+
+# Dump Style Value Permutations ===============================================
 
 with (dump_path / 'styles_options').open('w') as f:
   for k, v in keep.items():
