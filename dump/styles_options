@@ -1,0 +1,423 @@
+('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'paragraph-properties')
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'auto-text-indent')
+    - false
+    - true
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'justify-single-word')
+    - false
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'line-height-at-least')
+    - 0.111in
+    - 0.1252in
+    - 0.139in
+    - 0.1528in
+    - 0.1807in
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'page-number')
+    - 1
+    - auto
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'shadow')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'vertical-align')
+    - top
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'writing-mode')
+    - lr-tb
+  - ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'line-number')
+    - 0
+  - ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'number-lines')
+    - false
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'background-color')
+    - transparent
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-bottom')
+    - 0.06pt solid #000000
+    - 0.51pt solid #000000
+    - 0.99pt solid #000000
+    - 2.49pt solid #000000
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-left')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-right')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-top')
+    - 0.06pt solid #000000
+    - 0.51pt solid #000000
+    - 2.01pt solid #c0c0c0
+    - 2.49pt solid #000000
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'break-after')
+    - auto
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'break-before')
+    - auto
+    - page
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'keep-with-next')
+    - always
+    - auto
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'line-height')
+    - 100%
+    - 115%
+    - 138%
+    - 150%
+    - 200%
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'margin-bottom')
+    - 0.0138in
+    - 0.0201in
+    - 0.028in
+    - 0.0402in
+    - 0.0799in
+    - 0.0835in
+    - 0.2in
+    - 0in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'margin-left')
+    - -0.0063in
+    - 0.0201in
+    - 0.0346in
+    - 0.052in
+    - 0.1827in
+    - 0.1866in
+    - 0.1965in
+    - 0.25in
+    - 0.3118in
+    - 0.3in
+    - 0.5in
+    - 0.9374in
+    - 0.972in
+    - 0.9984in
+    - 0in
+    - 1.0008in
+    - 1.0071in
+    - 1.0161in
+    - 1.0417in
+    - 1.0618in
+    - 1.2327in
+    - 1.5in
+    - 1in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'margin-right')
+    - 0.0201in
+    - 0.0346in
+    - 0in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'margin-top')
+    - 0.0138in
+    - 0.0201in
+    - 0.028in
+    - 0.0555in
+    - 0.0693in
+    - 0.0701in
+    - 0.0799in
+    - 0.1701in
+    - 0in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'orphans')
+    - 2
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'padding')
+    - 0.0201in
+    - 0in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'padding-bottom')
+    - 0.0193in
+    - 1.9701in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'padding-left')
+    - 0.5in
+    - 0in
+    - 1.9701in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'padding-right')
+    - 0.5in
+    - 0in
+    - 1.9701in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'padding-top')
+    - 0in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'text-align')
+    - center
+    - end
+    - start
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'text-indent')
+    - -0.1965in
+    - -0.25in
+    - -1.0417in
+    - -1in
+    - 0.5in
+    - 0.6252in
+    - 0in
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'widows')
+    - 2
+  - ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'contextual-spacing')
+    - false
+    - true
+('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'section-properties')
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'editable')
+    - false
+('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-properties')
+  - ('http://openoffice.org/2009/office', 'paragraph-rsid')
+    - 001d0c3f
+    - 001f91d1
+    - 00217754
+    - 0022be72
+    - 0022c985
+    - 0023d227
+    - 0026398c
+    - 00269429
+    - 0028010d
+    - 00288564
+    - 002a4e47
+    - 002c9509
+    - 002f148b
+    - 0030f39e
+    - 0030f572
+    - 003488ca
+    - 00361fd9
+    - 0036837f
+    - 0037e29d
+    - 003930be
+    - 0041eb36
+    - 00438748
+    - 0044e175
+    - 0045aff4
+    - 004b7b44
+    - 005299fe
+    - 0053174a
+    - 0054d15f
+    - 0056b1a3
+    - 005af9f5
+    - 005b0030
+    - 005e53fa
+    - 005e6941
+    - 005fe021
+    - 0060a1fe
+    - 00629ada
+    - 0064ea13
+    - 006b0edc
+    - 00736012
+    - 00745348
+    - 00790e6b
+    - 0079fc37
+    - 007b98d9
+    - 007babb4
+    - 007c3a0e
+    - 007cf8f1
+    - 007e39e9
+    - 007ea912
+    - 007febf1
+    - 0080f153
+    - 008393cd
+    - 00894587
+  - ('http://openoffice.org/2009/office', 'rsid')
+    - 0019c347
+    - 001b623f
+    - 001d0c3f
+    - 001d35fb
+    - 001f91d1
+    - 00217754
+    - 0022be72
+    - 0022c985
+    - 0023d227
+    - 0026398c
+    - 00269429
+    - 0028010d
+    - 00288564
+    - 002a4e47
+    - 002b540f
+    - 002c9509
+    - 002d5adf
+    - 002f148b
+    - 0030f39e
+    - 0030f572
+    - 00346e88
+    - 003488ca
+    - 00361fd9
+    - 0036837f
+    - 0037e29d
+    - 003930be
+    - 004055b0
+    - 0041eb36
+    - 00438748
+    - 0044e175
+    - 0045aff4
+    - 004b7b44
+    - 004d17b5
+    - 005299fe
+    - 0053174a
+    - 0054d15f
+    - 0056b1a3
+    - 0059eb32
+    - 005af9f5
+    - 005b0030
+    - 005e53fa
+    - 005e6941
+    - 005fe021
+    - 0060a1fe
+    - 00629ada
+    - 0062e8a3
+    - 006300a8
+    - 0064ea13
+    - 006b0edc
+    - 006b7e83
+    - 006cf6e8
+    - 00736012
+    - 00745348
+    - 00777a50
+    - 00790e6b
+    - 0079fc37
+    - 007b98d9
+    - 007babb4
+    - 007c3a0e
+    - 007cf8f1
+    - 007e39e9
+    - 007ea912
+    - 007febf1
+    - 0080f153
+    - 008393cd
+    - 00857f37
+    - 008762f3
+    - 00887c94
+    - 00894587
+    - 008b1a65
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'country-complex')
+    - SA
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-asian')
+    - 'Times New Roman'
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-complex')
+    - 'Times New Roman'
+    - Arial
+    - Tahoma
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-generic')
+    - modern
+    - roman
+    - swiss
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-generic-asian')
+    - roman
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-generic-complex')
+    - roman
+    - swiss
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name')
+    - Arial
+    - Arial1
+    - Arial2
+    - Courier
+    - Courier New
+    - Courier New2
+    - Courier New3
+    - DejaVu Sans
+    - DejaVu Sans Mono
+    - DejaVu Sans Mono1
+    - DejaVu Sans1
+    - DejaVu Sans2
+    - DejaVu Serif
+    - DejaVu Serif1
+    - DejaVu Serif2
+    - Roboto Mono
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name-asian')
+    - Times New Roman
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name-complex')
+    - Arial2
+    - Courier New4
+    - Tahoma1
+    - Times New Roman
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch')
+    - fixed
+    - variable
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch-asian')
+    - variable
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch-complex')
+    - variable
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-size-asian')
+    - 10.5pt
+    - 10pt
+    - 11pt
+    - 12pt
+    - 14pt
+    - 16pt
+    - 7pt
+    - 85%
+    - 8pt
+    - 9pt
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-size-complex')
+    - 10pt
+    - 11pt
+    - 12pt
+    - 14pt
+    - 16pt
+    - 7pt
+    - 85%
+    - 8pt
+    - 9pt
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-style-asian')
+    - italic
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-style-complex')
+    - italic
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-style-name')
+    - Bold
+    - Bold Oblique
+    - Book
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-weight-asian')
+    - bold
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-weight-complex')
+    - bold
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'language-complex')
+    - ar
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'letter-kerning')
+    - true
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-blinking')
+    - false
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-line-through-style')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-line-through-type')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-scale')
+    - 100%
+    - 90%
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-underline-color')
+    - font-color
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-underline-style')
+    - none
+    - solid
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-underline-width')
+    - auto
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'use-window-font-color')
+    - true
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'background-color')
+    - transparent
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'color')
+    - #000000
+    - #0000ff
+    - #c9211e
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'country')
+    - US
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-family')
+    - 'DejaVu Sans Mono'
+    - 'DejaVu Sans'
+    - 'DejaVu Serif'
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-size')
+    - 10pt
+    - 11pt
+    - 12pt
+    - 14pt
+    - 16pt
+    - 18pt
+    - 20pt
+    - 24pt
+    - 7pt
+    - 8pt
+    - 9pt
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-style')
+    - italic
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-variant')
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-weight')
+    - bold
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'language')
+    - en
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'letter-spacing')
+    - normal
+  - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'text-transform')
+    - capitalize
+    - none
+  - ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'char-shading-value')
+    - 0
+('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'graphic-properties')
+  - ('urn:oasis:names:tc:opendocument:xmlns:drawing:1.0', 'fill')
+    - none
+  - ('urn:oasis:names:tc:opendocument:xmlns:drawing:1.0', 'fill-color')
+    - #99ccff
+    - #ffffff
