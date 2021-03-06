@@ -310,12 +310,11 @@ Developer's Guide
       for name, filename in self.pages:
         print('  {}'.format(filename), file=f)
 
-keep = {}
-
 class Info:
   def __init__(self, doc):
     self.doc = doc
     self.data = []
+    self.all_style_prop_groups = {}
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -337,7 +336,6 @@ class Info:
     return otherwise
 
   def push_node_info(self, node):
-    global keep
     self.push()
     self.set(node=node)
     if node.nodeType == element.Node.ELEMENT_NODE and node.qname[1] == 'p':
@@ -351,12 +349,12 @@ class Info:
     self.set(style=style)
     if style:
       for k, v in style.props.items():
-        if k not in keep:
-          keep[k] = {}
+        if k not in self.all_style_prop_groups:
+          self.all_style_prop_groups[k] = {}
         for ki, vi in v.items():
-          if ki not in keep[k]:
-            keep[k][ki] = set()
-          keep[k][ki] |= {vi}
+          if ki not in self.all_style_prop_groups[k]:
+            self.all_style_prop_groups[k][ki] = set()
+          self.all_style_prop_groups[k][ki] |= {vi}
 
   def style(self):
     return self.get('style', ignore_last=False)
@@ -609,16 +607,19 @@ body = doc.getElementsByType(Body)[0]
 from odf.text import Section
 section = doc.getElementsByType(Section)[0]
 out = Out()
-convert_node(Info(doc), section, out)
+info = Info(doc)
+convert_node(info, section, out)
 out.close()
 out.write_index()
 
 # Dump Style Value Permutations ===============================================
 
 with (dump_path / 'styles_options').open('w') as f:
-  for k, v in keep.items():
-    print(k, file=f)
-    for ki, vi in v.items():
-      print('  -', ki, file=f)
-      for i in vi:
-        print('    -', i, file=f)
+  for prop_group_key in sorted(info.all_style_prop_groups):
+    print(prop_group_key, file=f)
+    prop_group = info.all_style_prop_groups[prop_group_key]
+    for prop_key in sorted(prop_group):
+      print('  -', prop_key, file=f)
+      prop = prop_group[prop_key]
+      for prop_value in sorted(prop):
+        print('    -', prop_value, file=f)
