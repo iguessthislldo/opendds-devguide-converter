@@ -28,6 +28,15 @@ doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 #   - Quotes around monospace text. See "Persistence Profile" section
 # - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
 
+# One Sentence per Line =======================================================
+
+import nltk.data
+
+sentence_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+
+def one_sentence_per_line(text):
+  return '\n'.join(sentence_tokenizer.tokenize(text))
+
 # Start of RST Helpers ========================================================
 
 def write_code(out, lines):
@@ -516,7 +525,7 @@ def convert_node(info, node, out):
       if style.name == 'Note':
         out.writeln('.. note:: ' + get_text(info, node)[len('Note  '):])
       else:
-        text = get_text(info, node)
+        text = one_sentence_per_line(get_text(info, node))
         if text and text[-1] != '\n' and not info.get('ignore_style', ignore_last=False):
           text += '\n\n'
         out.write(text)

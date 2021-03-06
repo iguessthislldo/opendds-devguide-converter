@@ -6,23 +6,39 @@ Conditions and Listeners
 Introduction
 ************
 
-The DDS specification defines two separate mechanisms for notifying applications of DCPS communication status changes. Most of the status types define a structure that contains information related to the change of status and can be detected by the application using conditions or listeners. The different status types are described in  4.2.
+The DDS specification defines two separate mechanisms for notifying applications of DCPS communication status changes.
+Most of the status types define a structure that contains information related to the change of status and can be detected by the application using conditions or listeners.
+The different status types are described in  4.2.
 
-Each entity type (domain participant, topic, publisher, subscriber, data reader, and data writer) defines its own corresponding listener interface. Applications can implement this interface and then attach their listener implementation to the entity. Each listener interface contains an operation for each status that can be reported for that entity. The listener is asynchronously called back with the appropriate operation whenever a qualifying status change occurs. Details of the different listener types are discussed in 4.3.
+Each entity type (domain participant, topic, publisher, subscriber, data reader, and data writer) defines its own corresponding listener interface.
+Applications can implement this interface and then attach their listener implementation to the entity.
+Each listener interface contains an operation for each status that can be reported for that entity.
+The listener is asynchronously called back with the appropriate operation whenever a qualifying status change occurs.
+Details of the different listener types are discussed in 4.3.
 
-Conditions are used in conjunction with Wait Sets to let applications synchronously wait on events. The basic usage pattern for conditions involves creating the condition objects, attaching them to a wait set, and then waiting on the wait set until one of the conditions is triggered. The result of wait tells the application which conditions were triggered, allowing the application to take the appropriate actions to get the corresponding status information. Conditions are described in greater detail in 4.4.
+Conditions are used in conjunction with Wait Sets to let applications synchronously wait on events.
+The basic usage pattern for conditions involves creating the condition objects, attaching them to a wait set, and then waiting on the wait set until one of the conditions is triggered.
+The result of wait tells the application which conditions were triggered, allowing the application to take the appropriate actions to get the corresponding status information.
+Conditions are described in greater detail in 4.4.
 
 **************************
 Communication Status Types
 **************************
 
-Each status type is associated with a particular entity type. This section is organized by the entity types, with the corresponding statuses described in subsections under the associated entity type.
+Each status type is associated with a particular entity type.
+This section is organized by the entity types, with the corresponding statuses described in subsections under the associated entity type.
 
-Most of the statuses below are plain communication statuses. The exceptions are ``DATA_ON_READERS`` and ``DATA_AVAILABLE`` which are read statuses. Plain communication statuses define an IDL data structure. Their corresponding section below describes this structure and its fields. The read statuses are simple notifications to the application which then reads or takes the samples as desired.
+Most of the statuses below are plain communication statuses.
+The exceptions are ``DATA_ON_READERS`` and ``DATA_AVAILABLE`` which are read statuses.
+Plain communication statuses define an IDL data structure.
+Their corresponding section below describes this structure and its fields.
+The read statuses are simple notifications to the application which then reads or takes the samples as desired.
 
-Incremental values in the status data structure report a change since the last time the status was accessed. A status is considered accessed when a listener is called for that status or the status is read from its entity.
+Incremental values in the status data structure report a change since the last time the status was accessed.
+A status is considered accessed when a listener is called for that status or the status is read from its entity.
 
-Fields in the status data structure with a type of ``InstanceHandle_t`` identify an entity (topic, data reader, data writer, etc.) by the instance handle used for that entity in the Built-In-Topics.
+Fields in the status data structure with a type of ``InstanceHandle_t`` identify an entity (topic, data reader, data writer, etc.)
+by the instance handle used for that entity in the Built-In-Topics.
 
 Topic Status Types
 ==================
@@ -30,7 +46,9 @@ Topic Status Types
 Inconsistent Topic Status
 -------------------------
 
-The ``INCONSISTENT_TOPIC`` status indicates that a topic was attempted to be registered that already exists with different characteristics. Typically, the existing topic may have a different type associated with it. The IDL associated with the Inconsistent Topic Status is listed below:
+The ``INCONSISTENT_TOPIC`` status indicates that a topic was attempted to be registered that already exists with different characteristics.
+Typically, the existing topic may have a different type associated with it.
+The IDL associated with the Inconsistent Topic Status is listed below:
 
 ::
 
@@ -41,7 +59,8 @@ The ``INCONSISTENT_TOPIC`` status indicates that a topic was attempted to be reg
     };
     
 
-The ``total_count`` value is the cumulative count of topics that have been reported as inconsistent. The ``total_count_change`` value is the incremental count of inconsistent topics since the last time this status was accessed.
+The ``total_count`` value is the cumulative count of topics that have been reported as inconsistent.
+The ``total_count_change`` value is the incremental count of inconsistent topics since the last time this status was accessed.
 
 Subscriber Status Types
 =======================
@@ -49,7 +68,9 @@ Subscriber Status Types
 Data On Readers Status
 ----------------------
 
-The ``DATA_ON_READERS`` status indicates that new data is available on some of the data readers associated with the subscriber. This status is considered a read status and does not define an IDL structure. Applications receiving this status can call ``get_datareaders()`` on the subscriber to get the set of data readers with data available.
+The ``DATA_ON_READERS`` status indicates that new data is available on some of the data readers associated with the subscriber.
+This status is considered a read status and does not define an IDL structure.
+Applications receiving this status can call ``get_datareaders()`` on the subscriber to get the set of data readers with data available.
 
 Data Reader Status Types
 ========================
@@ -57,7 +78,8 @@ Data Reader Status Types
 Sample Rejected Status
 ----------------------
 
-The ``SAMPLE_REJECTED`` status indicates that a sample received by the data reader has been rejected. The IDL associated with the Sample Rejected Status is listed below:
+The ``SAMPLE_REJECTED`` status indicates that a sample received by the data reader has been rejected.
+The IDL associated with the Sample Rejected Status is listed below:
 
 ::
 
@@ -77,12 +99,16 @@ The ``SAMPLE_REJECTED`` status indicates that a sample received by the data read
     };
     
 
-The ``total_count`` value is the cumulative count of samples that have been reported as rejected. The ``total_count_change`` value is the incremental count of rejected samples since the last time this status was accessed. The ``last_reason`` value is the reason the most recently rejected sample was rejected. The ``last_instance_handle`` value indicates the instance of the last rejected sample.
+The ``total_count`` value is the cumulative count of samples that have been reported as rejected.
+The ``total_count_change`` value is the incremental count of rejected samples since the last time this status was accessed.
+The ``last_reason`` value is the reason the most recently rejected sample was rejected.
+The ``last_instance_handle`` value indicates the instance of the last rejected sample.
 
 Liveliness Changed Status
 -------------------------
 
-The ``LIVELINESS_CHANGED`` status indicates that there have been liveliness changes for one or more data writers that are publishing instances for this data reader. The IDL associated with the Liveliness Changed Status is listed below:
+The ``LIVELINESS_CHANGED`` status indicates that there have been liveliness changes for one or more data writers that are publishing instances for this data reader.
+The IDL associated with the Liveliness Changed Status is listed below:
 
 ::
 
@@ -96,12 +122,17 @@ The ``LIVELINESS_CHANGED`` status indicates that there have been liveliness chan
     };
     
 
-The ``alive_count`` value is the total number of data writers currently active on the topic this data reader is reading. The ``not_alive_count`` value is the total number of data writers writing to the data reader’s topic that are no longer asserting their liveliness. The ``alive_count_change`` value is the change in the alive count since the last time the status was accessed. The ``not_alive_count_change`` value is the change in the not alive count since the last time the status was accessed. The ``last_publication_handle`` is the handle of the last data writer whose liveliness has changed.
+The ``alive_count`` value is the total number of data writers currently active on the topic this data reader is reading.
+The ``not_alive_count`` value is the total number of data writers writing to the data reader’s topic that are no longer asserting their liveliness.
+The ``alive_count_change`` value is the change in the alive count since the last time the status was accessed.
+The ``not_alive_count_change`` value is the change in the not alive count since the last time the status was accessed.
+The ``last_publication_handle`` is the handle of the last data writer whose liveliness has changed.
 
 Requested Deadline Missed Status
 --------------------------------
 
-The ``REQUESTED_DEADLINE_MISSED`` status indicates that the deadline requested via the Deadline QoS policy was not respected for a specific instance. The IDL associated with the Requested Deadline Missed Status is listed below:
+The ``REQUESTED_DEADLINE_MISSED`` status indicates that the deadline requested via the Deadline QoS policy was not respected for a specific instance.
+The IDL associated with the Requested Deadline Missed Status is listed below:
 
 ::
 
@@ -113,12 +144,15 @@ The ``REQUESTED_DEADLINE_MISSED`` status indicates that the deadline requested v
     };
     
 
-The ``total_count`` value is the cumulative count of missed requested deadlines that have been reported. The ``total_count_change`` value is the incremental count of missed requested deadlines since the last time this status was accessed. The ``last_instance_handle`` value indicates the instance of the last missed deadline.
+The ``total_count`` value is the cumulative count of missed requested deadlines that have been reported.
+The ``total_count_change`` value is the incremental count of missed requested deadlines since the last time this status was accessed.
+The ``last_instance_handle`` value indicates the instance of the last missed deadline.
 
 Requested Incompatible QoS Status
 ---------------------------------
 
-The ``REQUESTED_INCOMPATIBLE_QOS`` status indicates that one or more QoS policy values that were requested were incompatible with what was offered. The IDL associated with the Requested Incompatible QoS Status is listed below:
+The ``REQUESTED_INCOMPATIBLE_QOS`` status indicates that one or more QoS policy values that were requested were incompatible with what was offered.
+The IDL associated with the Requested Incompatible QoS Status is listed below:
 
 ::
 
@@ -138,17 +172,23 @@ The ``REQUESTED_INCOMPATIBLE_QOS`` status indicates that one or more QoS policy 
     };
     
 
-The ``total_count`` value is the cumulative count of times data writers with incompatible QoS have been reported. The ``total_count_change`` value is the incremental count of incompatible data writers since the last time this status was accessed. The ``last_policy_id`` value identifies one of the QoS policies that was incompatible in the last incompatibility detected. The policies value is a sequence of values that indicates the total number of incompatibilities that have been detected for each QoS policy.
+The ``total_count`` value is the cumulative count of times data writers with incompatible QoS have been reported.
+The ``total_count_change`` value is the incremental count of incompatible data writers since the last time this status was accessed.
+The ``last_policy_id`` value identifies one of the QoS policies that was incompatible in the last incompatibility detected.
+The policies value is a sequence of values that indicates the total number of incompatibilities that have been detected for each QoS policy.
 
 Data Available Status
 ---------------------
 
-The ``DATA_AVAILABLE`` status indicates that samples are available on the data writer. This status is considered a read status and does not define an IDL structure. Applications receiving this status can use the various take and read operations on the data reader to retrieve the data.
+The ``DATA_AVAILABLE`` status indicates that samples are available on the data writer.
+This status is considered a read status and does not define an IDL structure.
+Applications receiving this status can use the various take and read operations on the data reader to retrieve the data.
 
 Sample Lost Status
 ------------------
 
-The ``SAMPLE_LOST`` status indicates that a sample has been lost and never received by the data reader. The IDL associated with the Sample Lost Status is listed below:
+The ``SAMPLE_LOST`` status indicates that a sample has been lost and never received by the data reader.
+The IDL associated with the Sample Lost Status is listed below:
 
 ::
 
@@ -159,12 +199,14 @@ The ``SAMPLE_LOST`` status indicates that a sample has been lost and never recei
     };
     
 
-The ``total_count`` value is the cumulative count of samples reported as lost. The ``total_count_change`` value is the incremental count of lost samples since the last time this status was accessed.
+The ``total_count`` value is the cumulative count of samples reported as lost.
+The ``total_count_change`` value is the incremental count of lost samples since the last time this status was accessed.
 
 Subscription Matched Status
 ---------------------------
 
-The ``SUBSCRIPTION_MATCHED`` status indicates that either a compatible data writer has been matched or a previously matched data writer has ceased to be matched. The IDL associated with the Subscription Matched Status is listed below:
+The ``SUBSCRIPTION_MATCHED`` status indicates that either a compatible data writer has been matched or a previously matched data writer has ceased to be matched.
+The IDL associated with the Subscription Matched Status is listed below:
 
 ::
 
@@ -178,7 +220,11 @@ The ``SUBSCRIPTION_MATCHED`` status indicates that either a compatible data writ
     };
     
 
-The ``total_count`` value is the cumulative count of data writers that have compatibly matched this data reader. The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed. The ``current_count`` value is the current number of data writers matched to this data reader. The ``current_count_change`` value is the change in the current count since the last time this status was accessed. The ``last_publication_handle`` value is a handle for the last data writer matched.
+The ``total_count`` value is the cumulative count of data writers that have compatibly matched this data reader.
+The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed.
+The ``current_count`` value is the current number of data writers matched to this data reader.
+The ``current_count_change`` value is the change in the current count since the last time this status was accessed.
+The ``last_publication_handle`` value is a handle for the last data writer matched.
 
 Data Writer Status Types
 ========================
@@ -186,7 +232,8 @@ Data Writer Status Types
 Liveliness Lost Status
 ----------------------
 
-The ``LIVELINESS_LOST`` status indicates that the liveliness that the data writer committed through its Liveliness QoS has not been respected. This means that any connected data readers will consider this data writer no longer active.The IDL associated with the Liveliness Lost Status is listed below:
+The ``LIVELINESS_LOST`` status indicates that the liveliness that the data writer committed through its Liveliness QoS has not been respected.
+This means that any connected data readers will consider this data writer no longer active.The IDL associated with the Liveliness Lost Status is listed below:
 
 ::
 
@@ -197,12 +244,14 @@ The ``LIVELINESS_LOST`` status indicates that the liveliness that the data write
     };
     
 
-The ``total_count`` value is the cumulative count of times that an alive data writer has become not alive. The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed.
+The ``total_count`` value is the cumulative count of times that an alive data writer has become not alive.
+The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed.
 
 Offered Deadline Missed Status
 ------------------------------
 
-The ``OFFERED_DEADLINE_MISSED`` status indicates that the deadline offered by the data writer has been missed for one or more instances. The IDL associated with the Offered Deadline Missed Status is listed below:
+The ``OFFERED_DEADLINE_MISSED`` status indicates that the deadline offered by the data writer has been missed for one or more instances.
+The IDL associated with the Offered Deadline Missed Status is listed below:
 
 ::
 
@@ -214,12 +263,15 @@ The ``OFFERED_DEADLINE_MISSED`` status indicates that the deadline offered by th
     };
     
 
-The ``total_count`` value is the cumulative count of times that deadlines have been missed for an instance. The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed. The ``last_instance_handle`` value indicates the last instance that has missed a deadline.
+The ``total_count`` value is the cumulative count of times that deadlines have been missed for an instance.
+The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed.
+The ``last_instance_handle`` value indicates the last instance that has missed a deadline.
 
 Offered Incompatible QoS Status
 -------------------------------
 
-The ``OFFERED_INCOMPATIBLE_QOS`` status indicates that an offered QoS was incompatible with the requested QoS of a data reader. The IDL associated with the Offered Incompatible QoS Status is listed below:
+The ``OFFERED_INCOMPATIBLE_QOS`` status indicates that an offered QoS was incompatible with the requested QoS of a data reader.
+The IDL associated with the Offered Incompatible QoS Status is listed below:
 
 ::
 
@@ -238,12 +290,16 @@ The ``OFFERED_INCOMPATIBLE_QOS`` status indicates that an offered QoS was incomp
     };
     
 
-The ``total_count`` value is the cumulative count of times that data readers with incompatible QoS have been found. The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed. The ``last_policy_id`` value identifies one of the QoS policies that was incompatible in the last incompatibility detected. The ``policies`` value is a sequence of values that indicates the total number of incompatibilities that have been detected for each QoS policy.
+The ``total_count`` value is the cumulative count of times that data readers with incompatible QoS have been found.
+The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed.
+The ``last_policy_id`` value identifies one of the QoS policies that was incompatible in the last incompatibility detected.
+The ``policies`` value is a sequence of values that indicates the total number of incompatibilities that have been detected for each QoS policy.
 
 Publication Matched Status
 --------------------------
 
-The ``PUBLICATION_MATCHED`` status indicates that either a compatible data reader has been matched or a previously matched data reader has ceased to be matched. The IDL associated with the Publication Matched Status is listed below:
+The ``PUBLICATION_MATCHED`` status indicates that either a compatible data reader has been matched or a previously matched data reader has ceased to be matched.
+The IDL associated with the Publication Matched Status is listed below:
 
 ::
 
@@ -257,15 +313,23 @@ The ``PUBLICATION_MATCHED`` status indicates that either a compatible data reade
     };
     
 
-The ``total_count`` value is the cumulative count of data readers that have compatibly matched this data writer. The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed. The ``current_count`` value is the current number of data readers matched to this data writer. The ``current_count_change`` value is the change in the current count since the last time this status was accessed. The ``last_subscription_handle`` value is a handle for the last data reader matched.
+The ``total_count`` value is the cumulative count of data readers that have compatibly matched this data writer.
+The ``total_count_change`` value is the incremental change in the total count since the last time this status was accessed.
+The ``current_count`` value is the current number of data readers matched to this data writer.
+The ``current_count_change`` value is the change in the current count since the last time this status was accessed.
+The ``last_subscription_handle`` value is a handle for the last data reader matched.
 
 *********
 Listeners
 *********
 
-Each entity defines its own listener interface based on the statuses it can report. Any entity’s listener interface also inherits from the listeners of its owned entities, allowing it to handle statuses for owned entities as well. For example, a subscriber listener directly defines an operation to handle Data On Readers statuses and inherits from the data reader listener as well.
+Each entity defines its own listener interface based on the statuses it can report.
+Any entity’s listener interface also inherits from the listeners of its owned entities, allowing it to handle statuses for owned entities as well.
+For example, a subscriber listener directly defines an operation to handle Data On Readers statuses and inherits from the data reader listener as well.
 
-Each status operation takes the general form of ``on_<status_name>(<entity>, <status_struct>)``, where ``<status_name>`` is the name of the status being reported, ``<entity>`` is a reference to the entity the status is reported for, and ``<status_struct>`` is the structure with details of the status. Read statuses omit the second parameter. For example, here is the operation for the Sample Lost status:
+Each status operation takes the general form of ``on_<status_name>(<entity>, <status_struct>)``, where ``<status_name>`` is the name of the status being reported, ``<entity>`` is a reference to the entity the status is reported for, and ``<status_struct>`` is the structure with details of the status.
+Read statuses omit the second parameter.
+For example, here is the operation for the Sample Lost status:
 
 ::
 
@@ -273,7 +337,10 @@ Each status operation takes the general form of ``on_<status_name>(<entity>, <st
       void on_sample_lost(in DataReader the_reader, in SampleLostStatus status);
     
 
-Listeners can either be passed to the factory function used to create their entity or explicitly set by calling ``set_listener()`` on the entity after it is created. Both of these functions also take a status mask as a parameter. The mask indicates which statuses are enabled in that listener. Mask bit values for each status are defined in DdsDcpsInfrastructure.idl:
+Listeners can either be passed to the factory function used to create their entity or explicitly set by calling ``set_listener()`` on the entity after it is created.
+Both of these functions also take a status mask as a parameter.
+The mask indicates which statuses are enabled in that listener.
+Mask bit values for each status are defined in DdsDcpsInfrastructure.idl:
 
 ::
 
@@ -298,7 +365,8 @@ Listeners can either be passed to the factory function used to create their enti
     };
     
 
-Simply do a bit-wise “or” of the desired status bits to construct a mask for your listener. Here is an example of attaching a listener to a data reader (for just Data Available statuses):
+Simply do a bit-wise “or” of the desired status bits to construct a mask for your listener.
+Here is an example of attaching a listener to a data reader (for just Data Available statuses):
 
 ::
 
@@ -321,9 +389,11 @@ Here is an example showing how to change the listener using ``set_listener()``:
              DDS::DATA_AVAILABLE_STATUS |       DDS::LIVELINESS_CHANGED_STATUS);
     
 
-When a plain communication status changes, OpenDDS invokes the most specific relevant listener operation. This means, for example, that a data reader’s listener would take precedence over the subscriber’s listener for statuses related to the data reader.
+When a plain communication status changes, OpenDDS invokes the most specific relevant listener operation.
+This means, for example, that a data reader’s listener would take precedence over the subscriber’s listener for statuses related to the data reader.
 
-The following sections define the different listener interfaces. For more details on the individual statuses, see 4.2.
+The following sections define the different listener interfaces.
+For more details on the individual statuses, see 4.2.
 
 Topic Listener
 ==============
@@ -429,12 +499,17 @@ The DDS specification defines four types of condition:
 Status Condition 
 =================
 
-Each entity has a status condition object associated with it and a ``get_statuscondition()`` operation that lets applications access the status condition. Each condition has a set of enabled statuses that can trigger that condition. Attaching one or more conditions to a wait set allows application developers to wait on the condition’s status set. Once an enabled status is triggered, the wait call returns from the wait set and the developer can query the relevant status condition on the entity. Querying the status condition resets the status.
+Each entity has a status condition object associated with it and a ``get_statuscondition()`` operation that lets applications access the status condition.
+Each condition has a set of enabled statuses that can trigger that condition.
+Attaching one or more conditions to a wait set allows application developers to wait on the condition’s status set.
+Once an enabled status is triggered, the wait call returns from the wait set and the developer can query the relevant status condition on the entity.
+Querying the status condition resets the status.
 
 Status Condition Example
 ------------------------
 
-This example enables the Offered Incompatible QoS status on a data writer, waits for it, and then queries it when it triggers. The first step is to get the status condition from the data writer, enable the desired status, and attach it to a wait set:
+This example enables the Offered Incompatible QoS status on a data writer, waits for it, and then queries it when it triggers.
+The first step is to get the status condition from the data writer, enable the desired status, and attach it to a wait set:
 
 ::
 
@@ -475,17 +550,24 @@ Developers have the option of attaching multiple conditions to a single wait set
 Additional Condition Types
 ==========================
 
-The DDS specification also defines three other types of conditions: read conditions, query conditions, and guard conditions. These conditions do not directly involve the processing of statuses but allow the integration of other activities into the condition and wait set mechanisms. These are other conditions are briefly described here. For more information see the DDS specification or the OpenDDS tests in $DDS_ROOT/tests/.
+The DDS specification also defines three other types of conditions: read conditions, query conditions, and guard conditions.
+These conditions do not directly involve the processing of statuses but allow the integration of other activities into the condition and wait set mechanisms.
+These are other conditions are briefly described here.
+For more information see the DDS specification or the OpenDDS tests in $DDS_ROOT/tests/.
 
 Read Conditions
 ---------------
 
-Read conditions are created using the data reader and the same masks that are passed to the read and take operations. When waiting on this condition, it is triggered whenever samples match the specified masks. Those samples can then be retrieved using the ``read_w_condition()`` and ``take_w_condition()`` operations which take the read condition as a parameter.
+Read conditions are created using the data reader and the same masks that are passed to the read and take operations.
+When waiting on this condition, it is triggered whenever samples match the specified masks.
+Those samples can then be retrieved using the ``read_w_condition()`` and ``take_w_condition()`` operations which take the read condition as a parameter.
 
 Query Conditions
 ----------------
 
-Query conditions are a specialized form of read conditions that are created with a limited form of an SQL-like query. This allows applications to filter the data samples that trigger the condition and then are read use the normal read condition mechanisms. See Section 5.3 for more information about query conditions.
+Query conditions are a specialized form of read conditions that are created with a limited form of an SQL-like query.
+This allows applications to filter the data samples that trigger the condition and then are read use the normal read condition mechanisms.
+See Section 5.3 for more information about query conditions.
 
 Guard Conditions
 ----------------

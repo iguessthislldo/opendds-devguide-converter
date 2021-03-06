@@ -6,12 +6,14 @@ DDS Security
 Building OpenDDS with Security Enabled
 **************************************
 
-Prior to utilizing DDS Security, OpenDDS must be built to include security elements into the resulting libraries.  The following instructions show how this is to be completed on various platforms.
+Prior to utilizing DDS Security, OpenDDS must be built to include security elements into the resulting libraries.
+The following instructions show how this is to be completed on various platforms.
 
 Prerequisites
 =============
 
-OpenDDS includes an implementation of the OMG DDS Security 1.1 specification.  Building OpenDDS with security enabled requires the following dependencies:
+OpenDDS includes an implementation of the OMG DDS Security 1.1 specification.
+Building OpenDDS with security enabled requires the following dependencies:
 
 * Xerces-C++ v3.x
 
@@ -19,7 +21,8 @@ OpenDDS includes an implementation of the OMG DDS Security 1.1 specification.  B
 
 * Google Test (only required if building OpenDDS tests)
 
-  * If you are using OpenDDS from a git repository, Google Test is provided as a git submodule. Make sure to enable submodules with the ``--recursive`` option to git clone.
+  * If you are using OpenDDS from a git repository, Google Test is provided as a git submodule.
+    Make sure to enable submodules with the ``--recursive`` option to git clone.
 
 * CMake (required if building OpenDDS tests and building Google Test and other dependencies from source).
 
@@ -39,7 +42,8 @@ Building OpenDDS with Security on Windows
 
 Using Microsoft vcpkg
 
-Microsoft vcpkg is a “C++ Library Manager for Windows, Linux, and macOS” which helps developers build/install dependencies. Although it is cross-platform, this guide only discusses vcpkg on Windows.
+Microsoft vcpkg is a “C++ Library Manager for Windows, Linux, and macOS” which helps developers build/install dependencies.
+Although it is cross-platform, this guide only discusses vcpkg on Windows.
 
 As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and later versions; if using an earlier version of Visual Studio, skip down to the manual setup instructions later in this section.
 
@@ -49,7 +53,8 @@ As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and l
 
       * Fetch and build the dependencies; by default, vcpkg targets x86 so be sure to specify the x64 target if required by specifying it when invoking vcpkg install, as shown here:``vcpkg install openssl:x64-windows xerces-c:x64-windows``
 
-      * Configure OpenDDS by passing the openssl and xerces3 switches. As a convenience, it can be helpful to set an environment variable to store the path since it is the same location for both dependencies.``set VCPKG_INSTALL=c:\path\to\vcpkg\installed\x64-windowsconfigure --security --openssl=%VCPKG_INSTALL% --xerces3=%VCPKG_INSTALL%``
+      * Configure OpenDDS by passing the openssl and xerces3 switches.
+        As a convenience, it can be helpful to set an environment variable to store the path since it is the same location for both dependencies.``set VCPKG_INSTALL=c:\path\to\vcpkg\installed\x64-windowsconfigure --security --openssl=%VCPKG_INSTALL% --xerces3=%VCPKG_INSTALL%``
 
       * Compile with msbuild or by launching Visual Studio from this command prompt so it inherits the correct environment variables and building from there.
 
@@ -65,9 +70,12 @@ Note: for all of the build steps listed here, check that each package targets th
 
 Compiling OpenSSL (see: https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows)
 
-* Install Perl and add it to the Path environment variable. For this guide, ActiveState is used.
+* Install Perl and add it to the Path environment variable.
+  For this guide, ActiveState is used.
 
-* Install Netwide Assembler (NASM). Click through the latest stable release and there is a win32 and win64 directory containing executable installers. The installer does not update the Path environment variable, so a manual entry ``(%LOCALAPPDATA%\bin\NASM)`` is necessary.
+* Install Netwide Assembler (NASM).
+  Click through the latest stable release and there is a win32 and win64 directory containing executable installers.
+  The installer does not update the Path environment variable, so a manual entry ``(%LOCALAPPDATA%\bin\NASM)`` is necessary.
 
 * Download the required version of OpenSSL by cloning the repository.
 
@@ -79,7 +87,8 @@ Compiling OpenSSL (see: https://wiki.openssl.org/index.php/Compilation_and_Insta
 
 * Run ``nmake install``.
 
-Note: if the default OpenSSL location is desired, which will be searched by OpenDDS, open the Developer Command Prompt as an administrator before running the install. It will write to “C:\Program Files” or “C:\Program Files (x86)” depending on the architecture.
+Note: if the default OpenSSL location is desired, which will be searched by OpenDDS, open the Developer Command Prompt as an administrator before running the install.
+It will write to “C:\Program Files” or “C:\Program Files (x86)” depending on the architecture.
 
 Compiling Xerces-C++ 3
 
@@ -94,7 +103,8 @@ Compiling Xerces-C++ 3
     mkdir build
     cd build
 
-* Run cmake with the appropriate generator. In this case Visual Studio 2017 with 64-bit is being used so:
+* Run cmake with the appropriate generator.
+  In this case Visual Studio 2017 with 64-bit is being used so:
 
 ::
 
@@ -127,12 +137,15 @@ Configuring and Building OpenDDS:
 Building OpenDDS with Security on Linux
 =======================================
 
-Xerces-C++ and OpenSSL may be installed using the system package manager, or built from source. If using the system package manager (that is, headers can be found under /usr/include), invoke the configure script with the --security option. If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar ``command line options.
+Xerces-C++ and OpenSSL may be installed using the system package manager, or built from source.
+If using the system package manager (that is, headers can be found under /usr/include), invoke the configure script with the --security option.
+If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar ``command line options.
 
 Building OpenDDS with Security on macOS
 =======================================
 
-Xerces-C++ and OpenSSL may be installed using homebrew or another developer-focused package manager, or built from source. The instructions above for Linux also apply to macOS but the package manager will not install directly in ``/usr`` so make sure to specify the library locations to the configure script.
+Xerces-C++ and OpenSSL may be installed using homebrew or another developer-focused package manager, or built from source.
+The instructions above for Linux also apply to macOS but the package manager will not install directly in ``/usr`` so make sure to specify the library locations to the configure script.
 
 Building OpenDDS with Security for Android
 ==========================================
@@ -143,13 +156,18 @@ See the ``docs/android.md`` file included in the OpenDDS source code.
 Architecture of the DDS Security Specification
 **********************************************
 
-The DDS Security specification defines plugin APIs for Authentication, Access Control, and Cryptographic operations. These APIs provide a level of abstraction for DDS implementations as well as allowing for future extensibility and version control. Additionally, the specification defines Built-In implementations of each of these plugins, which allows for a baseline of functionality and interoperability between DDS implementations. OpenDDS implements these Built-In plugins, and this document assumes that the Built-In plugins are being used. Developers using OpenDDS may also implement their own custom plugins, but those efforts are well beyond the scope of this document.
+The DDS Security specification defines plugin APIs for Authentication, Access Control, and Cryptographic operations.
+These APIs provide a level of abstraction for DDS implementations as well as allowing for future extensibility and version control.
+Additionally, the specification defines Built-In implementations of each of these plugins, which allows for a baseline of functionality and interoperability between DDS implementations.
+OpenDDS implements these Built-In plugins, and this document assumes that the Built-In plugins are being used.
+Developers using OpenDDS may also implement their own custom plugins, but those efforts are well beyond the scope of this document.
 
 *************************
 Terms and Background Info
 *************************
 
-DDS Security uses current industry standards and best-practices in security. As such, this document makes use of several security concepts which may warrant additional research by OpenDDS users.
+DDS Security uses current industry standards and best-practices in security.
+As such, this document makes use of several security concepts which may warrant additional research by OpenDDS users.
 
 +--------------------------------------------------+-------------------------------------------------------------------------------------------+
 | Term Group                                       | References                                                                                |
@@ -222,7 +240,9 @@ The following configuration steps are required to enable OpenDDS Security featur
 DDS Security Configuration via PropertyQosPolicy
 ================================================
 
-When the application creates a DomainParticipant object, the DomainParticipantQos passed to the ``create_participant()`` method now contains a PropertyQosPolicy object which has a sequence of name-value pairs. The following properties must be included to enable security. Except where noted, these values take the form of a URI starting with either the scheme “file:” followed by a filesystem path (absolute or relative) or the scheme “data:” followed by the literal data.
+When the application creates a DomainParticipant object, the DomainParticipantQos passed to the ``create_participant()`` method now contains a PropertyQosPolicy object which has a sequence of name-value pairs.
+The following properties must be included to enable security.
+Except where noted, these values take the form of a URI starting with either the scheme “file:” followed by a filesystem path (absolute or relative) or the scheme “data:” followed by the literal data.
 
 +---------------------------------------+----------------------------------+------------------------------------------+
 | Name                                  | Value                            | Notes                                    |
@@ -308,7 +328,8 @@ All certificate inputs to OpenDDS, including self-signed CA certificates, are ex
 Identity, Permissions, and Subject Names
 ========================================
 
-The “subject_name” element for a signed permissions XML document must match the “Subject:” field provided by the accompanying Identity Certificate which is transmitted during participant discovery, authentication, and authorization. This ensures that the permissions granted by the Permissions CA do, in fact, correspond to the identity provided.
+The “subject_name” element for a signed permissions XML document must match the “Subject:” field provided by the accompanying Identity Certificate which is transmitted during participant discovery, authentication, and authorization.
+This ensures that the permissions granted by the Permissions CA do, in fact, correspond to the identity provided.
 
 Examples in the OpenDDS Source Code Repository
 ==============================================
@@ -339,7 +360,9 @@ Table 14-3
 Using OpenSSL Utilities for OpenDDS
 ===================================
 
-To generate certificates using the openssl command, a configuration file "openssl.cnf" is required (see below for example commands). Before proceeding, it may be helpful to review OpenSSL’s manpages to get help with the file format. In particular, configuration file format and ca command’s documentation and configuration file options.
+To generate certificates using the openssl command, a configuration file "openssl.cnf" is required (see below for example commands).
+Before proceeding, it may be helpful to review OpenSSL’s manpages to get help with the file format.
+In particular, configuration file format and ca command’s documentation and configuration file options.
 
 .. note:: mple OpenSSL CA-Config file used in OpenDDS testing can be found here:
 .. note:: //github.com/objectcomputing/OpenDDS/blob/master/tests/security/certs/identity/identity_ca_openssl.cnf
@@ -393,12 +416,14 @@ Sign a document using existing CA & CA private key:
 Domain Governance Document
 **************************
 
-The signed governance document is used by the DDS Security built-in access control plugin in order to determine both per-domain and per-topic security configuration options for specific domains. For full details regarding the content of the governance document, see the OMG DDS Security specification section 9.4.1.2.
+The signed governance document is used by the DDS Security built-in access control plugin in order to determine both per-domain and per-topic security configuration options for specific domains.
+For full details regarding the content of the governance document, see the OMG DDS Security specification section 9.4.1.2.
 
 Global Governance Model
 =======================
 
-It’s worth noting that the DDS Security Model expects the governance document to be globally shared by all participants making use of the relevant domains described within the governance document. Even if this is not the case, the local participant will verify incoming authentication and access control requests as if the remote participant shared the same governance document and accept or reject the requests accordingly.
+It’s worth noting that the DDS Security Model expects the governance document to be globally shared by all participants making use of the relevant domains described within the governance document.
+Even if this is not the case, the local participant will verify incoming authentication and access control requests as if the remote participant shared the same governance document and accept or reject the requests accordingly.
 
 Key Governance Elements
 =======================
@@ -409,44 +434,54 @@ A list of domain ids and/or domain id ranges of domains impacted by the current 
 
 Governance Configuration Types
 
-The following types and values are used in configuring both per-domain and per-topic security configuration options. We summarize them here to simplify discussion of the configuration options where they’re used, found below.
+The following types and values are used in configuring both per-domain and per-topic security configuration options.
+We summarize them here to simplify discussion of the configuration options where they’re used, found below.
 
 Boolean
 
-A boolean value indicating whether a configuration option is enabled or not. Recognized values are: ``{true or false}``
+A boolean value indicating whether a configuration option is enabled or not.
+Recognized values are: ``{true or false}``
 
 ProtectionKind
 
-The method used to protect domain data (message signatures or message encryption) along with the ability to include origin authentication for either protection kind. Currently, OpenDDS doesn’t implement origin authentication. So while the "_WITH_ORIGIN_AUTHENTICATION" options are recognized, the underlying configuration is unsupported. Recognized values are: ``{NONE, SIGN, ENCRYPT, ````SIGN_WITH_ORIGIN_AUTHENTICATION``, or ``ENCRYPT_WITH_ORIGIN_AUTHENTICATION````}``
+The method used to protect domain data (message signatures or message encryption) along with the ability to include origin authentication for either protection kind.
+Currently, OpenDDS doesn’t implement origin authentication.
+So while the "_WITH_ORIGIN_AUTHENTICATION" options are recognized, the underlying configuration is unsupported.
+Recognized values are: ``{NONE, SIGN, ENCRYPT, ````SIGN_WITH_ORIGIN_AUTHENTICATION``, or ``ENCRYPT_WITH_ORIGIN_AUTHENTICATION````}``
 
 BasicProtectionKind
 
-The method used to protect domain data (message signatures or message encryption). Recognized values are: ``{NONE, SIGN, or ENCRYPT}``
+The method used to protect domain data (message signatures or message encryption).
+Recognized values are: ``{NONE, SIGN, or ENCRYPT}``
 
 ::
 
     FnmatchExpression
 
-A wildcard-capable string used to match topic names. Recognized values will conform to POSIX ``fnmatch()`` function as specified in POSIX 1003.2-1992, Section B.6.
+A wildcard-capable string used to match topic names.
+Recognized values will conform to POSIX ``fnmatch()`` function as specified in POSIX 1003.2-1992, Section B.6.
 
 Domain Rule Configuration Options
 =================================
 
 The following XML elements are used to configure domain participant behaviors.
 
-+------------------------------------------+----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| Element                                  | Type           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-+==========================================+================+==============================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================+
-| ``<allow_unauthenticated_participants>`` | Boolean        | A boolean value which determines whether to allow unauthenticated participants for the current domain rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-+------------------------------------------+----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``<enable_join_access_control>``         | Boolean        | A boolean value which determines whether to enforce domain access controls for authenticated participants                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-+------------------------------------------+----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| <discovery_protection_kind>              | ProtectionKind | The discovery protection element specifies the protection kind used for the built-in DataWriter(s) and DataReader(s) used for secure endpoint discovery messages                                                                                                                                                                                                                                                                                                                                                                                                                             |
-+------------------------------------------+----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| <liveliness_protection_kind>             | ProtectionKind | The liveliness protection element specifies the protection kind used for the built-in DataWriter and DataReader used for secure liveliness messages                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-+------------------------------------------+----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| <rtps_protection_kind>                   | ProtectionKind | Indicate the desired level of protection for the whole RTPS message. Very little RTPS data exists outside the “metadata protection” envelope (see topic rule configuration options), and so for most use cases topic-level “data protection” or “metadata protection” can be combined with discovery protection and/or liveliness protection in order to secure domain data adequately.  One item that is not secured by "metadata protection" is the timestamp, since RTPS uses a separate InfoTimestamp submessage for this.  The timestamp can be secured by using <rtps_protection_kind> |
-+------------------------------------------+----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Element                                  | Type           | Description                                                                                                                                                                                                                                                                                                        |
++==========================================+================+====================================================================================================================================================================================================================================================================================================================+
+| ``<allow_unauthenticated_participants>`` | Boolean        | A boolean value which determines whether to allow unauthenticated participants for the current domain rule                                                                                                                                                                                                         |
++------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ``<enable_join_access_control>``         | Boolean        | A boolean value which determines whether to enforce domain access controls for authenticated participants                                                                                                                                                                                                          |
++------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| <discovery_protection_kind>              | ProtectionKind | The discovery protection element specifies the protection kind used for the built-in DataWriter(s) and DataReader(s) used for secure endpoint discovery messages                                                                                                                                                   |
++------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| <liveliness_protection_kind>             | ProtectionKind | The liveliness protection element specifies the protection kind used for the built-in DataWriter and DataReader used for secure liveliness messages                                                                                                                                                                |
++------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| <rtps_protection_kind>                   | ProtectionKind | Indicate the desired level of protection for the whole RTPS message.                                                                                                                                                                                                                                               |
+|                                          |                | Very little RTPS data exists outside the “metadata protection” envelope (see topic rule configuration options), and so for most use cases topic-level “data protection” or “metadata protection” can be combined with discovery protection and/or liveliness protection in order to secure domain data adequately. |
+|                                          |                | One item that is not secured by "metadata protection" is the timestamp, since RTPS uses a separate InfoTimestamp submessage for this.                                                                                                                                                                              |
+|                                          |                | The timestamp can be secured by using <rtps_protection_kind>                                                                                                                                                                                                                                                       |
++------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 Table 14-4
 
 Topic Rule Configuration Options
@@ -456,7 +491,9 @@ The following XML elements are used to configure topic endpoint behaviors:
 
 ``<topic_expression>`` : FnmatchExpression
 
-A wildcard-capable string used to match topic names. See description above. A “default” rule to catch all previously unmatched topics can be made with: ``<topic_expression>*</topic_expression>``
+A wildcard-capable string used to match topic names.
+See description above.
+A “default” rule to catch all previously unmatched topics can be made with: ``<topic_expression>*</topic_expression>``
 
 ``<enable_discovery_protection>`` : Boolean
 
@@ -541,18 +578,21 @@ Governance XML Example
 Participant Permissions Document
 ********************************
 
-The signed permissions document is used by the DDS Security built-in access control plugin in order to determine participant permissions to join domains and to create endpoints for reading, writing, and relaying domain data. For full details regarding the content of the permissions document, see the OMG DDS Security specification section 9.4.1.3.
+The signed permissions document is used by the DDS Security built-in access control plugin in order to determine participant permissions to join domains and to create endpoints for reading, writing, and relaying domain data.
+For full details regarding the content of the permissions document, see the OMG DDS Security specification section 9.4.1.3.
 
 Key Permissions Elements
 ========================
 
 Grants
 
-Each permissions file consists of one or more permissions grants. Each grant bestows access control privileges to a single subject name for a limited validity period.
+Each permissions file consists of one or more permissions grants.
+Each grant bestows access control privileges to a single subject name for a limited validity period.
 
 Subject Name
 
-Each grant’s subject name is intended to match against a corresponding identity certificate’s “subject” field. In order for permissions checks to successfully validate for both local and remote participants, the supplied identity certificate subject name must match the subject name of one of the grants included in the permissions file.
+Each grant’s subject name is intended to match against a corresponding identity certificate’s “subject” field.
+In order for permissions checks to successfully validate for both local and remote participants, the supplied identity certificate subject name must match the subject name of one of the grants included in the permissions file.
 
 Validity
 
@@ -560,7 +600,11 @@ Each grant’s validity section contains a start date and an end date to indicat
 
 Allow / Deny Rules
 
-Grants will contain one or more allow / deny rules to indicate which privileges are being applied. When verifying that a particular operation is allowed by the supplied grant, rules are checked in the order they appear in the file. If the domain, partition, and (when implemented) data tags for an applicable topic rule match the operation being verified, the rule is applied (either allow or deny). Otherwise, the next rule is considered. Special Note: If a grant contains any allow rule that matches a given domain (even one with no publish / subscribe / relay rules), the grant may be used to join a domain with join access controls enabled.
+Grants will contain one or more allow / deny rules to indicate which privileges are being applied.
+When verifying that a particular operation is allowed by the supplied grant, rules are checked in the order they appear in the file.
+If the domain, partition, and (when implemented) data tags for an applicable topic rule match the operation being verified, the rule is applied (either allow or deny).
+Otherwise, the next rule is considered.
+Special Note: If a grant contains any allow rule that matches a given domain (even one with no publish / subscribe / relay rules), the grant may be used to join a domain with join access controls enabled.
 
 Default Rule
 
@@ -568,23 +612,43 @@ The default rule is the rule applied if none of the grant’s allow rules or den
 
 Domain List
 
-Every allow or deny rule must contain a list of domain ids to which it applies. The syntax is the same as the domain list found in the governance document.
+Every allow or deny rule must contain a list of domain ids to which it applies.
+The syntax is the same as the domain list found in the governance document.
 
 Publish / Subscribe / Relay Rules (PSR rules)
 
-Every allow or deny rule may optionally contain a list of publish, subscribe, or relay rules bestowing privileges to publish, subscribe, or relay data (respectively). Each rule applies to a collection of topics in a set of partitions with a particular set of data tags. As such, each rule must then meet these three conditions (topics, partitions, and (when implemented) data tags) in order to apply to a given operation. These conditions are governed by their relevant subsection, but the exact meaning and default values will vary depending on the both the PSR type (publish, subscribe, relay) as well as whether this is an allow rule or a deny rule. Each condition is summarized below, but please refer to the OMG DDS Security specification for full details. OpenDDS does not currently support relay-only behavior and consequently ignores allow and deny relay rules for both local and remote entities. Additionally, OpenDDS does not currently support data tags, and so the data tag condition applied is always the “default” behavior described below.
+Every allow or deny rule may optionally contain a list of publish, subscribe, or relay rules bestowing privileges to publish, subscribe, or relay data (respectively).
+Each rule applies to a collection of topics in a set of partitions with a particular set of data tags.
+As such, each rule must then meet these three conditions (topics, partitions, and (when implemented) data tags) in order to apply to a given operation.
+These conditions are governed by their relevant subsection, but the exact meaning and default values will vary depending on the both the PSR type (publish, subscribe, relay) as well as whether this is an allow rule or a deny rule.
+Each condition is summarized below, but please refer to the OMG DDS Security specification for full details.
+OpenDDS does not currently support relay-only behavior and consequently ignores allow and deny relay rules for both local and remote entities.
+Additionally, OpenDDS does not currently support data tags, and so the data tag condition applied is always the “default” behavior described below.
 
 Topic List
 
-The list of topics and/or topic expressions for which a rule applies. Topic names and expressions are matched using POSIX fnmatch() rules and syntax. If the triggering operation matches any of the topics listed, the topic condition is met. The topic section must always be present for a PSR rule, so there there is no default behavior.
+The list of topics and/or topic expressions for which a rule applies.
+Topic names and expressions are matched using POSIX fnmatch() rules and syntax.
+If the triggering operation matches any of the topics listed, the topic condition is met.
+The topic section must always be present for a PSR rule, so there there is no default behavior.
 
 Partition List
 
-The partitions list contains the set of partition names for which the parent PSR rule applies. Similarly to topics, partition names and expressions are matched using POSIX fnmatch() rules and syntax. For “allow” PSR rules, the DDS entity of the associated triggering operation must be using a strict subset of the partitions listed for the rule to apply. When no partition list is given for an “allow” PSR rule, the “empty string” partition is used as the default value. For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the partitions listed. When no partition list is given for a “deny” PSR rule, the wildcard expression “*” is used as the default value.
+The partitions list contains the set of partition names for which the parent PSR rule applies.
+Similarly to topics, partition names and expressions are matched using POSIX fnmatch() rules and syntax.
+For “allow” PSR rules, the DDS entity of the associated triggering operation must be using a strict subset of the partitions listed for the rule to apply.
+When no partition list is given for an “allow” PSR rule, the “empty string” partition is used as the default value.
+For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the partitions listed.
+When no partition list is given for a “deny” PSR rule, the wildcard expression “*” is used as the default value.
 
 Data Tags List
 
-Data tags are an optional part of the DDS Security specification and are not currently implemented by OpenDDS. If they were implemented, the condition criteria for data tags would be similar to partitions. For “allow” PSR rules, the DDS entity of the associated triggering operation must be using a strict subset of the data tags listed for the rule to apply. When no data tag list is given for an “allow” PSR rule, the empty set of data tags is used as the default value. For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the data tags listed. When no data tag list is given for a “deny” PSR rule, the set of “all possible tags” is used as the default value.
+Data tags are an optional part of the DDS Security specification and are not currently implemented by OpenDDS.
+If they were implemented, the condition criteria for data tags would be similar to partitions.
+For “allow” PSR rules, the DDS entity of the associated triggering operation must be using a strict subset of the data tags listed for the rule to apply.
+When no data tag list is given for an “allow” PSR rule, the empty set of data tags is used as the default value.
+For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the data tags listed.
+When no data tag list is given for a “deny” PSR rule, the set of “all possible tags” is used as the default value.
 
 Permissions XML Example
 =======================
