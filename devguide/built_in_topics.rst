@@ -58,6 +58,7 @@ DCPSTopic Topic
 ***************
 
 .. note:: OpenDDS does not support this Built-In-Topic when configured for RTPS discovery.
+
 The ``DCPSTopic`` topic publishes information about the topics in the domain.
 Here is the IDL that defines the structure published for this topic:
 

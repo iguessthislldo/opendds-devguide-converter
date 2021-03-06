@@ -125,7 +125,7 @@ When a Version 1 writer interacts with a Version 2 reader, the additional fields
 Assignability
 =============
 
-The first and second versions of the StationData type are *assignable *meaning that it is possible to construct a version 2 value from a version 1 value and vice-versa.
+The first and second versions of the StationData type are *assignable*meaning that it is possible to construct a version 2 value from a version 1 value and vice-versa.
 The assignability of non-constructed types (e.g., integers, enums, strings) is based on the types being identical or identical up to parameterization, i.e., bounds of strings and sequences may differ.
 The assignability of constructed types like structs and unions is based on finding corresponding members with assignable types.
 Corresponding members are those that have the same id.
@@ -475,7 +475,7 @@ HASH is the default value of autoid.
 Applies to: structure and union members
 
 The @hashid sets the identifier to the hash of the *value* parameter, if one is specified.
-If the* value* parameter is omitted or is the empty string, the member’s name is used as if it was the *value*.
+If the*value* parameter is omitted or is the empty string, the member’s name is used as if it was the *value*.
 
 Determining the Key Fields of a Type
 ====================================

@@ -50,7 +50,8 @@ This feature can be turned off with ``-DCPSPublisherContentFilter 0`` or the equ
 The behavior of non-default ``DEADLINE`` or ``LIVELINESS`` QoS policies may be affected by this policy.
 Special consideration must be given to how the “missing” samples impact the QoS behavior, see the document in ``docs/design/CONTENT_SUBSCRIPTION``.
 
-.. note:: RTPS_UDP transport does not always do Writer-side filtering. It does not currently implement transport level filtering, but may be able to filter above the transport layer.
+.. note:: RTPS_UDP transport does not always do Writer-side filtering.
+  It does not currently implement transport level filtering, but may be able to filter above the transport layer.
 
 Filter Expressions
 ==================
@@ -62,7 +63,7 @@ Query expressions (5.3.1) and topic expressions (5.4.1) are also defined in Anne
 Filter expressions are combinations of one or more predicates.
 Each predicate is a logical expression taking one of two forms:
 
-* ``<arg1> <RelOp> ````<arg2>``
+* ``<arg1> <RelOp>````<arg2>``
 
 * * ``arg1`` and ``arg2`` are arguments which may be either a literal value (integer, character, floating-point, string, or enumeration), a parameter placeholder of the form ``%n`` (where n is a zero-based index into the parameter sequence), or a field reference.
 

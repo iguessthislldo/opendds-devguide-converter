@@ -34,20 +34,20 @@ Below is a description of the generated files and which tools generate them.
 In this example, ``Foo.idl`` contains a single struct ``Bar`` contained in module ``Baz`` (IDL modules are similar to C++ namespaces and Java packages).
 To the right of each file name is the name of the tool that generates it, followed by some notes on its purpose.
 
-Table 10-1 Generated files descriptions
+**Table 10-1 Generated files descriptions**
 
 +--------------------------------------+------------------------------------------------------+
 | File                                 | Generation Tool                                      |
 +======================================+======================================================+
 | ``Foo.idl``                          | Developer-written description of the DDS sample type |
 +--------------------------------------+------------------------------------------------------+
-| ``Foo{C,S}.                          | ``tao_idl``: C++ representation of the IDL           |
-| {h,inl,cpp}``                        |                                                      |
+| ``Foo{C,S}.``                        | ``tao_idl``: C++ representation of the IDL           |
+| ``{h,inl,cpp}``                      |                                                      |
 +--------------------------------------+------------------------------------------------------+
 | ``FooTypeSupport.idl``               | ``opendds_idl``: DDS type-specific interfaces        |
 +--------------------------------------+------------------------------------------------------+
-| ``FooTypeSupport{C,S}.               | ``tao_idl``                                          |
-| {h,inl,cpp}``                        |                                                      |
+| ``FooTypeSupport{C,S}.``             | ``tao_idl``                                          |
+| ``{h,inl,cpp}``                      |                                                      |
 +--------------------------------------+------------------------------------------------------+
 | ``Baz/BarSeq{Helper,Holder}.java``   | ``idl2jni``                                          |
 +--------------------------------------+------------------------------------------------------+
@@ -55,19 +55,20 @@ Table 10-1 Generated files descriptions
 +--------------------------------------+------------------------------------------------------+
 | ``Baz/BarTypeSupport*.java``         | ``idl2jni`` (except TypeSupportImpl, see below)      |
 +--------------------------------------+------------------------------------------------------+
-| ``FooTypeSupportJC.                  | ``idl2jni``: JNI native method implementations       |
-| {h,cpp}``                            |                                                      |
+| ``FooTypeSupportJC.``                | ``idl2jni``: JNI native method implementations       |
+| ``{h,cpp}``                          |                                                      |
 +--------------------------------------+------------------------------------------------------+
-| ``FooTypeSupportImpl.                | ``opendds_idl``: DDS type-specific C++ impl.         |
-| {h,cpp}``                            |                                                      |
+| ``FooTypeSupportImpl.``              | ``opendds_idl``: DDS type-specific C++ impl.         |
+| ``{h,cpp}``                          |                                                      |
 +--------------------------------------+------------------------------------------------------+
 | ``Baz/BarTypeSupportImpl.java``      | ``opendds_idl``: DDS type-specific Java impl.        |
 +--------------------------------------+------------------------------------------------------+
 | ``Baz/Bar*.java``                    | ``idl2jni``: Java representation of IDL struct       |
 +--------------------------------------+------------------------------------------------------+
-| ``FooJC.                             | ``idl2jni``: JNI native method implementations       |
-| {h,cpp}``                            |                                                      |
+| ``FooJC.``                           | ``idl2jni``: JNI native method implementations       |
+| ``{h,cpp}``                          |                                                      |
 +--------------------------------------+------------------------------------------------------+
+
 ::
 
     

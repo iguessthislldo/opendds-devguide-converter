@@ -26,7 +26,7 @@ Building OpenDDS with security enabled requires the following dependencies:
 
 * CMake (required if building OpenDDS tests and building Google Test and other dependencies from source).
 
-General Notes on Using OpenDDS Configure Script with DDS Security
+**General Notes on Using OpenDDS Configure Script with DDS Security**
 
 * DDS Security is disabled by default, enable it with ``--security``
 
@@ -40,7 +40,7 @@ General Notes on Using OpenDDS Configure Script with DDS Security
 Building OpenDDS with Security on Windows
 =========================================
 
-Using Microsoft vcpkg
+**Using Microsoft vcpkg**
 
 Microsoft vcpkg is a “C++ Library Manager for Windows, Linux, and macOS” which helps developers build/install dependencies.
 Although it is cross-platform, this guide only discusses vcpkg on Windows.
@@ -64,11 +64,11 @@ As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and l
 
     
 
-Manual Build
+**Manual Build**
 
 Note: for all of the build steps listed here, check that each package targets the same architecture (either 32-bit or 64-bit) by compiling all dependencies within the same type of Developer Command Prompt.
 
-Compiling OpenSSL (see: https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows)
+**Compiling OpenSSL**(see: https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows)
 
 * Install Perl and add it to the Path environment variable.
   For this guide, ActiveState is used.
@@ -90,7 +90,7 @@ Compiling OpenSSL (see: https://wiki.openssl.org/index.php/Compilation_and_Insta
 Note: if the default OpenSSL location is desired, which will be searched by OpenDDS, open the Developer Command Prompt as an administrator before running the install.
 It will write to “C:\Program Files” or “C:\Program Files (x86)” depending on the architecture.
 
-Compiling Xerces-C++ 3
+**Compiling Xerces-C++ 3**
 
 (see: https://xerces.apache.org/xerces-c/build-3.html)
 
@@ -116,7 +116,7 @@ Compiling Xerces-C++ 3
 
     cmake --build . --target install
 
-Configuring and Building OpenDDS:
+**Configuring and Building OpenDDS**:
 
 * Change into the OpenDDS root folder and run configure with security enabled.
 
@@ -128,7 +128,7 @@ Configuring and Building OpenDDS:
 
 * * If a different location was used (assuming environment variables ``NEW_SSL_ROOT`` and ``NEW_XERCES_ROOT`` point to their respective library directories):
 
-``configure --security --openssl=%NEW_SSL_ROOT%   --xerces3=%NEW_XERCES_ROOT% ``
+``configure --security --openssl=%NEW_SSL_ROOT%   --xerces3=%NEW_XERCES_ROOT%``
 
 * Compile with msbuild (or by opening the solution file in Visual Studio and building from there).
 
@@ -139,7 +139,7 @@ Building OpenDDS with Security on Linux
 
 Xerces-C++ and OpenSSL may be installed using the system package manager, or built from source.
 If using the system package manager (that is, headers can be found under /usr/include), invoke the configure script with the --security option.
-If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar ``command line options.
+If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar``command line options.
 
 Building OpenDDS with Security on macOS
 =======================================
@@ -188,7 +188,8 @@ As such, this document makes use of several security concepts which may warrant 
 +--------------------------------------------------+-------------------------------------------------------------------------------------------+
 | Signed Documents                                 | * https://en.wikipedia.org/wiki/Digital_signature                                         |
 +--------------------------------------------------+-------------------------------------------------------------------------------------------+
-Table 14-1
+
+**Table 14-1**
 
 *******************************
 Required DDS Security Artifacts
@@ -261,7 +262,8 @@ Except where noted, these values take the form of a URI starting with either the
 +---------------------------------------+----------------------------------+------------------------------------------+
 | ``dds.sec.access.permissions``        | Signed XML (.p7s)                | Signed by ``permissions_ca``             |
 +---------------------------------------+----------------------------------+------------------------------------------+
-Table 14-2
+
+**Table 14-2**
 
 PropertyQosPolicy Example Code
 ==============================
@@ -355,7 +357,8 @@ The following table describes the various examples and where to find them in the
 +-----------------------------------------------------------------------------------+------------------------------------------------------------+
 | Permissions XML Document (alongside signed document)                              | tests/DCPS/Messenger/permissions_1.xml                     |
 +-----------------------------------------------------------------------------------+------------------------------------------------------------+
-Table 14-3
+
+**Table 14-3**
 
 Using OpenSSL Utilities for OpenDDS
 ===================================
@@ -364,9 +367,11 @@ To generate certificates using the openssl command, a configuration file "openss
 Before proceeding, it may be helpful to review OpenSSL’s manpages to get help with the file format.
 In particular, configuration file format and ca command’s documentation and configuration file options.
 
-.. note:: mple OpenSSL CA-Config file used in OpenDDS testing can be found here:
-.. note:: //github.com/objectcomputing/OpenDDS/blob/master/tests/security/certs/identity/identity_ca_openssl.cnf
-Creating Self-Signed Certificate Authorities
+.. note:: An example OpenSSL CA-Config file used in OpenDDS testing can be found here:
+
+  https://github.com/objectcomputing/OpenDDS/blob/master/tests/security/certs/identity/identity_ca_openssl.cnf
+
+**Creating Self-Signed Certificate Authorities**
 
 Generate a self-signed 2048-bit RSA CA:
 
@@ -385,7 +390,7 @@ Generate self-signed 256-bit Elliptic Curve CA:
     openssl req -config openssl.cnf -new -key ca_key.pem -out ca.csr
     openssl x509 -req -days 3650 -in ca.csr -signkey ca_key.pem -out ca_cert.pem
 
-Creating Signed Certificates with an Existing CA
+**Creating Signed Certificates with an Existing CA**
 
 Generate a signed 2048-bit RSA certificate:
 
@@ -404,7 +409,7 @@ Generate a signed 256-bit Elliptic Curve certificate:
     openssl ca -config openssl.cnf -days 3650 -in cert_2.csr -out cert_2.pem
     
 
-Signing Documents with SMIME
+**Signing Documents with SMIME**
 
 Sign a document using existing CA & CA private key:
 
@@ -437,19 +442,19 @@ Governance Configuration Types
 The following types and values are used in configuring both per-domain and per-topic security configuration options.
 We summarize them here to simplify discussion of the configuration options where they’re used, found below.
 
-Boolean
+**Boolean**
 
 A boolean value indicating whether a configuration option is enabled or not.
 Recognized values are: ``{true or false}``
 
-ProtectionKind
+**ProtectionKind**
 
 The method used to protect domain data (message signatures or message encryption) along with the ability to include origin authentication for either protection kind.
 Currently, OpenDDS doesn’t implement origin authentication.
 So while the "_WITH_ORIGIN_AUTHENTICATION" options are recognized, the underlying configuration is unsupported.
-Recognized values are: ``{NONE, SIGN, ENCRYPT, ````SIGN_WITH_ORIGIN_AUTHENTICATION``, or ``ENCRYPT_WITH_ORIGIN_AUTHENTICATION````}``
+Recognized values are: ``{NONE, SIGN, ENCRYPT,````SIGN_WITH_ORIGIN_AUTHENTICATION``, or ``ENCRYPT_WITH_ORIGIN_AUTHENTICATION````}``
 
-BasicProtectionKind
+**BasicProtectionKind**
 
 The method used to protect domain data (message signatures or message encryption).
 Recognized values are: ``{NONE, SIGN, or ENCRYPT}``
@@ -482,36 +487,37 @@ The following XML elements are used to configure domain participant behaviors.
 |                                          |                | One item that is not secured by "metadata protection" is the timestamp, since RTPS uses a separate InfoTimestamp submessage for this.                                                                                                                                                                              |
 |                                          |                | The timestamp can be secured by using <rtps_protection_kind>                                                                                                                                                                                                                                                       |
 +------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-Table 14-4
+
+**Table 14-4**
 
 Topic Rule Configuration Options
 ================================
 
 The following XML elements are used to configure topic endpoint behaviors:
 
-``<topic_expression>`` : FnmatchExpression
+``<topic_expression>`` : **FnmatchExpression**
 
 A wildcard-capable string used to match topic names.
 See description above.
 A “default” rule to catch all previously unmatched topics can be made with: ``<topic_expression>*</topic_expression>``
 
-``<enable_discovery_protection>`` : Boolean
+``<enable_discovery_protection>`` : **Boolean**
 
 Enables the use of secure discovery protections for matching user topic announcements.
 
-``<enable_read_access_control>`` : Boolean
+``<enable_read_access_control>`` : **Boolean**
 
 Enables the use of access control protections for matching user topic DataReaders.
 
-``<enable_write_access_control>`` : Boolean
+``<enable_write_access_control>`` : **Boolean**
 
 Enables the use of access control protections for matching user topic DataWriters.
 
-``<metadata_protection_kind>`` : ProtectionKind
+``<metadata_protection_kind>`` : **ProtectionKind**
 
 Specifies the protection kind used for the RTPS SubMessages sent by any DataWriter and DataReader whose associated Topic name matches the rule’s topic expression.
 
-<data_protection_kind> : BasicProtectionKind
+<data_protection_kind> : **BasicProtectionKind**
 
 Specifies the basic protection kind used for the RTPS SerializedPayload SubMessage element sent by any DataWriter whose associated Topic name matches the rule’s topic expression.
 
@@ -584,21 +590,21 @@ For full details regarding the content of the permissions document, see the OMG 
 Key Permissions Elements
 ========================
 
-Grants
+**Grants**
 
 Each permissions file consists of one or more permissions grants.
 Each grant bestows access control privileges to a single subject name for a limited validity period.
 
-Subject Name
+**Subject Name**
 
 Each grant’s subject name is intended to match against a corresponding identity certificate’s “subject” field.
 In order for permissions checks to successfully validate for both local and remote participants, the supplied identity certificate subject name must match the subject name of one of the grants included in the permissions file.
 
-Validity
+**Validity**
 
 Each grant’s validity section contains a start date and an end date to indicate the period of time during which the grant is valid.
 
-Allow / Deny Rules
+**Allow / Deny Rules**
 
 Grants will contain one or more allow / deny rules to indicate which privileges are being applied.
 When verifying that a particular operation is allowed by the supplied grant, rules are checked in the order they appear in the file.
@@ -606,16 +612,16 @@ If the domain, partition, and (when implemented) data tags for an applicable top
 Otherwise, the next rule is considered.
 Special Note: If a grant contains any allow rule that matches a given domain (even one with no publish / subscribe / relay rules), the grant may be used to join a domain with join access controls enabled.
 
-Default Rule
+**Default Rule**
 
 The default rule is the rule applied if none of the grant’s allow rules or deny rules match the incoming operation to be verified.
 
-Domain List
+**Domain List**
 
 Every allow or deny rule must contain a list of domain ids to which it applies.
 The syntax is the same as the domain list found in the governance document.
 
-Publish / Subscribe / Relay Rules (PSR rules)
+**Publish / Subscribe / Relay Rules (PSR rules)**
 
 Every allow or deny rule may optionally contain a list of publish, subscribe, or relay rules bestowing privileges to publish, subscribe, or relay data (respectively).
 Each rule applies to a collection of topics in a set of partitions with a particular set of data tags.
@@ -625,14 +631,14 @@ Each condition is summarized below, but please refer to the OMG DDS Security spe
 OpenDDS does not currently support relay-only behavior and consequently ignores allow and deny relay rules for both local and remote entities.
 Additionally, OpenDDS does not currently support data tags, and so the data tag condition applied is always the “default” behavior described below.
 
-Topic List
+**Topic List**
 
 The list of topics and/or topic expressions for which a rule applies.
 Topic names and expressions are matched using POSIX fnmatch() rules and syntax.
 If the triggering operation matches any of the topics listed, the topic condition is met.
 The topic section must always be present for a PSR rule, so there there is no default behavior.
 
-Partition List
+**Partition List**
 
 The partitions list contains the set of partition names for which the parent PSR rule applies.
 Similarly to topics, partition names and expressions are matched using POSIX fnmatch() rules and syntax.
@@ -641,7 +647,7 @@ When no partition list is given for an “allow” PSR rule, the “empty string
 For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the partitions listed.
 When no partition list is given for a “deny” PSR rule, the wildcard expression “*” is used as the default value.
 
-Data Tags List
+**Data Tags List**
 
 Data tags are an optional part of the DDS Security specification and are not currently implemented by OpenDDS.
 If they were implemented, the condition criteria for data tags would be similar to partitions.

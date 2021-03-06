@@ -8,7 +8,7 @@ DCPS Information Repository Options
 
 The table below shows the command line options for the ``DCPSInfoRepo`` server:
 
-Table 9-1 DCPS Information Repository Options
+**Table 9-1 DCPS Information Repository Options**
 
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 | Option                  | Description                                                                                                              | Default                       |
@@ -31,6 +31,7 @@ Table 9-1 DCPS Information Repository Options
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 | ``-?``                  | Display the command line usage and exit                                                                                  | N/A                           |
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
+
 OpenDDS clients often use the IOR file that ``DCPSInfoRepo`` outputs to locate the service.
 The ``-o`` option allows you to place the IOR file into an application-specific directory or file name.
 This file can subsequently be used by clients with the ``file://`` IOR prefix.
@@ -47,7 +48,7 @@ See 9.2 for descriptions of the federation capabilities and how to use these opt
 File persistence is implemented as an ACE Service object and is controlled via service config directives.
 Currently available configuration options are:
 
-Table 9-2 InfoRepo persistence directives
+**Table 9-2 InfoRepo persistence directives**
 
 +------------+-------------------------------+---------------------+
 | Options    | Description                   | Defaults            |
@@ -56,6 +57,7 @@ Table 9-2 InfoRepo persistence directives
 +------------+-------------------------------+---------------------+
 | ``-reset`` | Wipe out old persistent data. | ``0`` (false)       |
 +------------+-------------------------------+---------------------+
+
 The following directive:
 
 ::
@@ -81,6 +83,7 @@ Repository Federation
 *********************
 
 .. note:: Repository federation should be considered an experimental feature.
+
 Repository Federation allows multiple DCPS Information Repository servers to collaborate with one another into a single federated service.
 This allows applications obtaining service metadata and events from one repository to obtain them from another if the original repository is no longer available.
 
@@ -145,7 +148,7 @@ Some options contain endpoint information.
 This information consists of an optional host specification, separated from a required port specification by a colon.
 This endpoint information is used to create a CORBA object reference using the corbaloc: syntax in order to locate the 'Federator' object of the repository server.
 
-Table 9-3 repoctl Repository Management Command
+**Table 9-3 repoctl Repository Management Command**
 
 +--------------+----------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Command      | Syntax                                                   | Description                                                                                                                                                                                                              |
@@ -162,6 +165,7 @@ Table 9-3 repoctl Repository Management Command
 +--------------+----------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``help``     | ``repoctl help``                                         | Prints a usage message and quits.                                                                                                                                                                                        |
 +--------------+----------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
 A join command specifies two repository servers (by endpoint) and asks the second to join the first in a federation:
 
 ::
@@ -175,7 +179,7 @@ The join operation invocation passes the default Federation Domain value (becaus
 
 A full description of the command arguments are shown in Table 9-4.
 
-Table 9-4 Federation Management Command Arguments
+**Table 9-4 Federation Management Command Arguments**
 
 +-------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                  | Description                                                                                                                                                     |
@@ -290,7 +294,7 @@ Start the second repository as:
     
 
 Note that this is all intended to be on a single command line.
-The ``-ORBSvcConf ````tcp.conf`` option is the same as in the previous example.
+The ``-ORBSvcConf````tcp.conf`` option is the same as in the previous example.
 The ``-ORBListenEndpoints iiop://````localhost````:2112`` option ensures that the repository will be listening on the port that the previous configuration files are expecting.
 The ``-FederationId 2048`` option assigns the value 2048 as the repositories unique id within the federation.
 The ``-FederateWith file://repo.ior`` option initiates federation with the repository located at the IOR contained within the named file - which was written by the previously started repository.

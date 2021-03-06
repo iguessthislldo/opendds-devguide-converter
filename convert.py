@@ -34,10 +34,16 @@ import nltk.data
 
 sentence_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
 
-def one_sentence_per_line(text):
-  return '\n'.join(sentence_tokenizer.tokenize(text))
+def one_sentence_per_line(text, indent_following_lines=''):
+  lines = []
+  for line in sentence_tokenizer.tokenize(text):
+    if indent_following_lines and lines:
+      line = indent_following_lines + line
+    lines.append(line)
+  return '\n'.join(lines)
 
-# Start of RST Helpers ========================================================
+
+# RST Helpers =================================================================
 
 def write_code(out, lines):
   out.writeln('::\n')
@@ -114,6 +120,8 @@ def write_table(rows, out):
     if first:
       first = False
 
+  out.writeln('')
+
 
 def write_list(list_info, out):
   bullet = '#. ' if list_info['numbered'] else '* '
@@ -127,6 +135,27 @@ def write_list(list_info, out):
         out.writeln(line)
       out.writeln('')
   out.writeln('')
+
+
+def inline_markup(string, what):
+  if len(string) == 0:
+    return ''
+  return '{0}{1}{0}'.format(
+    {
+     'monospace': '``',
+     'italic': '*',
+     'bold': '**',
+    }[what], string.strip())
+
+
+def paragraph_break(text):
+  rv = text
+  if len(text) > 0 and not text.endswith('\n\n'):
+    if text.endswith('\n'):
+      rv += '\n'
+    else:
+      rv += '\n\n'
+  return rv
 
 
 # Style =======================================================================
@@ -155,17 +184,17 @@ class Style:
         self.props[child.qname] = dict()
       self.props[child.qname].update(child.attributes)
 
-  def __init__(self, doc, node):
+  def __init__(self, info, node=None, name=None):
     self.props = {}
-    self.monospace = False
-    self.bold = False
-    self.italic = False
-    self.name = style_name(node)
+    self.inline = None
+    if node is None != name is None:
+      raise ValueError('Invalid Arguments')
+    self.name = style_name(node) if node is not None else name
     if self.name is None:
       return
     if self.name == 'Note': # Ignore Italics on Notes
       return
-    self.check_node(doc, self.name)
+    self.check_node(info.doc, self.name)
 
     for prop_group in self.props.values():
       def get_prop(prop_key):
@@ -177,22 +206,31 @@ class Style:
         ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name'))
       font_pitch = get_prop(
         ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch'))
-      font_style =get_prop(
+      font_style = get_prop(
         ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-style'))
+      font_style_name = get_prop(
+        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-style-name'))
+      font_weight = get_prop(
+        ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-weight'))
+
+      if font_style == 'italic':
+        self.inline = 'italic'
+
+      if 'bold' in (font_style_name, font_weight):
+        self.inline = 'bold'
 
       if 'mono' in font_family or 'mono' in font_name or 'courier' in font_name or \
           font_pitch == 'fixed':
-        self.monospace = True
+        self.inline = 'monospace'
 
-      if font_style == 'italic':
-        self.italic = True
+    if node and node.nodeType == element.Node.ELEMENT_NODE and node.qname[1] == 'h':
+      self.inline = None
 
   def __bool__(self):
     return self.name is not None
 
   def __repr__(self):
-    return '<{} monospace: {} bold: {} italic: {}>'.format(
-      repr(self.name), repr(self.monospace), repr(self.bold), repr(self.italic))
+    return '<{} inline={}>'.format(repr(self.name), repr(self.inline))
 
 # Dump ========================================================================
 
@@ -319,6 +357,10 @@ Developer's Guide
       for name, filename in self.pages:
         print('  {}'.format(filename), file=f)
 
+  def __repr__(self):
+    return '<Out: ' + (str(self.path) if self.path is not None else 'BUFFER') + '>'
+
+
 class Info:
   def __init__(self, doc):
     self.doc = doc
@@ -350,16 +392,22 @@ class Info:
   def push_node_info(self, node):
     self.push()
     self.set(node=node)
+    style = None
     if node.nodeType == element.Node.ELEMENT_NODE and node.qname[1] == 'p':
+      if style_name(node) == 'P209':
+        style = Style(self, name='Note')
       self.set(paragraph=True)
       if self.get('paragraph'): # Are we nested?
         self.set(ignore_style=False) # If we are, then ignore prior style info
     if self.get('ignore_style', otherwise=False, ignore_last=False):
       style = None
-    else:
-      style = Style(self.doc, node)
+    elif style is None:
+      style = Style(self, node)
     self.set(style=style)
     if style:
+      if style.inline is not None:
+        self.set(ignore_style=True)
+      # Save Style Options
       for k, v in style.props.items():
         if k not in self.all_style_prop_groups:
           self.all_style_prop_groups[k] = {}
@@ -377,7 +425,7 @@ def convert_child_nodes(info, node, out):
   code_lines = []
   for child in node.childNodes:
     if child.nodeType == element.Node.ELEMENT_NODE and \
-        child.qname[1] == 'p' and Style(info.doc, child).monospace:
+        child.qname[1] == 'p' and Style(info, child).inline == 'monospace':
       indent = None
       for grandchild in child.childNodes:
         if grandchild.nodeType == element.Node.ELEMENT_NODE and \
@@ -512,7 +560,7 @@ def handle_header(info, node, out=None):
       section.append(name)
       section_number = info.get('section_number', ignore_last=False) + 1
       info.set(section_number=section_number)
-    print('  ' * level, section_number, name)
+    # print('  ' * level, section_number, name)
 
 
 def reference_builder(info, node):
@@ -524,24 +572,18 @@ def reference_builder(info, node):
       handle_header(info, node)
     for child_node in node.childNodes:
       reference_builder(info, child_node)
-    
+
 
 def convert_node(info, node, out):
   if node is None:
     return
   info.push_node_info(node)
-
   style = info.style()
-  if style:
-    if style.monospace:
-      out.write('``')
-      info.push(ignore_style=True)
-    elif style.bold:
-      out.write('**')
-      info.push(ignore_style=True)
-    elif style.italic:
-      out.write('*')
-      info.push(ignore_style=True)
+  inline = style.inline if style is not None else None
+  real_out = out
+  if inline:
+    out = Out()
+    out.open()
 
   if node.nodeType == element.Node.ELEMENT_NODE:
     kind = node.qname[1]
@@ -569,12 +611,18 @@ def convert_node(info, node, out):
           'Paragraph style is None, style name: ' + repr(style_name(node)))
 
     elif kind == 'p' and style.name != "Figure":
-      if style.name == 'Note':
-        out.writeln('.. note:: ' + get_text(info, node)[len('Note  '):])
-      else:
-        text = one_sentence_per_line(get_text(info, node))
-        if text and text[-1] != '\n' and not info.get('ignore_style', ignore_last=False):
-          text += '\n\n'
+      raw_text = get_text(info, node)
+      if raw_text != 'Note':
+        indent = ''
+        if style.name == 'Note':
+          if 'ecurity/certs/identity/identity_ca_openssl.cnf' in raw_text:
+            raw_text = '  ' + raw_text
+          else:
+            raw_text = '.. note:: ' + raw_text
+            indent = '  '
+        text = one_sentence_per_line(raw_text, indent)
+        if not inline:
+          text = paragraph_break(text)
         out.write(text)
 
     elif kind == 'a':
@@ -649,16 +697,17 @@ def convert_node(info, node, out):
   elif node.nodeType == element.Node.TEXT_NODE:
     out.write(str(node))
 
-  if style:
-    if style.monospace:
-      out.write('``')
-      info.pop()
-    elif style.bold:
-      out.write('**')
-      info.pop()
-    elif style.italic:
-      out.write('*')
-      info.pop()
+  if inline:
+    lines = []
+    for line in out.out.getvalue().split('\n'):
+      if not line.startswith('.. image::'):
+        line = inline_markup(line, inline)
+      lines.append(line)
+    rv = '\n'.join(lines)
+    if kind == 'p':
+      rv = paragraph_break(rv)
+    out.close()
+    real_out.write(rv)
 
   info.pop()
 
@@ -666,10 +715,13 @@ from odf.office import Body
 body = doc.getElementsByType(Body)[0]
 from odf.text import Section
 section = doc.getElementsByType(Section)[0]
+
+ref_info = Info(doc)
+reference_builder(ref_info, section)
+# print(ref_info.sections)
+
 out = Out()
 info = Info(doc)
-reference_builder(info, section)
-print(info.sections)
 convert_node(info, section, out)
 out.close()
 out.write_index()

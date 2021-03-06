@@ -107,7 +107,7 @@ That isn’t strictly necessary though, as the next section shows.
     
 
 If none of the fields in a struct are marked with ``@key`` or ``@key(TRUE)``, then when the struct is used in another struct and marked as a key, all the fields in the struct are assumed to keys.
-Fields marked with ``@key(FALSE) ``are always excluded from being a key, such as in this example:
+Fields marked with ``@key(FALSE)``are always excluded from being a key, such as in this example:
 
 ::
 
@@ -171,7 +171,7 @@ All types are nested by default in OpenDDS to reduce the code generated for type
 
 * The enclosing module can be annotated with ``@default_nested(FALSE)``.
 
-* The global default for ``opendds_idl`` can be changed by adding`` --no-default-nested````, ``in which case it would be as if all valid types were marked with ``@topic``.
+* The global default for ``opendds_idl`` can be changed by adding``--no-default-nested````,``in which case it would be as if all valid types were marked with ``@topic``.
   If desired for IDL compatibility with other DDS implementations or based on preference, this can be done through the build system:
 
   * When using MPC, add ``dcps_ts_flags += --no-default-nested`` to the project.
@@ -196,7 +196,7 @@ The OpenDDS IDL is first processed by the TAO IDL compiler.
     
 
 In addition, we need to process the IDL file with the OpenDDS IDL compiler to generate the serialization and key support code that OpenDDS requires to marshal and demarshal the Message, as well as the type support code for the data readers and writers.
-This IDL compiler is located in ``$DDS_ROOT/bin```` ``and generates three files for each IDL file processed.
+This IDL compiler is located in ``$DDS_ROOT/bin``````and generates three files for each IDL file processed.
 The three files all begin with the original IDL file name and would appear as follows:
 
 * ``<filename>TypeSupport.idl``
@@ -300,7 +300,7 @@ The full source code for this sample publisher is found in the ``Publisher.cpp``
 Initializing the Participant
 ----------------------------
 
-The first section of ``main()```` ``initializes the current process as an OpenDDS participant.
+The first section of ``main()``````initializes the current process as an OpenDDS participant.
 
 ::
 
@@ -355,7 +355,7 @@ Next, we obtain the registered type name from the type support object and create
 
 ::
 
-    `` `` CORBA::String_var type_name = mts->get_type_name ();
+    ```` CORBA::String_var type_name = mts->get_type_name ();
     
              DDS::Topic_var topic =
                  participant->create_topic ("Movie Discussion List",
@@ -395,7 +395,7 @@ With the publisher in place, we create the data writer.
 
 ::
 
-    ``  ``// Create the datawriter
+    ````// Create the datawriter
              DDS::DataWriter_var writer =
                  pub->create_datawriter(topic,
                                                                DATAWRITER_QOS_DEFAULT,
@@ -526,7 +526,7 @@ The beginning of the subscriber is identical to the publisher as we initialize t
 
     int main (int argc, char *argv[])
     {
-    `` try ``{
+    ``try``{
              DDS::DomainParticipantFactory_var dpf =
                  TheParticipantFactoryWithArgs(argc, argv);
              DDS::DomainParticipant_var participant =
@@ -560,7 +560,7 @@ There is also a ``find_topic()`` operation our subscriber could use to simply re
     
              DDS::Topic_var topic =
                  participant->create_topic("Movie Discussion List",
-    `` ````type_name````,``
+    ``````type_name````,``
                                                                      TOPIC_QOS_DEFAULT,
                                                                      0,  // No listener required
                                                                      OpenDDS::DCPS::DEFAULT_STATUS_MASK);
@@ -760,6 +760,7 @@ Running each of these commands in its own window should enable you to most easil
 First we will start a ``DCPSInfoRepo`` service so our publishers and subscribers can find one another.
 
 .. note:: This step is not necessary if you are using peer-to-peer discovery by configuring your environment to use RTPS discovery.
+
 The ``DCPSInfoRepo``  executable is found in ``$DDS_ROOT/bin/DCPSInfoRepo``.
 When we start the ``DCPSInfoRepo`` we need to ensure that publisher and subscriber application processes can also find the started ``DCPSInfoRepo``.
 This information can be provided in one of three ways: a.)
@@ -797,7 +798,7 @@ Unix:
 
 ::
 
-    ``./subscriber -DCPSInfoRepo```` file://simple.ior``
+    ``./subscriber -DCPSInfoRepo````file://simple.ior``
     
 
 The command line parameters direct the application to use the specified file to locate the ``DCPSInfoRepo``.
@@ -902,7 +903,7 @@ Registering and Using Instances in the Publisher
 
 The previous example implicitly specifies the instance it is publishing via the sample’s data fields.
 When ``write()`` is called, the data writer queries the sample’s key fields to determine the instance.
-The publisher also has the option to explicitly register the instance by calling ``register_instance()```` ``on the data writer:
+The publisher also has the option to explicitly register the instance by calling ``register_instance()``````on the data writer:
 
 ::
 
@@ -983,7 +984,7 @@ The following example code is taken from ``DevGuideExamples/DCPS/Messenger_ZeroC
     
 
 After both zero-copy takes/reads and single-copy takes/reads, the sample and info sequences’ length are set to the number of samples read.
-For the zero-copy reads, the ``max_len`` is set to a`` ````value >= length``.
+For the zero-copy reads, the ``max_len`` is set to a``````value >= length``.
 
 Since the application code has asked for a zero-copy loan of the data, it must return that loan when it is finished with the data:
 

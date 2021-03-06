@@ -22,7 +22,7 @@ Zero or one DCPS elements definition can be included in any given model.
 
 .. image:: images/10000200000003B9000005330605A5B43CF48041.png
 
-Figure 11-1 Graphical modeling of the data definitions
+**Figure 11-1 Graphical modeling of the data definitions**
 
 Creating separate models for QoS policies only, data definitions only, or DCPS elements only is supported.
 References to other models allows externally defined models to be included in a model.
@@ -30,7 +30,7 @@ This allows sharing of data definitions and QoS policies among different DCPS mo
 
 .. image:: images/10000200000003C900000533D2AF0A57E344DAD7.png
 
-Figure 11-2 Graphical modeling of the DCPS entities
+**Figure 11-2 Graphical modeling of the DCPS entities**
 
 Code Generation
 ===============
@@ -77,7 +77,7 @@ Installation
 
 .. image:: images/100000000000018A00000158B458ED5B89A62234.png
 
-Figure 11-3 Eclipse Software Installation Dialog
+**Figure 11-3 Eclipse Software Installation Dialog**
 
 * Click the hyperlink for Available Software Sites.
 
@@ -165,7 +165,7 @@ The OpenDDS Modeling SDK generates model-specific code for use by an OpenDDS Mod
 Starting with a .codegen file (which refers to an ``.opendds`` model file), the files described in Table 11-1.
 The process of generating code is documented in the Eclipse help.
 
-Table 11-1 Generated Files
+**Table 11-1 Generated Files**
 
 +---------------------------+---------------------------------------------------+
 | File Name                 | Description                                       |
@@ -310,7 +310,7 @@ The Service provides this interface for entity creation:
     
     DDS::DomainParticipant_var participant(Elements::Participants::Values part);
     DDS::TopicDescription_var topic(Elements::Participants::Values part,
-                                   `` ````Elements::Topics::Values topic````);``
+                                   ``````Elements::Topics::Values topic````);``
     DDS::Publisher_var publisher(Elements::Publishers::Values publisher);
     DDS::Subscriber_var subscriber(Elements::Subscribers::Values subscriber);
     DDS::DataWriter_var writer(Elements::DataWriters::Values writer);
@@ -349,7 +349,7 @@ What remains is to narrow the ``DataWriter`` to a type-specific data writer, and
         ``message.text = "Worst. Movie. Ever.";``
         ``DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);``
         ``if (error != DDS::RETCODE_OK) {``
-          ``// Handle error ``
+          ``// Handle error``
         ``}``
     
 
@@ -373,14 +373,14 @@ In total our publishing application, ``MinimalPublisher.cpp``, looks like this:
         ``using OpenDDS::Model::MinimalLib::Elements;``
         ``DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);``
     
-        ``data1::MessageDataWriter_var msg_writer = ``
+        ``data1::MessageDataWriter_var msg_writer =``
             ``data1::MessageDataWriter::_narrow(writer);``
-        ``data1::Message message; ``
+        ``data1::Message message;``
         ``// Populate message and send``
         ``message.text = "Worst. Movie. Ever.";``
         ``DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);``
         ``if (error != DDS::RETCODE_OK) {``
-          ``// Handle error ``
+          ``// Handle error``
         ``}``
       ``} catch (const CORBA::Exception& e) {``
         ``// Handle exception and return non-zero``

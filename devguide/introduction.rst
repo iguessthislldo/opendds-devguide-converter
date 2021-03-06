@@ -16,7 +16,8 @@ For additional details about DDS, developers should refer to the DDS specificati
 OpenDDS is the open-source C++ implementation of OMG’s DDS specification developed and commercially supported by Object Computing, Inc. (OCI).
 It is available for download from http://www.opendds.org/downloads.html and is compatible with the latest patch level of OCI TAO version 2.2a (includes ACE), and the latest DOC Group release of ACE+TAO in the ACE 6.x / TAO 2.x series.
 
-.. note:: OpenDDS currently implements the OMG DDS version 1.4 specification. See the compliance information in or at http://www.opendds.org/ for more information.
+.. note:: OpenDDS currently implements the OMG DDS version 1.4 specification.
+  See the compliance information in or at http://www.opendds.org/ for more information.
 
 *************
 DCPS Overview
@@ -30,7 +31,7 @@ Basic Concepts
 Figure 1-1 shows an overview of the DDS DCPS layer.
 The following subsections define the concepts shown in this diagram.
 
-Figure 1-1 DCPS Conceptual Overview
+**Figure 1-1 DCPS Conceptual Overview**
 
 .. image:: images/10000200000001C1000002026BB287CE5A7FFF6F.png
 
@@ -94,7 +95,7 @@ While subscribed, the application receives samples indicating changes in the ent
 
 The following table shows the built-in topics defined within the DDS specification:
 
-Table 1-1 Built-in Topics
+**Table 1-1 Built-in Topics**
 
 +----------------------+---------------------------------------------------------+
 | Topic Name           | Description                                             |
@@ -216,7 +217,8 @@ Items not implemented in OpenDDS:
 
 #. ``nackSuppressionDuration`` (Table 8.47) and ``heartbeatSuppressionDuration`` (Table 8.62).
 
-.. note:: Items 3 and 4 above are described in the DDSI-RTPS specification. However, they do not have a corresponding concept in the DDS specification.
+.. note:: Items 3 and 4 above are described in the DDSI-RTPS specification.
+  However, they do not have a corresponding concept in the DDS specification.
 
 IDL Compliance
 --------------
@@ -252,7 +254,7 @@ OpenDDS supports the following building blocks, with notes/caveats listed below 
 Extensions to the DDS Specification
 ===================================
 
-Data types, interfaces, and constants in the DDS IDL module (C++ namespace, Java package) correspond directly to the DDS specification with very few exceptions:
+Data types, interfaces, and constants in the **DDS** IDL module (C++ namespace, Java package) correspond directly to the DDS specification with very few exceptions:
 
 * DDS::SampleInfo contains an extra field starting with “opendds_reserved”
 
@@ -296,7 +298,7 @@ Refer to Section 7.4.4 for details on configuring ETF components.
 
 .. image:: images/10000200000002E40000018C06CE052F10E50233.png
 
-Figure 1-2 OpenDDS Extensible Transport Framework
+**Figure 1-2 OpenDDS Extensible Transport Framework**
 
 The ETF enables application developers to implement their own customized transports.
 Implementing a custom transport involves specializing a number of classes defined in the transport framework.
@@ -331,7 +333,7 @@ The DCPSInfoRepo is not involved in data propagation, its role is limited in sco
 
 .. image:: images/10000200000003950000022139AC77EE7287E934.png
 
-Figure 1-3: Centralized Discovery with OpenDDS InfoRepo
+**Figure 1-3: Centralized Discovery with OpenDDS InfoRepo**
 
 Application developers are free to run multiple information repositories with each managing their own non-overlapping sets of DCPS domains.
 
@@ -352,7 +354,7 @@ A more detailed description of this flexible configuration approach is discussed
 
 .. image:: images/10000201000003FC0000025ECF72BC11D66015DF.png
 
-Figure 1-4: Peer-to-peer Discovery with RTPS
+**Figure 1-4: Peer-to-peer Discovery with RTPS**
 
 The following are additional implementation limits that developers need to take into consideration when developing and deploying applications that use RTPS discovery:
 
@@ -403,21 +405,24 @@ Users requiring a small-footprint configuration or compatibility with safety-ori
 Building With a Feature Enabled or Disabled
 ===========================================
 
-Most features are supported by the *configure *script.
+Most features are supported by the *configure*script.
 The *configure* script creates config files with the correct content and then runs MPC.
 If you are using the *configure* script, run it with the “--help” command line option and look for the feature you wish to enable/disable.
-If you are not using the *configure *script, continue reading below for instructions on running MPC directly.
+If you are not using the *configure*script, continue reading below for instructions on running MPC directly.
 
 For the features described below, MPC is used for enabling (the default) a feature or disabling the feature.
 For a feature named *feature*, the following steps are used to disable the feature from the build:
 
-#. Use the command line “features” argument to MPC:``````mwc.pl -type <type> -features ````feature````=0 DDS.mwc``````Or alternatively, add the line ``feature````=0`` to the file ``$ACE_ROOT/bin/MakeProjectCreator/config/default.features`` and regenerate the project files using MPC.
+#. Use the command line “features” argument to MPC:``mwc.pl -type <type> -features````feature````=0 DDS.mwc``Or alternatively, add the line ``feature````=0`` to the file ``$ACE_ROOT/bin/MakeProjectCreator/config/default.features`` and regenerate the project files using MPC.
 
 #. If you are using the ``gnuace`` MPC project type (which is the case if you will be using GNU make as your build system), add line “``feature````=0``” to the file ``$ACE_ROOT/include/makeinclude/platform_macros.GNU``.
 
-To explicitly enable the feature, use ``feature````=1```` ``above.
+To explicitly enable the feature, use ``feature````=1``````above.
 
-.. note:: You can also use the ``$DDS_ROOT/configure`` script to enable or disable features. To disable the feature, pass ``--no-````feature`` to the script, to enable pass ``--````feature``. In this case ‘``-``’ is used instead of ‘``_``’ in the feature name. For example, to disable feature ``content_subscription```` ``discussed below, pass ``--no-content-subscription`` to the configure script.
+.. note:: You can also use the ``$DDS_ROOT/configure`` script to enable or disable features.
+  To disable the feature, pass ``--no-````feature`` to the script, to enable pass ``--````feature``.
+  In this case ‘``-``’ is used instead of ‘``_``’ in the feature name.
+  For example, to disable feature ``content_subscription``````discussed below, pass ``--no-content-subscription`` to the configure script.
 
 Disabling the Building of Built-In Topic Support
 ================================================
@@ -446,7 +451,7 @@ This profile adds the classes ``ContentFilteredTopic``, ``QueryCondition``, and 
 
 In addition, individual classes can be excluded by using the features given in the table below.
 
-Table 1-2: Content-Subscription Class Features
+**Table 1-2: Content-Subscription Class Features**
 
 +----------------------+----------------------------+
 | Class                | Feature                    |
@@ -478,10 +483,9 @@ This profile adds:
 
 * setting a ``depth > 1`` for the ``HISTORY`` QoS policy.
 
-*Note
+.. note:: Some users may wish to exclude support for the Exclusive OWNERSHIP policy and its associated OWNERSHIP_STRENGTH without impacting use of HISTORY.
+  In order to support this configuration, OpenDDS also has the MPC feature ownership_kind_exclusive (configure script option --no-ownership-kind-exclusive).
 
-Some users may wish to exclude support for the Exclusive OWNERSHIP policy and its associated OWNERSHIP_STRENGTH without impacting use of HISTORY.
-In order to support this configuration, OpenDDS also has the MPC feature ownership_kind_exclusive (configure script option --no-ownership-kind-exclusive).*
 Object Model Profile
 --------------------
 
@@ -489,7 +493,7 @@ Feature Name: ``object_model_profile``
 
 This profile includes support for the ``PRESENTATION`` access_scope setting of ‘``GROUP``’.
 
-.. note:: Currently, the ``PRESENTATION`` access_scope of ‘``TOPIC``’ is also excluded when ``object_model_profile```` ``is disabled.
+.. note:: Currently, the ``PRESENTATION`` access_scope of ‘``TOPIC``’ is also excluded when ``object_model_profile``````is disabled.
 
 **************************************
 Building Applications that use OpenDDS
