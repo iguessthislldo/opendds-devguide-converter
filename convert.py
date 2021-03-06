@@ -1,26 +1,30 @@
 import sys
 from pathlib import Path
-import textwrap
 import io
 
 import odf
 from odf import text, element
 from odf.opendocument import load
 
+# TODO:
+# - Lists
+# - Figure Links (bookmarks?)
+# - Section Links
+# - Footnotes
+
+# Tasks
+# - Replace Section Numbers with Names
+# - Merge Installation Section with INSTALL.md
+# - Proper use of inline monospace text like:
+#   - Fix places where how the the OpenOffice docment cause the conversion
+#     script to mess up, like the "Note" in
+#     "Building With a Feature Enabled or Disabled".
+#   - Find places that should be monospace, but are not.
+#     Ex: "Extensions to the DDS Specification"
+#   - Quotes around monospace text. See "Persistence Profile" section
+# - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
+
 indent = '  '
-
-def paragraph_wrap(out, text, **kwargs):
-  kw = {'width': 79, 'break_long_words': True}
-  kw.update(kwargs)
-  out.writeln('\n'.join(textwrap.wrap(text, **kw)))
-  out.write('\n')
-
-
-def directive_wrap(out, text, **kwargs):
-  kw = {'subsequent_indent': indent}
-  kw.update(kwargs)
-  paragraph_wrap(out, text, **kw)
-
 
 def code(out, lines):
   out.writeln('::\n')
@@ -124,26 +128,40 @@ class Style:
     self.props = {}
     self.monospace = False
     self.bold = False
+    self.italic = False
     self.name = get_style(node)
     if self.name is None:
+      return
+    if self.name == 'Note': # Ignore Italics on Notes
       return
     self.check_node(doc, self.name)
 
     for prop_group in self.props.values():
-      font_family = prop_group.get(
-        ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-family'), None)
-      font_name = prop_group.get(
-        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name'), None)
-      if (font_family and 'mono' in font_family.lower()) or \
-          (font_name and 'mono' in font_name.lower()):
+      def get_prop(prop_key):
+        return prop_group.get(prop_key, '').lower()
+
+      font_family = get_prop(
+        ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-family'))
+      font_name = get_prop(
+        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name'))
+      font_pitch = get_prop(
+        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch'))
+      font_style =get_prop(
+        ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-style'))
+
+      if 'mono' in font_family or 'mono' in font_name or 'courier' in font_name or \
+          font_pitch == 'fixed':
         self.monospace = True
+
+      if font_style == 'italic':
+        self.italic = True
 
   def __bool__(self):
     return self.name is not None
 
   def __repr__(self):
-    return '<{} monospace: {} bold: {}>'.format(
-      repr(self.name), repr(self.monospace), repr(self.bold))
+    return '<{} monospace: {} bold: {} italic: {}>'.format(
+      repr(self.name), repr(self.monospace), repr(self.bold), repr(self.italic))
 
 doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 
@@ -161,7 +179,7 @@ with (dump_path / 'main.xml').open('w') as f:
   buf.close()
 
 # Dump Nodes
-def dump_node(doc, node, indent, f):
+def dump_node(node, indent, f):
   style = get_style(node)
   print(indent + str(node.qname), file=f)
   for k, v in node.attributes.items():
@@ -169,14 +187,24 @@ def dump_node(doc, node, indent, f):
   child_indent = indent + '  '
   for child in node.childNodes:
     if child.nodeType == element.Node.ELEMENT_NODE:
-      dump_node(doc, child, child_indent, f)
+      dump_node(child, child_indent, f)
     elif child.nodeType == element.Node.TEXT_NODE:
       print(str(child), file=f)
 
+def dump_node_exit(info, node, message):
+  print('ERROR:', message, file=sys.stderr)
+  print('This is the node the error happended on:', file=sys.stderr)
+  print('=' * 80, file=sys.stderr)
+  dump_node(node, '  ', sys.stderr)
+  print('=' * 80, file=sys.stderr)
+  print('Info stack (First item is top):', file=sys.stderr)
+  for item in reversed(info.data):
+    print(' -', repr(item), file=sys.stderr)
+  sys.exit('Exiting')
 
 nodes_path = dump_path / 'nodes'
 with nodes_path.open('w') as f:
-  dump_node(doc, doc.topnode, '', f)
+  dump_node(doc.topnode, '', f)
 
 
 # Convert =====================================================================
@@ -198,6 +226,7 @@ class Out:
     self.out = None
     self.path = None
     self.pages = []
+    self.newline_count = 0
 
   @staticmethod
   def filename(name):
@@ -222,14 +251,26 @@ class Out:
       self.out = self.path.open('w')
 
   def write(self, *args, **kwargs):
-    if 'end' not in kwargs:
-      kwargs['end'] = ''
     if self.out is not None:
-      print(*args, **kwargs, file=self.out)
+      end = kwargs.get('end', '')
+      sep = kwargs.get('sep', ' ')
+      raw_string = sep.join(args) + end
+      string = ''
+      for c in raw_string:
+        if c == '\n':
+          if self.newline_count == 2:
+            self.newline_count = 0
+            continue
+          self.newline_count += 1
+        else:
+          self.newline_count = 0
+        string += c
+
+      print(string, end='', file=self.out)
 
   def writeln(self, *args, **kwargs):
     if self.out is not None:
-      print(*args, **kwargs, file=self.out)
+      self.write(*args, **kwargs, end='\n')
 
   def close(self):
     if self.out is not None:
@@ -240,9 +281,9 @@ class Out:
   def write_index(self):
     with (export_path / 'index.rst').open('w') as f:
       print('''\
-########
-DevGuide
-########
+#################
+Developer's Guide
+#################
 
 .. toctree::
 ''', file=f)
@@ -279,6 +320,10 @@ class Info:
     global keep
     self.push()
     self.set(node=node)
+    if node.nodeType == element.Node.ELEMENT_NODE and node.qname[1] == 'p':
+      self.set(paragraph=True)
+      if self.get('paragraph'): # Are we nested?
+        self.set(ignore_style=False) # If we are, then ignore prior style info
     if self.get('ignore_style', otherwise=False, ignore_last=False):
       style = None
     else:
@@ -359,6 +404,9 @@ def convert_node(info, doc, node, out):
     elif style.bold:
       out.write('**')
       info.push(ignore_style=True)
+    elif style.italic:
+      out.write('*')
+      info.push(ignore_style=True)
 
   if node.nodeType == element.Node.ELEMENT_NODE:
     kind = node.qname[1]
@@ -367,16 +415,54 @@ def convert_node(info, doc, node, out):
         ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'outline-level'), None)
       assert(level is not None)
       level = int(level) - 1
-      name = str(node)
+      name = ''
+      for child in node.childNodes:
+        if child.nodeType == element.Node.ELEMENT_NODE:
+          child_kind = child.qname[1]
+          if child_kind == 'frame':
+            # Hack for "Figure 1-1  DCPS Conceptual Overview" which is inside the
+            # header node for some unknown reason and otherwise would get lost in in
+            # `name = str(node)``
+            convert_node(info, doc, child, out)
+          elif child_kind == 'span':
+            # Span is part of the title, again for no seeming reason
+            name += str(child)
+          elif child_kind not in ( # Make sure nothing else is in here we can't ignore
+              'bookmark', 'bookmark-start', 'bookmark-end', 'span',
+              'soft-page-break', 'line-break',
+              'reference-mark-start', 'reference-mark-end'):
+            dump_node_exit(info, node, 'Figure 1-1 Hack Assert Failed on ' + repr(child_kind))
+        elif child.nodeType == element.Node.TEXT_NODE:
+          name += str(child)
+      if len(name) == 0:
+        dump_node_exit(info, node, 'Header Name is Blank')
       if level == 0:
         out.open(name)
       out.write(get_header(name, level))
+
+    elif kind == 's':
+      # <text:s/>
+      # TODO: This can have "c" attribute like: <text:s text:c="2"/>
+      # Use it?
+      out.write(' ')
+
+    elif kind == 'p' and style is None:
+      if get_style(node) == 'Footnote':
+        # TODO this needs to be written outside a table
+        pass
+      else:
+        dump_node_exit(info, node,
+          'Paragraph style is None, style name: ' + repr(get_style(node)))
+
     elif kind == 'p' and style.name != "Figure":
       if style.name == 'Note':
-        text = get_text(info, doc, node)[len('Note  '):]
-        directive_wrap(out, '.. note:: {}\n'.format(text))
+        out.writeln('.. note:: ' + get_text(info, doc, node)[len('Note  '):])
       else:
-        paragraph_wrap(out, get_text(info, doc, node))
+        text = get_text(info, doc, node)
+        if text and text[-1] != '\n' and not info.get('ignore_style', ignore_last=False):
+          text += '\n\n'
+        out.write(text)
+
     elif kind == 'a':
       info.push(ignore_style=True)
       text = get_text(info, doc, node)
@@ -386,6 +472,7 @@ def convert_node(info, doc, node, out):
       else:
         out.write('`{} <{}>`_'.format(text, link))
       info.pop()
+
     elif kind == 'image':
       mime = node.attributes.get(
         ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'mime-type'), None)
@@ -393,12 +480,17 @@ def convert_node(info, doc, node, out):
       path = Path('images') / Path(href).name
       if mime == 'image/png' and href:
         out.writeln('.. image:: {}\n'.format(path))
+
     elif kind == 'table':
       rows = []
       gather_table_rows(info, doc, node, rows)
       convert_table(rows, out)
+
     else:
+      # if kind not in ('span', 'soft-page-break'):
+      #   print('Other:', kind)
       convert_child_nodes(info, doc, node, out)
+
   elif node.nodeType == element.Node.TEXT_NODE:
     out.write(str(node))
 
@@ -408,6 +500,9 @@ def convert_node(info, doc, node, out):
       info.pop()
     elif style.bold:
       out.write('**')
+      info.pop()
+    elif style.italic:
+      out.write('*')
       info.pop()
 
   info.pop()
