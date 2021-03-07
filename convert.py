@@ -592,8 +592,10 @@ def convert_child_nodes(info, node, out):
             ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'c'), None)
           if indent is not None:
             break
-      indent = 0 if indent is None else int(indent)
-      code_lines.append(('  ' * indent) + get_text(info, child))
+      line = get_text(info, child)
+      if indent and line:
+        line = ' ' * int(indent) + line.strip()
+      code_lines.append(line)
       info.pop()
     else:
       if code_lines:

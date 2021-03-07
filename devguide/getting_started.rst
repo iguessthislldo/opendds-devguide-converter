@@ -37,14 +37,14 @@ Here is the IDL file that defines our Message data type:
 
     module Messenger {
 
-         @topic
-         struct Message {
-             string from;
-             string subject;
-             @key long subject_id;
-             string text;
-             long count;
-         };
+      @topic
+      struct Message {
+        string from;
+        string subject;
+        @key long subject_id;
+        string text;
+        long count;
+      };
     };
 
 The ``@topic`` annotation marks a data type that can be used as a topic’s type.
@@ -79,19 +79,19 @@ Since we are using the default QoS policies, subsequent samples with the same su
 .. code-block:: omg-idl
 
     struct StructA {
-         @key long key;
+      @key long key;
     };
 
     struct StructB {
-         @key StructA main_info;
-         long other_info;
+      @key StructA main_info;
+      long other_info;
     };
 
     @topic
     struct StructC {
-         @key StructA keya; // keya.key is one key
-         @key StructB keyb; // keyb.main_info.key is another
-         DDS::OctetSeq data;
+      @key StructA keya; // keya.key is one key
+      @key StructB keyb; // keyb.main_info.key is another
+      DDS::OctetSeq data;
     };
 
 In this example, every type from the key marked on the topic type down to what primitive data types to use as the key is annotated with ``@key``.
@@ -128,7 +128,7 @@ Fields marked with ``@key(FALSE)`` are always excluded from being a key, such as
     @topic
     struct OuterStruct {
       @key InnerStruct value;
-         // Now just value.a and value.b are the keys
+      // Now just value.a and value.b are the keys
     };
 
 * Unions can also be used as keys if their discriminator is marked as a key.
@@ -150,19 +150,19 @@ Here is an example:
 .. code-block:: omg-idl
 
     enum TypeKind {
-         STRING_TYPE,
-         LONG_TYPE,
-         FLOAT_TYPE
+      STRING_TYPE,
+      LONG_TYPE,
+      FLOAT_TYPE
     };
 
     @topic
     union MyUnionType switch (@key TypeKind) {
     case STRING_TYPE:
-         string string_value;
+      string string_value;
     case LONG_TYPE:
-         long long_value;
+      long long_value;
     case FLOAT_TYPE:
-         float float_value;
+      float float_value;
     };
 
 Unions can be keyed like structures, but only the union discriminator can be a key, so the set of possible DDS Instances of topics using keyed unions are values of the discriminator.
@@ -250,12 +250,12 @@ Here is the MPC file section common to both the publisher and subscriber
 ::
 
     project(*idl): dcps {
-         // This project ensures the common components get built first.
+      // This project ensures the common components get built first.
 
-         TypeSupport_Files {
-             Messenger.idl
-         }
-         custom_only = 1
+      TypeSupport_Files {
+        Messenger.idl
+      }
+      custom_only = 1
     }
 
 The dcps parent project adds the Type Support custom build rules.
@@ -265,16 +265,16 @@ Here is the publisher section:
 ::
 
     project(*Publisher): dcpsexe_with_tcp {
-         exename  = publisher
-         after  += *idl
+      exename  = publisher
+      after  += *idl
 
-         TypeSupport_Files {
-             Messenger.idl
-         }
+      TypeSupport_Files {
+        Messenger.idl
+      }
 
-         Source_Files {
-             Publisher.cpp
-         }
+      Source_Files {
+        Publisher.cpp
+      }
     }
 
 The ``dcpsexe_with_tcp`` project links in the DCPS library.
@@ -285,17 +285,17 @@ For completeness, here is the subscriber section of the MPC file:
 
     project(*Subscriber): dcpsexe_with_tcp {
 
-         exename  = subscriber
-         after  += *idl
+      exename  = subscriber
+      after  += *idl
 
-         TypeSupport_Files {
-             Messenger.idl
-         }
+      TypeSupport_Files {
+        Messenger.idl
+      }
 
-         Source_Files {
-             Subscriber.cpp
-             DataReaderListenerImpl.cpp
-         }
+      Source_Files {
+        Subscriber.cpp
+        DataReaderListenerImpl.cpp
+      }
     }
 
 .. _2.1.3:
@@ -318,18 +318,18 @@ The first section of ``main()`` initializes the current process as an OpenDDS pa
 .. code-block:: cpp
 
     int main (int argc, char *argv[]) {
-         try {
-             DDS::DomainParticipantFactory_var dpf =
-                 TheParticipantFactoryWithArgs(argc, argv);
-             DDS::DomainParticipant_var participant =
-                 dpf->create_participant(42, // domain ID
-                                                                 PARTICIPANT_QOS_DEFAULT,
-                                                                 0,  // No listener required
-                                                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!participant) {
-                 std::cerr << "create_participant failed." << std::endl;
-                 return 1;
-             }
+      try {
+        DDS::DomainParticipantFactory_var dpf =
+          TheParticipantFactoryWithArgs(argc, argv);
+        DDS::DomainParticipant_var participant =
+          dpf->create_participant(42, // domain ID
+                                  PARTICIPANT_QOS_DEFAULT,
+                                  0,  // No listener required
+                                  OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!participant) {
+          std::cerr << "create_participant failed." << std::endl;
+          return 1;
+        }
 
 The ``TheParticipantFactoryWithArgs`` macro is defined in ``Service_Participant.h`` and initializes the Domain Participant Factory with the command line arguments.
 These command line arguments are used to initialize the ORB that the OpenDDS service uses as well as the service itself.
@@ -356,12 +356,12 @@ A specific type name such as “*Message*” can be used as well.
 
 .. code-block:: cpp
 
-         Messenger::MessageTypeSupport_var mts =
-             new Messenger::MessageTypeSupportImpl();
-         if (DDS::RETCODE_OK != mts->register_type(participant, "")) {
-             std::cerr << "register_type failed." << std::endl;
-             return 1;
-         }
+      Messenger::MessageTypeSupport_var mts =
+        new Messenger::MessageTypeSupportImpl();
+      if (DDS::RETCODE_OK != mts->register_type(participant, "")) {
+        std::cerr << "register_type failed." << std::endl;
+        return 1;
+      }
 
 Next, we obtain the registered type name from the type support object and create the topic by passing the type name to the participant in the ``create_topic()`` operation.
 
@@ -369,16 +369,16 @@ Next, we obtain the registered type name from the type support object and create
 
       CORBA::String_var type_name = mts->get_type_name ();
 
-             DDS::Topic_var topic =
-                 participant->create_topic ("Movie Discussion List",
-                                                                       type_name,
-                                                                       TOPIC_QOS_DEFAULT,
-                                                                       0,  // No listener required
-                                                                       OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!topic) {
-                 std::cerr << "create_topic failed." << std::endl;
-                 return 1;
-             }
+        DDS::Topic_var topic =
+          participant->create_topic ("Movie Discussion List",
+                                     type_name,
+                                     TOPIC_QOS_DEFAULT,
+                                     0,  // No listener required
+                                     OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!topic) {
+          std::cerr << "create_topic failed." << std::endl;
+          return 1;
+        }
 
 We have created a topic named “*Movie Discussion List*” with the registered type and the default QoS policies.
 
@@ -391,14 +391,14 @@ Now, we are ready to create the publisher with the default publisher QoS.
 
 .. code-block:: cpp
 
-             DDS::Publisher_var pub =
-                 participant->create_publisher(PUBLISHER_QOS_DEFAULT,
-                                                                             0,  // No listener required
-                                                                             OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!pub) {
-                 std::cerr << "create_publisher failed." << std::endl;
-                 return 1;
-             }
+        DDS::Publisher_var pub =
+          participant->create_publisher(PUBLISHER_QOS_DEFAULT,
+                                        0,  // No listener required
+                                        OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!pub) {
+          std::cerr << "create_publisher failed." << std::endl;
+          return 1;
+        }
 
 .. _2.1.3.4:
 
@@ -410,23 +410,23 @@ With the publisher in place, we create the data writer.
 .. code-block:: cpp
 
       // Create the datawriter
-             DDS::DataWriter_var writer =
-                 pub->create_datawriter(topic,
-                                                               DATAWRITER_QOS_DEFAULT,
-                                                               0,  // No listener required
-                                                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!writer) {
-                 std::cerr << "create_datawriter failed." << std::endl;
-                 return 1;
-             }
+        DDS::DataWriter_var writer =
+          pub->create_datawriter(topic,
+                                 DATAWRITER_QOS_DEFAULT,
+                                 0,  // No listener required
+                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!writer) {
+          std::cerr << "create_datawriter failed." << std::endl;
+          return 1;
+        }
 
 When we create the data writer we pass the topic object reference, the default QoS policies, and a null listener reference.
 We now narrow the data writer reference to a ``MessageDataWriter`` object reference so we can use the type-specific publication operations.
 
 .. code-block:: cpp
 
-             Messenger::MessageDataWriter_var message_writer =
-                       Messenger::MessageDataWriter::_narrow(writer);
+        Messenger::MessageDataWriter_var message_writer =
+             Messenger::MessageDataWriter::_narrow(writer);
 
 The example code uses *conditions* and *wait* sets so the publisher waits for the subscriber to become connected and fully initialized.
 In a simple example like this, failure to wait for the subscriber may cause the publisher to publish its samples before the subscriber is connected.
@@ -453,37 +453,37 @@ Here is the corresponding code:
 
 .. code-block:: cpp
 
-             // Block until Subscriber is available
-             DDS::StatusCondition_var condition = writer->get_statuscondition();
-             condition->set_enabled_statuses(
-                     DDS::PUBLICATION_MATCHED_STATUS);
+        // Block until Subscriber is available
+        DDS::StatusCondition_var condition = writer->get_statuscondition();
+        condition->set_enabled_statuses(
+            DDS::PUBLICATION_MATCHED_STATUS);
 
-             DDS::WaitSet_var ws = new DDS::WaitSet;
-             ws->attach_condition(condition);
+        DDS::WaitSet_var ws = new DDS::WaitSet;
+        ws->attach_condition(condition);
 
-             while (true) {
-                 DDS::PublicationMatchedStatus matches;
-                 if (writer->get_publication_matched_status(matches)
-                         != DDS::RETCODE_OK) {
-                     std::cerr << "get_publication_matched_status failed!"
-                                         << std::endl;
-                     return 1;
-                 }
+        while (true) {
+          DDS::PublicationMatchedStatus matches;
+          if (writer->get_publication_matched_status(matches)
+              != DDS::RETCODE_OK) {
+            std::cerr << "get_publication_matched_status failed!"
+                      << std::endl;
+            return 1;
+          }
 
-                 if (matches.current_count >= 1) {
-                     break;
-                 }
+          if (matches.current_count >= 1) {
+            break;
+          }
 
-                 DDS::ConditionSeq conditions;
-                 DDS::Duration_t timeout = { 60, 0 };
-                 if (ws->wait(conditions, timeout) != DDS::RETCODE_OK) {
-                     std::cerr << "wait failed!" << std::endl;
-                     return 1;
-                 }
+          DDS::ConditionSeq conditions;
+          DDS::Duration_t timeout = { 60, 0 };
+          if (ws->wait(conditions, timeout) != DDS::RETCODE_OK) {
+            std::cerr << "wait failed!" << std::endl;
+            return 1;
+          }
 
-             }
+        }
 
-             ws->detach_condition(condition);
+        ws->detach_condition(condition);
 
 For more details about status, conditions, and wait sets, see Chapter :ref:`4`.
 
@@ -496,22 +496,22 @@ The message publication is quite straightforward:
 
 .. code-block:: cpp
 
-             // Write samples
-             Messenger::Message message;
-             message.subject_id = 99;
-             message.from  = "Comic Book Guy";
-             message.subject  = "Review";
-             message.text  = "Worst. Movie. Ever.";
-             message.count  = 0;
-             for (int i = 0; i < 10; ++i) {
-                 DDS::ReturnCode_t error = message_writer->write(message,    DDS::HANDLE_NIL);
-                 ++message.count;
-                 ++message.subject_id;
-                 if (error != DDS::RETCODE_OK) {
-                     // Log or otherwise handle the error condition
-                     return 1;
-                 }
-             }
+        // Write samples
+        Messenger::Message message;
+        message.subject_id = 99;
+        message.from  = "Comic Book Guy";
+        message.subject  = "Review";
+        message.text  = "Worst. Movie. Ever.";
+        message.count  = 0;
+        for (int i = 0; i < 10; ++i) {
+          DDS::ReturnCode_t error = message_writer->write(message,    DDS::HANDLE_NIL);
+          ++message.count;
+          ++message.subject_id;
+          if (error != DDS::RETCODE_OK) {
+            // Log or otherwise handle the error condition
+            return 1;
+          }
+        }
 
 For each loop iteration, calling ``write()`` causes a message to be distributed to all connected subscribers that are registered for our topic.
 Since the subject_id is the key for Message, each time subject_id is incremented and ``write()`` is called, a new instance is created (see :ref:`1.1.1.3`).
@@ -541,17 +541,17 @@ The beginning of the subscriber is identical to the publisher as we initialize t
     int main (int argc, char *argv[])
     {
      try {
-             DDS::DomainParticipantFactory_var dpf =
-                 TheParticipantFactoryWithArgs(argc, argv);
-             DDS::DomainParticipant_var participant =
-                 dpf->create_participant(42, // Domain ID
-                                                                 PARTICIPANT_QOS_DEFAULT,
-                                                                 0,  // No listener required
-                                                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!participant) {
-                 std::cerr << "create_participant failed." << std::endl;
-                 return 1;
-             }
+        DDS::DomainParticipantFactory_var dpf =
+          TheParticipantFactoryWithArgs(argc, argv);
+        DDS::DomainParticipant_var participant =
+          dpf->create_participant(42, // Domain ID
+                                  PARTICIPANT_QOS_DEFAULT,
+                                  0,  // No listener required
+                                  OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!participant) {
+          std::cerr << "create_participant failed." << std::endl;
+          return 1;
+        }
 
 .. _2.1.4.2:
 
@@ -565,25 +565,25 @@ There is also a ``find_topic()`` operation our subscriber could use to simply re
 
 .. code-block:: cpp
 
-             Messenger::MessageTypeSupport_var mts =
-                 new Messenger::MessageTypeSupportImpl();
-             if (DDS::RETCODE_OK != mts->register_type(participant, "")) {
-                 std::cerr << "Failed to register the MessageTypeSupport." << std::endl;
-                 return 1;
-             }
+        Messenger::MessageTypeSupport_var mts =
+          new Messenger::MessageTypeSupportImpl();
+        if (DDS::RETCODE_OK != mts->register_type(participant, "")) {
+          std::cerr << "Failed to register the MessageTypeSupport." << std::endl;
+          return 1;
+        }
 
-             CORBA::String_var type_name = mts->get_type_name ();
+        CORBA::String_var type_name = mts->get_type_name ();
 
-             DDS::Topic_var topic =
-                 participant->create_topic("Movie Discussion List",
+        DDS::Topic_var topic =
+          participant->create_topic("Movie Discussion List",
      type_name,
-                                                                     TOPIC_QOS_DEFAULT,
-                                                                     0,  // No listener required
-                                                                     OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!topic) {
-                 std::cerr << "Failed to create_topic." << std::endl;
-                 return 1;
-             }
+                                    TOPIC_QOS_DEFAULT,
+                                    0,  // No listener required
+                                    OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!topic) {
+          std::cerr << "Failed to create_topic." << std::endl;
+          return 1;
+        }
 
 .. _2.1.4.3:
 
@@ -594,15 +594,15 @@ Next, we create the subscriber with the default QoS.
 
 .. code-block:: cpp
 
-             // Create the subscriber
-             DDS::Subscriber_var sub =
-                 participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT,
-                                                                               0,  // No listener required
-                                                                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!sub) {
-                 std::cerr << "Failed to create_subscriber." << std::endl;
-                 return 1;
-             }
+        // Create the subscriber
+        DDS::Subscriber_var sub =
+          participant->create_subscriber(SUBSCRIBER_QOS_DEFAULT,
+                                         0,  // No listener required
+                                         OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!sub) {
+          std::cerr << "Failed to create_subscriber." << std::endl;
+          return 1;
+        }
 
 .. _2.1.4.4:
 
@@ -615,7 +615,7 @@ The ``DataReaderListenerImpl`` class is shown in the next subsection.
 
 .. code-block:: cpp
 
-             DDS::DataReaderListener_var listener(new DataReaderListenerImpl);
+        DDS::DataReaderListener_var listener(new DataReaderListenerImpl);
 
 The listener is allocated on the heap and assigned to a ``DataReaderListener``_var object.
 This type provides reference counting behavior so the listener is automatically cleaned up when the last reference to it is removed.
@@ -625,16 +625,16 @@ Now we can create the data reader and associate it with our topic, the default Q
 
 .. code-block:: cpp
 
-             // Create the Datareader
-             DDS::DataReader_var dr =
-                 sub->create_datareader(topic,
-                                                               DATAREADER_QOS_DEFAULT,
-                                                               listener,
-                                                               OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-             if (!dr) {
-                 std::cerr << "create_datareader failed." << std::endl;
-                 return 1;
-             }
+        // Create the Datareader
+        DDS::DataReader_var dr =
+          sub->create_datareader(topic,
+                                 DATAREADER_QOS_DEFAULT,
+                                 listener,
+                                 OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+        if (!dr) {
+          std::cerr << "create_datareader failed." << std::endl;
+          return 1;
+        }
 
 This thread is now free to perform other application work.
 Our listener object will be called on an OpenDDS thread when a sample is available.
@@ -653,20 +653,20 @@ Here is the interface definition:
 .. code-block:: omg-idl
 
     module DDS {
-         local interface DataReaderListener : Listener {
-             void on_requested_deadline_missed(in DataReader reader,
-                                                                                 in RequestedDeadlineMissedStatus status);
-             void on_requested_incompatible_qos(in DataReader reader,
-                                                                                 in RequestedIncompatibleQosStatus status);
-             void on_sample_rejected(in DataReader reader,
-                                                             in SampleRejectedStatus status);
-             void on_liveliness_changed(in DataReader reader,
-                                                                   in LivelinessChangedStatus status);
-             void on_data_available(in DataReader reader);
-             void on_subscription_matched(in DataReader reader,
-                                                                       in SubscriptionMatchedStatus status);
-             void on_sample_lost(in DataReader reader, in SampleLostStatus status);
-         };
+      local interface DataReaderListener : Listener {
+        void on_requested_deadline_missed(in DataReader reader,
+                                          in RequestedDeadlineMissedStatus status);
+        void on_requested_incompatible_qos(in DataReader reader,
+                                          in RequestedIncompatibleQosStatus status);
+        void on_sample_rejected(in DataReader reader,
+                                in SampleRejectedStatus status);
+        void on_liveliness_changed(in DataReader reader,
+                                   in LivelinessChangedStatus status);
+        void on_data_available(in DataReader reader);
+        void on_subscription_matched(in DataReader reader,
+                                     in SubscriptionMatchedStatus status);
+        void on_sample_lost(in DataReader reader, in SampleLostStatus status);
+      };
     };
 
 Our example listener class stubs out most of these listener operations with simple print statements.
@@ -676,15 +676,15 @@ The only operation that is really needed for this example is ``on_data_available
 
     void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
     {
-         ++num_reads_;
+      ++num_reads_;
 
-         try {
-             Messenger::MessageDataReader_var reader_i =
-                         Messenger::MessageDataReader::_narrow(reader);
-             if (!reader_i) {
-                 std::cerr << "read: _narrow failed." << std::endl;
-                 return;
-             }
+      try {
+        Messenger::MessageDataReader_var reader_i =
+              Messenger::MessageDataReader::_narrow(reader);
+        if (!reader_i) {
+          std::cerr << "read: _narrow failed." << std::endl;
+          return;
+        }
 
 The code above narrows the generic data reader passed into the listener to the type-specific ``MessageDataReader`` interface.
 The following code takes the next sample from the message reader.
@@ -692,38 +692,38 @@ If the take is successful and returns valid data, we print out each of the messa
 
 .. code-block:: cpp
 
-             Messenger::Message message;
-             DDS::SampleInfo si;
-             DDS::ReturnCode_t status = reader_i->take_next_sample(message, si);
+        Messenger::Message message;
+        DDS::SampleInfo si;
+        DDS::ReturnCode_t status = reader_i->take_next_sample(message, si);
 
-             if (status == DDS::RETCODE_OK) {
+        if (status == DDS::RETCODE_OK) {
 
-                 if (si.valid_data == 1) {
+          if (si.valid_data == 1) {
 
-                         std::cout << "Message: subject  = " << message.subject.in() << std::endl
-                             << "  subject_id = " << message.subject_id  << std::endl
-                             << "  from  = " << message.from.in()  << std::endl
-                             << "  count  = " << message.count  << std::endl
-                             << "  text  = " << message.text.in()  << std::endl;
-                 }
-                 else if (si.instance_state == DDS::NOT_ALIVE_DISPOSED_INSTANCE_STATE)
-                 {
-                     std::cout << "instance is disposed" << std::endl;
-                 }
-                 else if (si.instance_state == DDS::NOT_ALIVE_NO_WRITERS_INSTANCE_STATE)
-                 {
-                     std::cout << "instance is unregistered" << std::endl;
-                 }
-                 else
-                 {
-                     std::cerr << "ERROR: received unknown instance state "
-                                         << si.instance_state << std::endl;
-                 }
-             } else if (status == DDS::RETCODE_NO_DATA) {
-                     cerr << "ERROR: reader received DDS::RETCODE_NO_DATA!" << std::endl;
-             } else {
-                     cerr << "ERROR: read Message: Error: " <<  status << std::endl;
-             }
+              std::cout << "Message: subject  = " << message.subject.in() << std::endl
+                << "  subject_id = " << message.subject_id  << std::endl
+                << "  from  = " << message.from.in()  << std::endl
+                << "  count  = " << message.count  << std::endl
+                << "  text  = " << message.text.in()  << std::endl;
+          }
+          else if (si.instance_state == DDS::NOT_ALIVE_DISPOSED_INSTANCE_STATE)
+          {
+            std::cout << "instance is disposed" << std::endl;
+          }
+          else if (si.instance_state == DDS::NOT_ALIVE_NO_WRITERS_INSTANCE_STATE)
+          {
+            std::cout << "instance is unregistered" << std::endl;
+          }
+          else
+          {
+            std::cerr << "ERROR: received unknown instance state "
+                      << si.instance_state << std::endl;
+          }
+        } else if (status == DDS::RETCODE_NO_DATA) {
+            cerr << "ERROR: reader received DDS::RETCODE_NO_DATA!" << std::endl;
+        } else {
+            cerr << "ERROR: read Message: Error: " <<  status << std::endl;
+        }
 
 Note the sample read may contain invalid data.
 The valid_data flag indicates if the sample has valid data.
@@ -746,9 +746,9 @@ After we are finished in the publisher and subscriber, we can use the following 
 
 .. code-block:: cpp
 
-             participant->delete_contained_entities();
-             dpf->delete_participant(participant);
-             TheServiceParticipant->shutdown ();
+        participant->delete_contained_entities();
+        dpf->delete_participant(participant);
+        TheServiceParticipant->shutdown ();
 
 The domain participant’s ``delete_contained_entities()`` operation deletes all the topics, subscribers, and publishers created with that participant.
 Once this is done, we can use the domain participant factory to delete our domain participant.
@@ -761,14 +761,14 @@ The following code illustrates the use of ``wait_for_acknowledgements()`` to blo
 
 .. code-block:: cpp
 
-         DDS::Duration_t shutdown_delay = {15, 0};
-         DDS::ReturnCode_t result;
-         result = writer->wait_for_acknowledgments(shutdown_delay);
-         if( result != DDS::RETCODE_OK) {
-             std::cerr << "Failed while waiting for acknowledgment of "
-                                 << "data being received by subscriptions, some data "
-                                 << "may not have been delivered." << std::endl;
-         }
+      DDS::Duration_t shutdown_delay = {15, 0};
+      DDS::ReturnCode_t result;
+      result = writer->wait_for_acknowledgments(shutdown_delay);
+      if( result != DDS::RETCODE_OK) {
+        std::cerr << "Failed while waiting for acknowledgment of "
+                  << "data being received by subscriptions, some data "
+                  << "may not have been delivered." << std::endl;
+      }
 
 .. _2.1.7:
 
@@ -924,9 +924,9 @@ The publisher also has the option to explicitly register the instance by calling
 
 .. code-block:: cpp
 
-             Messenger::Message message;
-             message.subject_id = 99;
-             DDS::InstanceHandle_t handle = message_writer->register_instance(message);
+        Messenger::Message message;
+        message.subject_id = 99;
+        DDS::InstanceHandle_t handle = message_writer->register_instance(message);
 
 After we populate the Message structure we called the register_instance() function to register the instance.
 The instance is identified by the subject_id value of 99 (because we earlier specified that field as the key).
@@ -935,7 +935,7 @@ We can later use the returned instance handle when we publish a sample:
 
 .. code-block:: cpp
 
-             DDS::ReturnCode_t ret = data_writer->write(message, handle);
+        DDS::ReturnCode_t ret = data_writer->write(message, handle);
 
 Publishing samples using the instance handle may be slightly more efficient than forcing the writer to query for the instance and is much more efficient when publishing the first sample on an instance.
 Without explicit registration, the first write causes resource allocation by OpenDDS for that instance.
@@ -964,14 +964,14 @@ Here is a sample call to ``take()`` that reads up to 5 samples at a time.
 
 .. code-block:: cpp
 
-             MessageSeq messages(5);
-             DDS::SampleInfoSeq sampleInfos(5);
-             DDS::ReturnCode_t status =
-                                                                                                    message_dr->take(messages,      sampleInfos,
-                                                       5,
-                                                       DDS::ANY_SAMPLE_STATE,
-                                                       DDS::ANY_VIEW_STATE,
-                                                       DDS::ANY_INSTANCE_STATE);
+        MessageSeq messages(5);
+        DDS::SampleInfoSeq sampleInfos(5);
+        DDS::ReturnCode_t status =
+                                                    message_dr->take(messages,      sampleInfos,
+                             5,
+                             DDS::ANY_SAMPLE_STATE,
+                             DDS::ANY_VIEW_STATE,
+                             DDS::ANY_INSTANCE_STATE);
 
 The three state parameters potentially specialize which samples are returned from the reader.
 See the DDS specification for details on their usage.
@@ -991,16 +991,16 @@ The following example code is taken from ``DevGuideExamples/DCPS/Messenger_ZeroC
 
 .. code-block:: cpp
 
-                 Messenger::MessageSeq messages;
-                 DDS::SampleInfoSeq info;
+          Messenger::MessageSeq messages;
+          DDS::SampleInfoSeq info;
 
-                 // get references to the samples  (zero-copy read of the samples)
-                 DDS::ReturnCode_t status = dr->take(messages,
-                                                                                         info,
-                                                                                         DDS::LENGTH_UNLIMITED,
-                                                                                         DDS::ANY_SAMPLE_STATE,
-                                                                                         DDS::ANY_VIEW_STATE,
-                                                                                         DDS::ANY_INSTANCE_STATE);
+          // get references to the samples  (zero-copy read of the samples)
+          DDS::ReturnCode_t status = dr->take(messages,
+                                              info,
+                                              DDS::LENGTH_UNLIMITED,
+                                              DDS::ANY_SAMPLE_STATE,
+                                              DDS::ANY_VIEW_STATE,
+                                              DDS::ANY_INSTANCE_STATE);
 
 After both zero-copy takes/reads and single-copy takes/reads, the sample and info sequences’ length are set to the number of samples read.
 For the zero-copy reads, the ``max_len`` is set to a ``value >= length``.
@@ -1009,7 +1009,7 @@ Since the application code has asked for a zero-copy loan of the data, it must r
 
 .. code-block:: cpp
 
-                 dr->return_loan(messages, info);
+          dr->return_loan(messages, info);
 
 Calling ``return_loan()`` results in the sequences’ ``max_len`` being set to 0 and its owns member set to false, allowing the same sequences to be used for another zero-copy read.
 

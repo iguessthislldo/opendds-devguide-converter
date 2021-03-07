@@ -109,7 +109,7 @@ First, here is the IDL for Message:
 .. code-block:: omg-idl
 
       module Messenger {
-           @topic
+      @topic
         struct Message {
           long id;
         };

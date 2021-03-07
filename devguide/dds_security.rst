@@ -317,35 +317,35 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
 
     void append(DDS::PropertySeq& props, const char* name, const char* value)
     {
-         const DDS::Property_t prop = {name, value, false /*propagate*/};
-         const unsigned int len = props.length();
-         props.length(len + 1);
-         props[len] = prop;
+      const DDS::Property_t prop = {name, value, false /*propagate*/};
+      const unsigned int len = props.length();
+      props.length(len + 1);
+      props[len] = prop;
     }
 
     int main(int argc, char* argv[])
     {
-         DDS::DomainParticipantFactory_var dpf =
-             TheParticipantFactoryWithArgs(argc, argv);
+      DDS::DomainParticipantFactory_var dpf =
+        TheParticipantFactoryWithArgs(argc, argv);
 
-         // Start with the default Participant QoS
-         DDS::DomainParticipantQos part_qos;
-         dpf->get_default_participant_qos(part_qos);
+      // Start with the default Participant QoS
+      DDS::DomainParticipantQos part_qos;
+      dpf->get_default_participant_qos(part_qos);
 
-         // Add properties required by DDS Security
-         DDS::PropertySeq& props = part_qos.property.value;
-         append(props, DDSSEC_PROP_IDENTITY_CA, auth_ca_file);
-         append(props, DDSSEC_PROP_IDENTITY_CERT, id_cert_file);
-         append(props, DDSSEC_PROP_IDENTITY_PRIVKEY, id_key_file);
-         append(props, DDSSEC_PROP_PERM_CA, perm_ca_file);
-         append(props, DDSSEC_PROP_PERM_GOV_DOC, governance_file);
-         append(props, DDSSEC_PROP_PERM_DOC, permissions_file);
+      // Add properties required by DDS Security
+      DDS::PropertySeq& props = part_qos.property.value;
+      append(props, DDSSEC_PROP_IDENTITY_CA, auth_ca_file);
+      append(props, DDSSEC_PROP_IDENTITY_CERT, id_cert_file);
+      append(props, DDSSEC_PROP_IDENTITY_PRIVKEY, id_key_file);
+      append(props, DDSSEC_PROP_PERM_CA, perm_ca_file);
+      append(props, DDSSEC_PROP_PERM_GOV_DOC, governance_file);
+      append(props, DDSSEC_PROP_PERM_DOC, permissions_file);
 
-         // Create the participant
-         participant = dpf->create_participant(4, // DomainID
-                                                                                     part_qos,
-                                                                                     0, // No listener
-                                                                                     OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+      // Create the participant
+      participant = dpf->create_participant(4, // DomainID
+                                            part_qos,
+                                            0, // No listener
+                                            OpenDDS::DCPS::DEFAULT_STATUS_MASK);
     …
 
 .. _14.5.3:
@@ -572,56 +572,56 @@ Governance XML Example
 
     <?xml version="1.0" encoding="utf-8"?>
     <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.omg.org/spec/DDS- Security/20170801/omg_shared_ca_domain_governance.xsd">
-         <domain_access_rules>
-             <domain_rule>
-                 <domains>
-                     <id>0</id>
-                     <id_range>
-                         <min>10</min>
-                         <max>20</max>
-                     </id_range>
-                 </domains>
+      <domain_access_rules>
+        <domain_rule>
+          <domains>
+            <id>0</id>
+            <id_range>
+              <min>10</min>
+              <max>20</max>
+            </id_range>
+          </domains>
     <allow_unauthenticated_participants>FALSE</allow_unauthenticated_participants>
-                 <enable_join_access_control>TRUE</enable_join_access_control>
-                 <rtps_protection_kind>SIGN</rtps_protection_kind>
-                 <discovery_protection_kind>ENCRYPT</discovery_protection_kind>
-                 <liveliness_protection_kind>SIGN</liveliness_protection_kind>
-                 <topic_access_rules>
-                     <topic_rule>
-                         <topic_expression>Square*</topic_expression>
-                         <enable_discovery_protection>TRUE</enable_discovery_protection>
-                         <enable_read_access_control>TRUE</enable_read_access_control>
-                         <enable_write_access_control>TRUE</enable_write_access_control>
-                         <metadata_protection_kind>ENCRYPT</metadata_protection_kind>
-                         <data_protection_kind>ENCRYPT</data_protection_kind>
-                     </topic_rule>
-                     <topic_rule>
-                         <topic_expression>Circle</topic_expression>
-                         <enable_discovery_protection>TRUE</enable_discovery_protection>
-                         <enable_read_access_control>FALSE</enable_read_access_control>
-                         <enable_write_access_control>TRUE</enable_write_access_control>
-                         <metadata_protection_kind>ENCRYPT</metadata_protection_kind>
-                         <data_protection_kind>ENCRYPT</data_protection_kind>
-                     </topic_rule>
-                     <topic_rule>
-                         <topic_expression>Triangle</topic_expression>
-                         <enable_discovery_protection>FALSE</enable_discovery_protection>
-                         <enable_read_access_control>FALSE</enable_read_access_control>
-                         <enable_write_access_control>TRUE</enable_write_access_control>
-                         <metadata_protection_kind>NONE</metadata_protection_kind>
-                         <data_protection_kind>NONE</data_protection_kind>
-                     </topic_rule>
-                     <topic_rule>
-                         <topic_expression>*</topic_expression>
-                         <enable_discovery_protection>TRUE</enable_discovery_protection>
-                         <enable_read_access_control>TRUE</enable_read_access_control>
-                         <enable_write_access_control>TRUE</enable_write_access_control>
-                         <metadata_protection_kind>ENCRYPT</metadata_protection_kind>
-                         <data_protection_kind>ENCRYPT</data_protection_kind>
-                     </topic_rule>
-                 </topic_access_rules>
-             </domain_rule>
-         </domain_access_rules>
+          <enable_join_access_control>TRUE</enable_join_access_control>
+          <rtps_protection_kind>SIGN</rtps_protection_kind>
+          <discovery_protection_kind>ENCRYPT</discovery_protection_kind>
+          <liveliness_protection_kind>SIGN</liveliness_protection_kind>
+          <topic_access_rules>
+            <topic_rule>
+              <topic_expression>Square*</topic_expression>
+              <enable_discovery_protection>TRUE</enable_discovery_protection>
+              <enable_read_access_control>TRUE</enable_read_access_control>
+              <enable_write_access_control>TRUE</enable_write_access_control>
+              <metadata_protection_kind>ENCRYPT</metadata_protection_kind>
+              <data_protection_kind>ENCRYPT</data_protection_kind>
+            </topic_rule>
+            <topic_rule>
+              <topic_expression>Circle</topic_expression>
+              <enable_discovery_protection>TRUE</enable_discovery_protection>
+              <enable_read_access_control>FALSE</enable_read_access_control>
+              <enable_write_access_control>TRUE</enable_write_access_control>
+              <metadata_protection_kind>ENCRYPT</metadata_protection_kind>
+              <data_protection_kind>ENCRYPT</data_protection_kind>
+            </topic_rule>
+            <topic_rule>
+              <topic_expression>Triangle</topic_expression>
+              <enable_discovery_protection>FALSE</enable_discovery_protection>
+              <enable_read_access_control>FALSE</enable_read_access_control>
+              <enable_write_access_control>TRUE</enable_write_access_control>
+              <metadata_protection_kind>NONE</metadata_protection_kind>
+              <data_protection_kind>NONE</data_protection_kind>
+            </topic_rule>
+            <topic_rule>
+              <topic_expression>*</topic_expression>
+              <enable_discovery_protection>TRUE</enable_discovery_protection>
+              <enable_read_access_control>TRUE</enable_read_access_control>
+              <enable_write_access_control>TRUE</enable_write_access_control>
+              <metadata_protection_kind>ENCRYPT</metadata_protection_kind>
+              <data_protection_kind>ENCRYPT</data_protection_kind>
+            </topic_rule>
+          </topic_access_rules>
+        </domain_rule>
+      </domain_access_rules>
     </dds>
 
 .. _14.7:
@@ -713,55 +713,55 @@ Permissions XML Example
 
     <?xml version="1.0" encoding="UTF-8"?>
     <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.omg.org/spec/DDS-Security/20170801/omg_shared_ca_permissions.xsd">
-         <permissions>
-             <grant name="ShapesPermission">
-                 <subject_name>emailAddress=cto@acme.com, CN=DDS Shapes Demo, OU=CTO Office, O=ACME Inc., L=Sunnyvale, ST=CA, C=US</subject_name>
-                 <validity>
-                     <!-- Format is CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm] The time zone may
-                     be specified as Z (UTC) or (+|-)hh:mm. Time zones that aren't
-                     specified are considered UTC. -->
-                     <not_before>2015-10-26T00:00:00</not_before>
-                     <not_after>2020-10-26T22:45:30</not_after>
-                 </validity>
-                 <allow_rule>
-                     <domains>
-                         <id>0</id>
-                     </domains>
-                 </allow_rule>
-                 <deny_rule>
-                     <domains>
-                         <id>0</id>
-                     </domains>
-                     <publish>
-                         <topics>
-                             <topic>Circle1</topic>
-                         </topics>
-                     </publish>
-                     <publish>
-                         <topics>
-                             <topic>Square</topic>
-                         </topics>
-                         <partitions>
-                             <partition>A_partition</partition>
-                         </partitions>
-                     </publish>
-                     <subscribe>
-                         <topics>
-                             <topic>Square1</topic>
-                         </topics>
-                     </subscribe>
-                     <subscribe>
-                         <topics>
-                             <topic>Tr*</topic>
-                         </topics>
-                         <partitions>
-                             <partition>P1*</partition>
-                         </partitions>
-                     </subscribe>
-                 </deny_rule>
-                 <default>DENY</default>
-             </grant>
-         </permissions>
+      <permissions>
+        <grant name="ShapesPermission">
+          <subject_name>emailAddress=cto@acme.com, CN=DDS Shapes Demo, OU=CTO Office, O=ACME Inc., L=Sunnyvale, ST=CA, C=US</subject_name>
+          <validity>
+            <!-- Format is CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm] The time zone may
+            be specified as Z (UTC) or (+|-)hh:mm. Time zones that aren't
+            specified are considered UTC. -->
+            <not_before>2015-10-26T00:00:00</not_before>
+            <not_after>2020-10-26T22:45:30</not_after>
+          </validity>
+          <allow_rule>
+            <domains>
+              <id>0</id>
+            </domains>
+          </allow_rule>
+          <deny_rule>
+            <domains>
+              <id>0</id>
+            </domains>
+            <publish>
+              <topics>
+                <topic>Circle1</topic>
+              </topics>
+            </publish>
+            <publish>
+              <topics>
+                <topic>Square</topic>
+              </topics>
+              <partitions>
+                <partition>A_partition</partition>
+              </partitions>
+            </publish>
+            <subscribe>
+              <topics>
+                <topic>Square1</topic>
+              </topics>
+            </subscribe>
+            <subscribe>
+              <topics>
+                <topic>Tr*</topic>
+              </topics>
+              <partitions>
+                <partition>P1*</partition>
+              </partitions>
+            </subscribe>
+          </deny_rule>
+          <default>DENY</default>
+        </grant>
+      </permissions>
     </dds>
 
 .. _14.8:

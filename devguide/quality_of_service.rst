@@ -28,11 +28,11 @@ For example, the Publisher’s QoS structure is defined in the specification’s
 .. code-block:: omg-idl
 
     module DDS {
-         struct PublisherQos {
-           PresentationQosPolicy presentation;
-           PartitionQosPolicy partition;
-           GroupDataQosPolicy group_data;
-           EntityFactoryQosPolicy entity_factory;
+      struct PublisherQos {
+       PresentationQosPolicy presentation;
+       PartitionQosPolicy partition;
+       GroupDataQosPolicy group_data;
+       EntityFactoryQosPolicy entity_factory;
      };
     };
 

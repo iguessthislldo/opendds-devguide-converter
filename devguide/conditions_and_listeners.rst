@@ -363,22 +363,22 @@ Mask bit values for each status are defined in DdsDcpsInfrastructure.idl:
 .. code-block:: omg-idl
 
     module DDS {
-         typedef unsigned long StatusKind;
-         typedef unsigned long StatusMask; // bit-mask StatusKind
+      typedef unsigned long StatusKind;
+      typedef unsigned long StatusMask; // bit-mask StatusKind
 
-         const StatusKind INCONSISTENT_TOPIC_STATUS        = 0x0001 << 0;
-         const StatusKind OFFERED_DEADLINE_MISSED_STATUS   = 0x0001 << 1;
-         const StatusKind REQUESTED_DEADLINE_MISSED_STATUS = 0x0001 << 2;
-         const StatusKind OFFERED_INCOMPATIBLE_QOS_STATUS  = 0x0001 << 5;
-         const StatusKind REQUESTED_INCOMPATIBLE_QOS_STATUS= 0x0001 << 6;
-         const StatusKind SAMPLE_LOST_STATUS               = 0x0001 << 7;
-         const StatusKind SAMPLE_REJECTED_STATUS           = 0x0001 << 8;
-         const StatusKind DATA_ON_READERS_STATUS           = 0x0001 << 9;
-         const StatusKind DATA_AVAILABLE_STATUS            = 0x0001 << 10;
-         const StatusKind LIVELINESS_LOST_STATUS           = 0x0001 << 11;
-         const StatusKind LIVELINESS_CHANGED_STATUS        = 0x0001 << 12;
-         const StatusKind PUBLICATION_MATCHED_STATUS       = 0x0001 << 13;
-         const StatusKind SUBSCRIPTION_MATCHED_STATUS      = 0x0001 << 14;
+      const StatusKind INCONSISTENT_TOPIC_STATUS        = 0x0001 << 0;
+      const StatusKind OFFERED_DEADLINE_MISSED_STATUS   = 0x0001 << 1;
+      const StatusKind REQUESTED_DEADLINE_MISSED_STATUS = 0x0001 << 2;
+      const StatusKind OFFERED_INCOMPATIBLE_QOS_STATUS  = 0x0001 << 5;
+      const StatusKind REQUESTED_INCOMPATIBLE_QOS_STATUS= 0x0001 << 6;
+      const StatusKind SAMPLE_LOST_STATUS               = 0x0001 << 7;
+      const StatusKind SAMPLE_REJECTED_STATUS           = 0x0001 << 8;
+      const StatusKind DATA_ON_READERS_STATUS           = 0x0001 << 9;
+      const StatusKind DATA_AVAILABLE_STATUS            = 0x0001 << 10;
+      const StatusKind LIVELINESS_LOST_STATUS           = 0x0001 << 11;
+      const StatusKind LIVELINESS_CHANGED_STATUS        = 0x0001 << 12;
+      const StatusKind PUBLICATION_MATCHED_STATUS       = 0x0001 << 13;
+      const StatusKind SUBSCRIPTION_MATCHED_STATUS      = 0x0001 << 14;
     };
 
 Simply do a bit-wise “or” of the desired status bits to construct a mask for your listener.
@@ -399,7 +399,7 @@ Here is an example showing how to change the listener using ``set_listener()``:
 .. code-block:: cpp
 
       dr->set_listener(listener,
-             DDS::DATA_AVAILABLE_STATUS |       DDS::LIVELINESS_CHANGED_STATUS);
+      DDS::DATA_AVAILABLE_STATUS |       DDS::LIVELINESS_CHANGED_STATUS);
 
 When a plain communication status changes, OpenDDS invokes the most specific relevant listener operation.
 This means, for example, that a data reader’s listener would take precedence over the subscriber’s listener for statuses related to the data reader.

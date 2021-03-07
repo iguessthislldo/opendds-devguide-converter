@@ -90,8 +90,8 @@ This is accomplished by using the ``TheParticipantFactoryWithArgs`` macro:
     int main (int argc, char* argv[])
     {
 
-         DDS::DomainParticipantFactory_var dpf =
-             TheParticipantFactoryWithArgs(argc, argv);
+      DDS::DomainParticipantFactory_var dpf =
+        TheParticipantFactoryWithArgs(argc, argv);
 
 To set a default configuration file to load, use ``TheServiceParticipant->default_configuration_file(ACE_TCHAR* path)``, like in the following example:
 
@@ -102,10 +102,10 @@ To set a default configuration file to load, use ``TheServiceParticipant->defaul
     int main (int argc, char* argv[])
     {
 
-         TheServiceParticipant->default_configuration_file(ACE_TEXT(“pub.ini”));
+      TheServiceParticipant->default_configuration_file(ACE_TEXT(“pub.ini”));
 
-         DDS::DomainParticipantFactory_var dpf =
-             TheParticipantFactoryWithArgs(argc, argv);
+      DDS::DomainParticipantFactory_var dpf =
+        TheParticipantFactoryWithArgs(argc, argv);
 
 ``pub.ini would`` be used unless ``-DCPSConfigFile`` is passed to override the default configuration file.
 

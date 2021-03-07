@@ -80,7 +80,7 @@ To the right of each file name is the name of the tool that generates it, follow
     Foo.idl:
 
     module Baz {
-         @topic
+      @topic
       struct Bar {
         long x;
       };
@@ -367,7 +367,7 @@ The subscriber needs to create a participant in the same domain, register an ide
             }
 
             MessageTypeSupportImpl servant = new MessageTypeSupportImpl();
-                                                   if (servant.register_type(dp, "") != RETCODE_OK.value) {
+                           if (servant.register_type(dp, "") != RETCODE_OK.value) {
               System.err.println ("register_type failed");
               return;
             }
