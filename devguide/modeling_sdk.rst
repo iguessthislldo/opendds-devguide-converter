@@ -282,16 +282,16 @@ It is recommended that Modeling SDK applications catch both ``CORBA::Exception``
     
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
-      ``try {``
-        ``// Create and use OpenDDS Modeling SDK (see sections below)``
-      ``} catch (const CORBA::Exception& e) {``
-        ``// Handle exception and return non-zero``
-      ``} catch (const OpenDDS::DCPS::Transport::Exception& te) {``
-        ``// Handle exception and return non-zero``
-      ``} catch (const std::exception& ex) {``
-        ``// Handle exception and return non-zero``
-      ``}``
-      ``return 0;``
+      try {
+        // Create and use OpenDDS Modeling SDK (see sections below)
+      } catch (const CORBA::Exception& e) {
+        // Handle exception and return non-zero
+      } catch (const OpenDDS::DCPS::Transport::Exception& te) {
+        // Handle exception and return non-zero
+      } catch (const std::exception& ex) {
+        // Handle exception and return non-zero
+      }
+      return 0;
     }
     
 
@@ -310,7 +310,7 @@ The Service provides this interface for entity creation:
     
     DDS::DomainParticipant_var participant(Elements::Participants::Values part);
     DDS::TopicDescription_var topic(Elements::Participants::Values part,
-                                   ``````Elements::Topics::Values topic````);``
+                                    Elements::Topics::Values topic);
     DDS::Publisher_var publisher(Elements::Publishers::Values publisher);
     DDS::Subscriber_var subscriber(Elements::Subscribers::Values subscriber);
     DDS::DataWriter_var writer(Elements::DataWriters::Values writer);
@@ -329,12 +329,12 @@ Using the ``writer()`` method shown above, ``MinimalPublisher.cpp`` continues:
     
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
-      ``try {``
-        ``OpenDDS::Model::Application application(argc, argv);``
-        ``MinimalLib::DefaultMinimalType model(application, argc, argv);``
+      try {
+        OpenDDS::Model::Application application(argc, argv);
+        MinimalLib::DefaultMinimalType model(application, argc, argv);
     
-        ``using OpenDDS::Model::MinimalLib::Elements;``
-        ``DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);``
+        using OpenDDS::Model::MinimalLib::Elements;
+        DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);
     
 
 What remains is to narrow the ``DataWriter`` to a type-specific data writer, and send samples.
@@ -342,15 +342,15 @@ What remains is to narrow the ``DataWriter`` to a type-specific data writer, and
 ::
 
     
-        ``data1::MessageDataWriter_var msg_writer =``
-            ``data1::MessageDataWriter::_narrow(writer);``
-        ``data1::Message message;``
-        ``// Populate message and send``
-        ``message.text = "Worst. Movie. Ever.";``
-        ``DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);``
-        ``if (error != DDS::RETCODE_OK) {``
-          ``// Handle error``
-        ``}``
+        data1::MessageDataWriter_var msg_writer =
+            data1::MessageDataWriter::_narrow(writer);
+        data1::Message message;
+        // Populate message and send
+        message.text = "Worst. Movie. Ever.";
+        DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);
+        if (error != DDS::RETCODE_OK) {
+          // Handle error
+        }
     
 
 In total our publishing application, ``MinimalPublisher.cpp``, looks like this:
@@ -366,28 +366,28 @@ In total our publishing application, ``MinimalPublisher.cpp``, looks like this:
     
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
-      ``try {``
-        ``OpenDDS::Model::Application application(argc, argv);``
-        ``MinimalLib::DefaultMinimalType model(application, argc, argv);``
+      try {
+        OpenDDS::Model::Application application(argc, argv);
+        MinimalLib::DefaultMinimalType model(application, argc, argv);
     
-        ``using OpenDDS::Model::MinimalLib::Elements;``
-        ``DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);``
+        using OpenDDS::Model::MinimalLib::Elements;
+        DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);
     
-        ``data1::MessageDataWriter_var msg_writer =``
-            ``data1::MessageDataWriter::_narrow(writer);``
-        ``data1::Message message;``
-        ``// Populate message and send``
-        ``message.text = "Worst. Movie. Ever.";``
-        ``DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);``
-        ``if (error != DDS::RETCODE_OK) {``
-          ``// Handle error``
-        ``}``
-      ``} catch (const CORBA::Exception& e) {``
-        ``// Handle exception and return non-zero``
-      ``} catch (const std::exception& ex) {``
-        ``// Handle exception and return non-zero``
-      ``}``
-      ``return 0;``
+        data1::MessageDataWriter_var msg_writer =
+            data1::MessageDataWriter::_narrow(writer);
+        data1::Message message;
+        // Populate message and send
+        message.text = "Worst. Movie. Ever.";
+        DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);
+        if (error != DDS::RETCODE_OK) {
+          // Handle error
+        }
+      } catch (const CORBA::Exception& e) {
+        // Handle exception and return non-zero
+      } catch (const std::exception& ex) {
+        // Handle exception and return non-zero
+      }
+      return 0;
     }
     
 
@@ -414,34 +414,34 @@ Subscribers can create a listener by deriving a class from ``NullReaderListener`
     
     class ReaderListener : public OpenDDS::Model::NullReaderListener {
     public:
-      ``virtual void on_data_available(DDS::DataReader_ptr reader)``
-                            ``ACE_THROW_SPEC((CORBA::SystemException)) {``
-        ``data1::MessageDataReader_var reader_i =``
-          ``data1::MessageDataReader::_narrow(reader);``
+      virtual void on_data_available(DDS::DataReader_ptr reader)
+                            ACE_THROW_SPEC((CORBA::SystemException)) {
+        data1::MessageDataReader_var reader_i =
+          data1::MessageDataReader::_narrow(reader);
     
-        ``if (!reader_i) {``
-          ``// Handle error``
-          ``ACE_OS::exit(-1);``
-        ``}``
+        if (!reader_i) {
+          // Handle error
+          ACE_OS::exit(-1);
+        }
     
-        ``data1::Message msg;``
-        ``DDS::SampleInfo info;``
+        data1::Message msg;
+        DDS::SampleInfo info;
     
-        ``// Read until no more messages``
-        ``while (true) {``
-          ``DDS::ReturnCode_t error = reader_i->take_next_sample(msg, info);``
-          ``if (error == DDS::RETCODE_OK) {``
-            ``if (info.valid_data) {``
-              ``std::cout << "Message: " << msg.text.in() << std::endl;``
-            ``}``
-          ``} else {``
-            ``if (error != DDS::RETCODE_NO_DATA) {``
-              ``// Handle error``
-            ``}``
-            ``break;``
-          ``}``
-        ``}``
-      ``}``
+        // Read until no more messages
+        while (true) {
+          DDS::ReturnCode_t error = reader_i->take_next_sample(msg, info);
+          if (error == DDS::RETCODE_OK) {
+            if (info.valid_data) {
+              std::cout << "Message: " << msg.text.in() << std::endl;
+            }
+          } else {
+            if (error != DDS::RETCODE_NO_DATA) {
+              // Handle error
+            }
+            break;
+          }
+        }
+      }
     };
     
 
@@ -450,7 +450,7 @@ In the main function, create a data reader from the service object:
 ::
 
     
-        ``DDS::DataReader_var reader = model.reader(Elements::DataReaders::reader);``
+        DDS::DataReader_var reader = model.reader(Elements::DataReaders::reader);
     
 
 Naturally, the ``DataReaderListener`` must be associated with the data reader in order to get its callbacks.
@@ -458,8 +458,8 @@ Naturally, the ``DataReaderListener`` must be associated with the data reader in
 ::
 
     
-        ``DDS::DataReaderListener_var listener(new ReaderListener);``
-        ``reader->set_listener(listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);``
+        DDS::DataReaderListener_var listener(new ReaderListener);
+        reader->set_listener(listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
     
 
 The remaining subscriber code has the same requirements of any OpenDDS Modeling SDK application, in that it must initialize the OpenDDS library through an ``OpenDDS::Modeling::Application`` object, and create a Service object with the proper DCPS model Elements class and traits class.
@@ -478,63 +478,63 @@ An example subscribing application, ``MinimalSubscriber.cpp``, follows.
     
     class ReaderListener : public OpenDDS::Model::NullReaderListener {
     public:
-      ``virtual void on_data_available(DDS::DataReader_ptr reader)``
-                            ``ACE_THROW_SPEC((CORBA::SystemException)) {``
-        ``data1::MessageDataReader_var reader_i =``
-          ``data1::MessageDataReader::_narrow(reader);``
+      virtual void on_data_available(DDS::DataReader_ptr reader)
+                            ACE_THROW_SPEC((CORBA::SystemException)) {
+        data1::MessageDataReader_var reader_i =
+          data1::MessageDataReader::_narrow(reader);
     
-        ``if (!reader_i) {``
-          ``// Handle error``
-          ``ACE_OS::exit(-1);``
-        ``}``
+        if (!reader_i) {
+          // Handle error
+          ACE_OS::exit(-1);
+        }
     
-        ``data1::Message msg;``
-        ``DDS::SampleInfo info;``
+        data1::Message msg;
+        DDS::SampleInfo info;
     
-        ``// Read until no more messages``
-        ``while (true) {``
-          ``DDS::ReturnCode_t error = reader_i->take_next_sample(msg, info);``
-          ``if (error == DDS::RETCODE_OK) {``
-            ``if (info.valid_data) {``
-              ``std::cout << "Message: " << msg.text.in() << std::endl;``
-            ``}``
-          ``} else {``
-            ``if (error != DDS::RETCODE_NO_DATA) {``
-              ``// Handle error``
-            ``}``
-            ``break;``
-          ``}``
-        ``}``
-      ``}``
+        // Read until no more messages
+        while (true) {
+          DDS::ReturnCode_t error = reader_i->take_next_sample(msg, info);
+          if (error == DDS::RETCODE_OK) {
+            if (info.valid_data) {
+              std::cout << "Message: " << msg.text.in() << std::endl;
+            }
+          } else {
+            if (error != DDS::RETCODE_NO_DATA) {
+              // Handle error
+            }
+            break;
+          }
+        }
+      }
     };
     
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
-      ``try {``
-        ``OpenDDS::Model::Application application(argc, argv);``
-        ``MinimalLib::DefaultMinimalType model(application, argc, argv);``
+      try {
+        OpenDDS::Model::Application application(argc, argv);
+        MinimalLib::DefaultMinimalType model(application, argc, argv);
     
-        ``using OpenDDS::Model::MinimalLib::Elements;``
+        using OpenDDS::Model::MinimalLib::Elements;
     
-        ``DDS::DataReader_var reader = model.reader(Elements::DataReaders::reader);``
+        DDS::DataReader_var reader = model.reader(Elements::DataReaders::reader);
     
-        ``DDS::DataReaderListener_var listener(new ReaderListener);``
-        ``reader->set_listener(listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);``
+        DDS::DataReaderListener_var listener(new ReaderListener);
+        reader->set_listener(listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
     
-        ``// Call on_data_available in case there are samples which are waiting``
-        ``listener->on_data_available(reader);``
+        // Call on_data_available in case there are samples which are waiting
+        listener->on_data_available(reader);
     
-        ``// At this point the application can wait for an exteral “stop” indication``
-        ``// such as blocking until the user terminates the program with Ctrl-C.``
+        // At this point the application can wait for an exteral “stop” indication
+        // such as blocking until the user terminates the program with Ctrl-C.
     
-      ``} catch (const CORBA::Exception& e) {``
-        ``e._tao_print_exception("Exception caught in main():");``
-        ``return -1;``
-      ``} catch (const std::exception& ex) {``
-        ``// Handle error``
-        ``return -1;``
-      ``}``
-      ``return 0;``
+      } catch (const CORBA::Exception& e) {
+        e._tao_print_exception("Exception caught in main():");
+        return -1;
+      } catch (const std::exception& ex) {
+        // Handle error
+        return -1;
+      }
+      return 0;
     }
     
 
@@ -548,7 +548,7 @@ This is in addition to the dcpsexe base from which non-Modeling SDK projects inh
 
     
     project(*Publisher) : dcpsexe, dds_model {
-      ``// project configuration``
+      // project configuration
     }
     
 
@@ -559,9 +559,9 @@ OpenDDS modeling applications must both (1) include the generated model library 
 
     
     project(*Publisher) : dcpsexe, dds_model {
-      ``// project configuration``
-      ``libs  += Minimal``
-      ``after += Minimal``
+      // project configuration
+      libs  += Minimal
+      after += Minimal
     }
     
 
@@ -571,7 +571,7 @@ Both of these can be accomplished by inheriting from the model library's project
 
     
     project(*Publisher) : dcpsexe, dds_model, Minimal {
-      ``// project configuration``
+      // project configuration
     }
     
 
@@ -584,8 +584,8 @@ Using either form, the MPC file must tell the build system where to look for the
 
     
     project(*Publisher) : dcpsexe, dds_model, Minimal {
-      ``// project configuration``
-      ``libpaths += model``
+      // project configuration
+      libpaths += model
     }
     
 
@@ -596,9 +596,9 @@ Finally, like any other MPC project, its source files must be included:
 ::
 
     
-      ``Source_Files {``
-        ``MinimalPublisher.cpp``
-      ``}``
+      Source_Files {
+        MinimalPublisher.cpp
+      }
     
 
 The final MPC project looks like this for the publisher:
@@ -607,12 +607,12 @@ The final MPC project looks like this for the publisher:
 
     
     project(*Publisher) : dcpsexe, dds_model, Minimal {
-      ``exename   = publisher``
-      ``libpaths += model``
+      exename   = publisher
+      libpaths += model
     
-      ``Source_Files {``
-        ``MinimalPublisher.cpp``
-      ``}``
+      Source_Files {
+        MinimalPublisher.cpp
+      }
     }
     
 
@@ -622,12 +622,12 @@ And similar for the subscriber:
 
     
     project(*Subscriber) : dcpsexe, dds_model, Minimal {
-      ``exename   = subscriber``
-      ``libpaths += model``
+      exename   = subscriber
+      libpaths += model
     
-      ``Source_Files {``
-        ``MinimalSubscriber.cpp``
-      ``}``
+      Source_Files {
+        MinimalSubscriber.cpp
+      }
     }
     
 
@@ -647,21 +647,21 @@ Our full MPC file looks like this:
 
     
     project(*Publisher) : dcpsexe, dds_model, Minimal, Minimal_paths {
-      ``exename   = publisher``
-      ``libpaths += model``
+      exename   = publisher
+      libpaths += model
     
-      ``Source_Files {``
-        ``MinimalPublisher.cpp``
-      ``}``
+      Source_Files {
+        MinimalPublisher.cpp
+      }
     }
     
     project(*Subscriber) : dcpsexe, dds_model, Minimal, Minimal_paths {
-      ``exename   = subscriber``
-      ``libpaths += model``
+      exename   = subscriber
+      libpaths += model
     
-      ``Source_Files {``
-        ``MinimalSubscriber.cpp``
-      ``}``
+      Source_Files {
+        MinimalSubscriber.cpp
+      }
     }
     
     

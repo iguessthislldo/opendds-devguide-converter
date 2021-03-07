@@ -276,7 +276,7 @@ Start the first repository as:
 ::
 
     
-        ``$DDS/bin/DCPSInfoRepo -ORBSvcConf tcp.conf -o repo.ior -FederationId 1024``
+        $DDS/bin/DCPSInfoRepo -ORBSvcConf tcp.conf -o repo.ior -FederationId 1024
     
 
 The ``-o repo.ior`` option ensures that the repository IOR will be placed into the file as expected by the configuration files.
@@ -288,14 +288,14 @@ Start the second repository as:
 ::
 
     
-        ``$DDS/bin/DCPSInfoRepo -ORBSvcConf tcp.conf \``
-          ``-ORBListenEndpoints iiop://localhost:2112 \``
-          ``-FederationId 2048 -FederateWith file://repo.ior``
+        $DDS/bin/DCPSInfoRepo -ORBSvcConf tcp.conf \
+          -ORBListenEndpoints iiop://localhost:2112 \
+          -FederationId 2048 -FederateWith file://repo.ior
     
 
 Note that this is all intended to be on a single command line.
-The ``-ORBSvcConf````tcp.conf`` option is the same as in the previous example.
-The ``-ORBListenEndpoints iiop://````localhost````:2112`` option ensures that the repository will be listening on the port that the previous configuration files are expecting.
+The ``-ORBSvcConftcp.conf`` option is the same as in the previous example.
+The ``-ORBListenEndpoints iiop://localhost:2112`` option ensures that the repository will be listening on the port that the previous configuration files are expecting.
 The ``-FederationId 2048`` option assigns the value 2048 as the repositories unique id within the federation.
 The ``-FederateWith file://repo.ior`` option initiates federation with the repository located at the IOR contained within the named file - which was written by the previously started repository.
 

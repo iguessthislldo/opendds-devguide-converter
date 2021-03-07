@@ -139,7 +139,7 @@ Building OpenDDS with Security on Linux
 
 Xerces-C++ and OpenSSL may be installed using the system package manager, or built from source.
 If using the system package manager (that is, headers can be found under /usr/include), invoke the configure script with the --security option.
-If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar``command line options.
+If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar`` command line options.
 
 Building OpenDDS with Security on macOS
 =======================================
@@ -452,7 +452,7 @@ Recognized values are: ``{true or false}``
 The method used to protect domain data (message signatures or message encryption) along with the ability to include origin authentication for either protection kind.
 Currently, OpenDDS doesn’t implement origin authentication.
 So while the "_WITH_ORIGIN_AUTHENTICATION" options are recognized, the underlying configuration is unsupported.
-Recognized values are: ``{NONE, SIGN, ENCRYPT,````SIGN_WITH_ORIGIN_AUTHENTICATION``, or ``ENCRYPT_WITH_ORIGIN_AUTHENTICATION````}``
+Recognized values are: ``{NONE, SIGN, ENCRYPT,SIGN_WITH_ORIGIN_AUTHENTICATION``, or ``ENCRYPT_WITH_ORIGIN_AUTHENTICATION}``
 
 **BasicProtectionKind**
 

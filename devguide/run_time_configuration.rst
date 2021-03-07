@@ -123,14 +123,14 @@ A sample ``[common]`` section follows:
 ::
 
     
-        ``[common]``
-        ``DCPSDebugLevel=0``
-        ``DCPSInfoRepo=localhost:12345``
-        ``DCPSLivelinessFactor=80``
-        ``DCPSChunks=20``
-        ``DCPSChunksAssociationMultiplier=10``
-        ``DCPSBitLookupDurationMsec=2000``
-        ``DCPSPendingTimeout=30``
+        [common]
+        DCPSDebugLevel=0
+        DCPSInfoRepo=localhost:12345
+        DCPSLivelinessFactor=80
+        DCPSChunks=20
+        DCPSChunksAssociationMultiplier=10
+        DCPSBitLookupDurationMsec=2000
+        DCPSPendingTimeout=30
     
     
 
@@ -143,7 +143,7 @@ For example:
 ::
 
     
-        ``subscriber -DCPSInfoRepo localhost:12345``
+        subscriber -DCPSInfoRepo localhost:12345
     
 
 The following table summarizes the ``[common]`` configuration options:
@@ -222,7 +222,7 @@ The following table summarizes the ``[common]`` configuration options:
 |                                               | This controls the security debug logging granularity by category.                                                                                                                                                                      |                                                         |
 |                                               | See Section 7.6.3 “Security Logging” for details.                                                                                                                                                                                      |                                                         |
 +-----------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
-| ``DCPS````Security````DebugLevel=````n``      | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``N/A``                                                 |
+| ``DCPSSecurityDebugLevel=n``                  | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``N/A``                                                 |
 |                                               | This controls the security debug logging granularity by debug level.                                                                                                                                                                   |                                                         |
 |                                               | See Section 7.6.3 “Security Logging” for details.                                                                                                                                                                                      |                                                         |
 +-----------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
@@ -309,8 +309,8 @@ Here is an example:
 ::
 
     
-    [domain/**books**]
-    **DomainId**=1
+    [domain/books]
+    DomainId=1
     DiscoveryConfig=DiscoveryConfig1
     
 
@@ -329,9 +329,9 @@ Here is an extension of our example:
 ::
 
     [domain/1]
-    DiscoveryConfig=**DiscoveryConfig1**
+    DiscoveryConfig=DiscoveryConfig1
     
-    [repository/**DiscoveryConfig1**]
+    [repository/DiscoveryConfig1]
     RepositoryIor=host1.mydomain.com:12345
     
 
@@ -648,9 +648,9 @@ The following example uses the ``[common]`` section to point to an instance of a
 
     
     [common]
-    ``DCPSDefaultDiscovery=````TheRTPSConfig``
+    DCPSDefaultDiscovery=TheRTPSConfig
     
-    ``[rtps_discovery/````TheRTPSConfig````]``
+    [rtps_discovery/TheRTPSConfig]
     ResendPeriod=5
     
 
@@ -777,7 +777,7 @@ Those properties, along with options specific to OpenDDS’s RTPS Discovery impl
 +------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``MulticastInterface=iface``                   | Specifies the network interface to be used by this discovery instance.                                                                                          | The system default interface is used     |
 |                                                | This uses a platform-specific format that identifies the network interface.                                                                                     |                                          |
-|                                                | On Linux systems this would be something like eth``0``.                                                                                                         |                                          |
+|                                                | On Linux systems this would be something like eth ``0``.                                                                                                        |                                          |
 |                                                |                                                                                                                                                                 |                                          |
 |                                                | If this value is not configured, the Common Configuration value ``DCPSDefaultAddress`` is used to set the multicast interface.                                  |                                          |
 +------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
@@ -1275,13 +1275,13 @@ Here is the source code mechanism (using a domain participant):
 ::
 
     
-      ``DDS::DomainParticipant_var dp =``
-              ``dpf->create_participant(MY_DOMAIN,``
-                                      ``PARTICIPANT_QOS_DEFAULT,``
-                                      ``DDS::DomainParticipantListener::_nil(),``
-                                      ``OpenDDS::DCPS::DEFAULT_STATUS_MASK);``
+      DDS::DomainParticipant_var dp =
+              dpf->create_participant(MY_DOMAIN,
+                                      PARTICIPANT_QOS_DEFAULT,
+                                      DDS::DomainParticipantListener::_nil(),
+                                      OpenDDS::DCPS::DEFAULT_STATUS_MASK);
     
-     ``OpenDDS::DCPS::TransportRegistry::instance()->bind_config("config_b", dp);``
+     OpenDDS::DCPS::TransportRegistry::instance()->bind_config("config_b", dp);
     
 
 Any Data Writers or Readers owned by this Domain Participant should now use the “``B``” side configuration.
@@ -1294,7 +1294,7 @@ Transport Registry Example
 ==========================
 
 OpenDDS allows developers to also define transport configurations and instances via C++ APIs.
-The``````OpenDDS::DCPS::TransportRegistry``````class is used to construct ``OpenDDS::DCPS::TransportConfig`` and ``OpenDDS::DCPS::TransportInst`` objects.
+The ``OpenDDS::DCPS::TransportRegistry`` class is used to construct ``OpenDDS::DCPS::TransportConfig`` and ``OpenDDS::DCPS::TransportInst`` objects.
 The ``TransportConfig`` and ``TransportInst`` classes contain public data member corresponding to the options defined below.
 This section contains the code equivalent of the simple transport configuration file described in .
 First, we need to include the correct header files:
@@ -1692,7 +1692,7 @@ The interesting pattern that this allows for is a deployed OpenDDS application t
     DCPSGlobalTransportConfig=myconfig
     
     [config/myconfig]
-    ``transports=mytcp,````myrtps``
+    transports=mytcp,myrtps
     
     [transport/myrtps]
     transport_type=rtps_udp
@@ -1724,7 +1724,7 @@ Some implementation notes related to using the ``rtps_udp`` transport protocol a
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | ``multicast_interface=iface``       | Specifies the network interface to be used by this transport instance.                                                                                        | The system default interface is used |
 |                                     | This uses a platform-specific format that identifies the network interface.                                                                                   |                                      |
-|                                     | On Linux systems this would be something like eth``0``.                                                                                                       |                                      |
+|                                     | On Linux systems this would be something like eth ``0``.                                                                                                      |                                      |
 |                                     |                                                                                                                                                               |                                      |
 |                                     | If this value is not configured, the Common Configuration value ``DCPSDefaultAddress`` is used to set the multicast interface.                                |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
@@ -1829,7 +1829,7 @@ Configuring a Set of Similar Transports
 
 Transport template sections are specified as ``[transport_template/name]``.
 They are similar to ``[transport]`` sections and use the same configuration properties as well as an optional ``Customization`` property that maps to a named ``[Customization]`` section.
-To associate a transport template with a domain range in a configuration file, set the ``DCPSGlobalTransportConfig`` property in the ``[````c````ommon]`` section to the name of the ``[config]`` whose transports property is the name of the transport template.
+To associate a transport template with a domain range in a configuration file, set the ``DCPSGlobalTransportConfig`` property in the ``[common]`` section to the name of the ``[config]`` whose transports property is the name of the transport template.
 For example, for a global config setting
 
 ::
@@ -1866,7 +1866,7 @@ Adding Customizations
 
 * ``InteropMulticastOverride=AddDomainId`` adds the domain id to the last octet of the ``InteropMulticastOverride`` address
 
-* ``multicast_group_address=add_domain_id_to_ip_addr``adds the domain ID to the last octet of the multicast group address
+* ``multicast_group_address=add_domain_id_to_ip_addr`` adds the domain ID to the last octet of the multicast group address
 
 * ``multicast_group_address=add_domain_id_to_port`` uses the domain ID in the port calculation for the multicast group address
 

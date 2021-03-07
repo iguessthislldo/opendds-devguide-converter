@@ -63,14 +63,14 @@ Query expressions (5.3.1) and topic expressions (5.4.1) are also defined in Anne
 Filter expressions are combinations of one or more predicates.
 Each predicate is a logical expression taking one of two forms:
 
-* ``<arg1> <RelOp>````<arg2>``
+* ``<arg1> <RelOp><arg2>``
 
 * * ``arg1`` and ``arg2`` are arguments which may be either a literal value (integer, character, floating-point, string, or enumeration), a parameter placeholder of the form ``%n`` (where n is a zero-based index into the parameter sequence), or a field reference.
 
   * At least one of the arguments must be a field reference, which is the name of an IDL struct field, optionally followed by any number of ‘.’ and another field name to represent nested structures.
 
   * ``RelOp`` is a relational operator from the list: ``=``, ``>``, ``>=``, ``<``, ``<=``, ``<>``, and ‘``like``’.
-    ‘l``ike``’ is a wildcard match using ``%`` to match any number of characters and _ to match a single character.
+    ‘l ``ike``’ is a wildcard match using ``%`` to match any number of characters and _ to match a single character.
 
   * Examples of this form of predicate include: ``a = 'z'``, ``b <> 'str'``, ``c < d``, ``e = 'enumerator'``, ``f >= 3.14e3``, ``27 > g``, ``h <> i``, ``j.k.l like %0``
 

@@ -311,7 +311,7 @@ DDS Discovery
 DDS applications must discover one another via some central agent or through some distributed scheme.
 An important feature of OpenDDS is that DDS applications can be configured to perform discovery using the DCPSInfoRepo or RTPS discovery, but utilize a different transport type for data transfer between data writers and data readers.
 The OMG DDS specification (``formal/2015-04-10``) leaves the details of discovery to the implementation.
-In the case of interoperability between DDS implementations, the OMG DDSI-RTPS``(````formal/2014-09-01````)`` specification provides requirements for a peer-to-peer style of discovery.
+In the case of interoperability between DDS implementations, the OMG DDSI-RTPS ``(formal/2014-09-01)`` specification provides requirements for a peer-to-peer style of discovery.
 
 OpenDDS provides two options for discovery.
 
@@ -413,16 +413,16 @@ If you are not using the *configure*script, continue reading below for instructi
 For the features described below, MPC is used for enabling (the default) a feature or disabling the feature.
 For a feature named *feature*, the following steps are used to disable the feature from the build:
 
-#. Use the command line “features” argument to MPC:``mwc.pl -type <type> -features````feature````=0 DDS.mwc``Or alternatively, add the line ``feature````=0`` to the file ``$ACE_ROOT/bin/MakeProjectCreator/config/default.features`` and regenerate the project files using MPC.
+#. Use the command line “features” argument to MPC:``mwc.pl -type <type> -featuresfeature=0 DDS.mwc`` Or alternatively, add the line ``feature=0`` to the file ``$ACE_ROOT/bin/MakeProjectCreator/config/default.features`` and regenerate the project files using MPC.
 
-#. If you are using the ``gnuace`` MPC project type (which is the case if you will be using GNU make as your build system), add line “``feature````=0``” to the file ``$ACE_ROOT/include/makeinclude/platform_macros.GNU``.
+#. If you are using the ``gnuace`` MPC project type (which is the case if you will be using GNU make as your build system), add line “``feature=0``” to the file ``$ACE_ROOT/include/makeinclude/platform_macros.GNU``.
 
-To explicitly enable the feature, use ``feature````=1``````above.
+To explicitly enable the feature, use ``feature=1`` above.
 
 .. note:: You can also use the ``$DDS_ROOT/configure`` script to enable or disable features.
-  To disable the feature, pass ``--no-````feature`` to the script, to enable pass ``--````feature``.
+  To disable the feature, pass ``--no-feature`` to the script, to enable pass ``--feature``.
   In this case ‘``-``’ is used instead of ‘``_``’ in the feature name.
-  For example, to disable feature ``content_subscription``````discussed below, pass ``--no-content-subscription`` to the configure script.
+  For example, to disable feature ``content_subscription`` discussed below, pass ``--no-content-subscription`` to the configure script.
 
 Disabling the Building of Built-In Topic Support
 ================================================
@@ -493,7 +493,7 @@ Feature Name: ``object_model_profile``
 
 This profile includes support for the ``PRESENTATION`` access_scope setting of ‘``GROUP``’.
 
-.. note:: Currently, the ``PRESENTATION`` access_scope of ‘``TOPIC``’ is also excluded when ``object_model_profile``````is disabled.
+.. note:: Currently, the ``PRESENTATION`` access_scope of ‘``TOPIC``’ is also excluded when ``object_model_profile`` is disabled.
 
 **************************************
 Building Applications that use OpenDDS

@@ -36,12 +36,12 @@ Listeners may be optionally implemented by the application.
 The ``Recorder`` class acts similarly to a ``DataReader`` and the ``Replayer`` class acts similarly to a ``DataWriter``.
 
 Both ``Recorder`` and ``Replayer`` make use of the underlying OpenDDS discovery and transport libraries as if they were ``DataReader`` and ``DataWriter``, respectively.
-Regular OpenDDS applications in the domain will “see” the ``Recorder`` objects as if they were remote ``DataReader``s and ``Replayers`` as if they were ``DataWriter``s.
+Regular OpenDDS applications in the domain will “see” the ``Recorder`` objects as if they were remote ``DataReader`` s and ``Replayers`` as if they were ``DataWriter`` s.
 
 Usage Model
 ===========
 
-The application creates any number of ``Recorder``s and ``Replayer``s as necessary.
+The application creates any number of ``Recorder`` s and ``Replayer`` s as necessary.
 This could be based on using the Built-In Topics to dynamically discover which topics are active in the Domain.
 Creating a ``Recorder`` or ``Replayer`` requires the application to provide a topic name and type name (as in ``DomainParticipant::create_topic()``) and also the relevant QoS data structures.
 The ``Recorder`` requires SubscriberQos and DataReaderQos whereas the ``Replayer`` requires PublisherQos and DataWriterQos.
@@ -52,12 +52,12 @@ Here is the code needed to create a recorder:
 ::
 
     
-     ``OpenDDS::DCPS::Recorder_var recorder =``
-          ``service_participant->create_recorder(domain_participant,``
-                                               ``topic.in(),``
-                                               ``sub_qos,``
-                                               ``dr_qos,``
-                                               ``recorder_listener);``
+     OpenDDS::DCPS::Recorder_var recorder =
+          service_participant->create_recorder(domain_participant,
+                                               topic.in(),
+                                               sub_qos,
+                                               dr_qos,
+                                               recorder_listener);
     
 
 Data samples are made available to the application via the ``RecorderListener`` using a simple “one callback per sample” model.
@@ -71,13 +71,13 @@ Here is a class definition for a user-defined Recorder Listener.
     class MessengerRecorderListener : public OpenDDS::DCPS::RecorderListener
     {
     public:
-      ``MessengerRecorderListener();``
+      MessengerRecorderListener();
     
-      ``virtual void on_sample_data_received(OpenDDS::DCPS::Recorder*,``
-                                           ``const OpenDDS::DCPS::RawDataSample& sample);``
+      virtual void on_sample_data_received(OpenDDS::DCPS::Recorder*,
+                                           const OpenDDS::DCPS::RawDataSample& sample);
     
-      ``virtual void on_recorder_matched(OpenDDS::DCPS::Recorder*,``
-                                       ``const DDS::SubscriptionMatchedStatus& status );``
+      virtual void on_recorder_matched(OpenDDS::DCPS::Recorder*,
+                                       const DDS::SubscriptionMatchedStatus& status );
     
     };
     
@@ -90,7 +90,7 @@ Here is an example call that replays a sample to all readers connected on a repl
 ::
 
     
-         ``replayer->write(sample);``
+         replayer->write(sample);
     
 
 Because the stored data is dependent on the definition of the data structure, it can’t be used across different versions of OpenDDS or different versions of the IDL used by the OpenDDS participants.
@@ -144,7 +144,7 @@ Durability details
 ------------------
 
 On the ``Recorder`` side, transient local durability works just the same as any normal ``DataReader``.
-Durable data is received from matched ``DataWriter``s.
+Durable data is received from matched ``DataWriter`` s.
 On the ``Replayer`` side there are some differences.
 As opposed to the normal DDS ``DataWriter``, ``Replayer`` is not caching/storing any data samples (they are simply sent to the transport).
 Because instances are not known, storing data samples according to the usual History and Resource Limits rules is not possible.

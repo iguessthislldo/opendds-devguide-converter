@@ -13,7 +13,6 @@ doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 # - Section Links
 # - Footnotes
 # - List in "Building OpenDDS with Security on Windows"
-# - ``...`` within code blocks in "Setting up an OpenDDS Java Project" onwards in java file
 
 # Tasks
 # - Replace Section Numbers with Names
@@ -70,7 +69,68 @@ def get_header(title, level):
   return rv + '\n'
 
 
+def fix_monospace(raw_string, last_char_arg=None):
+  tick_count = 0
+  string = ''
+  keep_back = None
+  state = 0
+  for c in raw_string:
+    last_char = string[-1] if string else last_char_arg
+    if c == '`':
+      if state == 0: # Left of ``..``
+        if tick_count == 1: # Almost Inside ``..``
+          if last_char and last_char.isalnum():
+            string += ' '
+          string += '``'
+          state = 1
+          tick_count = 0
+        else:
+          tick_count += 1
+        continue
+      elif state == 1: # Inside ``..``
+        if tick_count == 1: # Almost Outside ``..``
+          keep_back = '``'
+          state = 2
+          tick_count = 0
+        else:
+          tick_count += 1
+        continue
+      elif state == 2: # After ``..``
+        if tick_count == 1: # Almost Outside ``..``
+          tick_count = 0
+          keep_back = None
+          state = 1
+        else:
+          tick_count += 1
+        continue
+    else:
+      if state == 2: # After ``
+        string += keep_back
+        keep_back = None
+        if c.isalnum():
+          string += ' '
+        state = 0
+      else:
+        if keep_back:
+          string += keep_back
+          keep_back = None
+        string += '`' * tick_count
+        tick_count = 0
+    string += c
+  if keep_back:
+    string += keep_back
+  return string
+
+
 def write_table(rows, out):
+  new_rows = []
+  for row in rows:
+    new_row = []
+    for cell in row:
+      new_row.append(fix_monospace(cell))
+    new_rows.append(new_row)
+  rows = new_rows
+
   # Get Column Count
   col_count = None
   for row in rows:
@@ -294,6 +354,10 @@ class Out:
     self.path = None
     self.pages = []
     self.newline_count = 0
+    self.keep_back = None
+    self.tilde_count = 0
+    self.inline_monospace_state = 0
+    self.last_char = None
 
   @staticmethod
   def filename(name):
@@ -322,22 +386,73 @@ class Out:
       end = kwargs.get('end', '')
       sep = kwargs.get('sep', ' ')
       raw_string = sep.join(args) + end
-      string = ''
-      for c in raw_string:
-        if c == '\n':
-          if self.newline_count == 2:
+      if self.path:
+        string = ''
+        for c in raw_string:
+          last_char = string[-1] if string else self.last_char
+          if c == '\n':
+            if self.keep_back:
+              string += self.keep_back
+              self.keep_back = None
+            string += '`' * self.tilde_count
+            self.tilde_count = 0
+            self.inline_monospace_state = 0
+            if self.newline_count == 2:
+              self.newline_count = 0
+              continue
+            self.newline_count += 1
+          elif c == '`':
             self.newline_count = 0
-            continue
-          self.newline_count += 1
-        else:
-          self.newline_count = 0
-        string += c
+            if self.inline_monospace_state == 0: # Left of ``..``
+              if self.tilde_count == 1: # Almost Inside ``..``
+                if last_char.isalnum():
+                  string += ' '
+                string += '``'
+                self.inline_monospace_state = 1
+                self.tilde_count = 0
+              else:
+                self.tilde_count += 1
+              continue
+            elif self.inline_monospace_state == 1: # Inside ``..``
+              if self.tilde_count == 1: # Almost Outside ``..``
+                self.keep_back = '``'
+                self.inline_monospace_state = 2
+                self.tilde_count = 0
+              else:
+                self.tilde_count += 1
+              continue
+            elif self.inline_monospace_state == 2: # After ``..``
+              if self.tilde_count == 1: # Almost Outside ``..``
+                self.tilde_count = 0
+                self.keep_back = None
+                self.inline_monospace_state = 1
+              else:
+                self.tilde_count += 1
+              continue
+          else:
+            if self.inline_monospace_state == 2: # After ``
+              string += self.keep_back
+              self.keep_back = None
+              if c.isalnum():
+                string += ' '
+              self.inline_monospace_state = 0
+            else:
+              if self.keep_back:
+                string += self.keep_back
+                self.keep_back = None
+              string += '`' * self.tilde_count
+              self.tilde_count = 0
+            self.newline_count = 0
+          string += c
+      else:
+        string = raw_string
 
+      if string:
+        self.last_char = string[-1]
       print(string, end='', file=self.out)
 
   def writeln(self, *args, **kwargs):
-    if self.out is not None:
-      self.write(*args, **kwargs, end='\n')
+    self.write(*args, **kwargs, end='\n')
 
   def close(self):
     if self.out is not None:
@@ -366,9 +481,8 @@ class Info:
     self.doc = doc
     self.data = []
     self.all_style_prop_groups = {}
-    self.sections = []
-    self.push(section=self.sections, section_level=0, section_number=0)
-    self.section_dict = {}
+    self.sections = {}
+    self.push(section_level=0, section_number=0, section_ref="")
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -426,6 +540,7 @@ def convert_child_nodes(info, node, out):
   for child in node.childNodes:
     if child.nodeType == element.Node.ELEMENT_NODE and \
         child.qname[1] == 'p' and Style(info, child).inline == 'monospace':
+      info.push(ignore_style=True)
       indent = None
       for grandchild in child.childNodes:
         if grandchild.nodeType == element.Node.ELEMENT_NODE and \
@@ -436,6 +551,7 @@ def convert_child_nodes(info, node, out):
             break
       indent = 0 if indent is None else int(indent)
       code_lines.append(('  ' * indent) + get_text(info, child))
+      info.pop()
     else:
       if code_lines:
         write_code(out, code_lines)
@@ -538,29 +654,25 @@ def handle_header(info, node, out=None):
     out.write(get_header(name, level))
 
   else: # in reference_builder
+    level += 1
     section_level = info.get('section_level', ignore_last=False)
-    section = info.get('section', ignore_last=False)
     section_number = info.get('section_number', ignore_last=False)
+    section_ref = info.get('section_ref', ignore_last=False)
     if level > section_level:
-      # section.append(name)
-      # section_number = info.get('section_number', ignore_last=False) + 1
-      # info.set(section_number=section_number)
-      new_section = [name]
-      section.append(new_section)
+      if section_number > 0:
+        section_ref += str(section_number) + "."
       section_number = 1
-      info.push(section_level=level, section=new_section, section_number=section_number)
+      info.push(section_level=level, section_ref=section_ref, section_number=section_number)
     elif level < section_level:
       for i in range(section_level - level):
         info.pop()
-      section = info.get('section', ignore_last=False)
-      section.append(name)
       section_number = info.get('section_number', ignore_last=False) + 1
       info.set(section_number=section_number)
     else:
-      section.append(name)
       section_number = info.get('section_number', ignore_last=False) + 1
       info.set(section_number=section_number)
-    # print('  ' * level, section_number, name)
+    section_ref = info.get('section_ref', ignore_last=False) + str(section_number)
+    print('  ' * (level - 1), section_ref, name)
 
 
 def reference_builder(info, node):
@@ -718,7 +830,6 @@ section = doc.getElementsByType(Section)[0]
 
 ref_info = Info(doc)
 reference_builder(ref_info, section)
-# print(ref_info.sections)
 
 out = Out()
 info = Info(doc)
