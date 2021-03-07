@@ -1,3 +1,5 @@
+.. _12:
+
 ############################
 Alternate Interfaces to Data
 ############################
@@ -16,6 +18,7 @@ The two approaches are:
   * Observers play a role similar to the spec-defined Listeners (attached to DataReaders and/or DataWriters).
     Unlike the Listeners, Observers don’t need to interact with the DataReader/Writer caches to access the data samples.
 
+.. _12.1:
 
 *********************
 Recorder and Replayer
@@ -28,6 +31,8 @@ Effectively, the samples are treated as if each one contains an opaque byte sequ
 
 The purpose of this section is to describe the public API for OpenDDS to enable the recording/replaying use-case.
 
+.. _12.1.1:
+
 API Structure
 =============
 
@@ -37,6 +42,8 @@ The ``Recorder`` class acts similarly to a ``DataReader`` and the ``Replayer`` c
 
 Both ``Recorder`` and ``Replayer`` make use of the underlying OpenDDS discovery and transport libraries as if they were ``DataReader`` and ``DataWriter``, respectively.
 Regular OpenDDS applications in the domain will “see” the ``Recorder`` objects as if they were remote ``DataReader`` s and ``Replayers`` as if they were ``DataWriter`` s.
+
+.. _12.1.2:
 
 Usage Model
 ===========
@@ -95,6 +102,8 @@ Here is an example call that replays a sample to all readers connected on a repl
 
 Because the stored data is dependent on the definition of the data structure, it can’t be used across different versions of OpenDDS or different versions of the IDL used by the OpenDDS participants.
 
+.. _12.1.3:
+
 QoS Processing
 ==============
 
@@ -139,6 +148,7 @@ The properties can be divided into a few categories:
 
   * User/Group Data
 
+.. _12.1.3.1:
 
 Durability details
 ------------------
@@ -151,6 +161,8 @@ Because instances are not known, storing data samples according to the usual His
 Instead, transient local durability can be supported with a “pull” model whereby the middleware invokes a method on the ``ReplayerListener`` when a new remote ``DataReader`` is discovered.
 The application can then call a method on the ``Replayer`` with any data samples that should be sent to that newly-joined ``DataReader``.
 Determining which samples these are is left to the application.
+
+.. _12.2:
 
 ********
 Observer
@@ -170,6 +182,7 @@ The following events can be observed:
 
 * DataReader sample received (enters the cache), read, taken
 
+.. _12.2.1:
 
 Attaching Observers to Entities
 ===============================
@@ -178,7 +191,7 @@ Entity is the spec-defined base interface of the following types:
 
 * DataWriter, DataReader
 
-  * As seen above in 12.2, the Observer events originate in the DataWriter and DataReader Entities
+  * As seen above in :ref:`12.2`, the Observer events originate in the DataWriter and DataReader Entities
 
 * DomainParticipant, Publisher, Subscriber
 
@@ -204,6 +217,8 @@ These methods are not part of the IDL interfaces, so invoking them the requires 
 Note that since the Observer class as an internal (not IDL) interface, it uses the “RCH” (Reference Counted Handle) smart pointer classes.
 Observer itself inherits from RcObject, and uses of Observer-derived classes should use the RcHandle template and its associated functions, as in the example above.
 See ``dds/DCPS/RcHandle_T.h`` for details.
+
+.. _12.2.2:
 
 Writing Observer-Derived Classes
 ================================
@@ -231,6 +246,7 @@ The virtual methods in the Observer class are divided into 3 groups based on the
     The definition of this structure is nested within Observer.
     See below for details.
 
+.. _12.2.3:
 
 The Observer::Sample structure
 ==============================

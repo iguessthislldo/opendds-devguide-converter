@@ -1,6 +1,10 @@
+.. _3:
+
 ##################
 Quality of Service
 ##################
+
+.. _3.1:
 
 ************
 Introduction
@@ -9,6 +13,8 @@ Introduction
 The previous examples use default QoS policies for the various entities.
 This chapter discusses the QoS policies which are implemented in OpenDDS and the details of their usage.
 See the DDS specification for further information about the policies discussed in this chapter.
+
+.. _3.2:
 
 ************
 QoS Policies
@@ -31,7 +37,7 @@ For example, the Publisher’s QoS structure is defined in the specification’s
     };
 
 Setting policies is as simple as obtaining a structure with the default values already set, modifying the individual policy structures as necessary, and then applying the QoS structure to an entity (usually when it is created).
-We show examples of how to obtain the default QoS policies for various entity types in Section 3.2.1.
+We show examples of how to obtain the default QoS policies for various entity types in Section :ref:`3.2.1`.
 
 Applications can change the QoS of any entity by calling the set_qos() operation on the entity.
 If the QoS is changeable, existing associations are removed if they are no longer compatible and new associations are added if they become compatible.
@@ -46,6 +52,8 @@ Some changeable QoS policies, such as ``USER_DATA``, ``TOPIC_DATA``, ``GROUP_DAT
 The ``DEADLINE`` and ``LATENCY_BUDGET`` QoS policies require compatibility re-evaluation, but not for association.
 The ``PARTITION`` QoS policy does not require compatibility re-evaluation, but does require association re-evaluation.
 The DDS specification lists ``TRANSPORT_PRIORITY`` as changeable, but the OpenDDS implementation does not support dynamically modifying this policy.
+
+.. _3.2.1:
 
 Default QoS Policy Values
 =========================
@@ -349,6 +357,8 @@ The following tables summarize the default QoS policies for each entity type in 
 |                           | ``autopurge_disposed_samples_delay.nanosec`` | ``DURATION_INFINITY_NSEC``                      |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 
+.. _3.2.2:
+
 LIVELINESS
 ==========
 
@@ -402,6 +412,8 @@ The liveliness kind values are ordered as follows:
 In addition, the writer’s offered lease duration must be less than or equal to the reader’s requested lease duration.
 Both of these conditions must be met for the offered and requested liveliness policy settings to be considered compatible and the association established.
 
+.. _3.2.3:
+
 RELIABILITY
 ===========
 
@@ -435,6 +447,8 @@ This policy is considered during the creation of associations between data write
 The value of both sides of the association must be compatible in order for an association to be created.
 The reliability kind of data writer must be greater than or equal to the value of data reader.
 
+.. _3.2.4:
+
 HISTORY
 =======
 
@@ -466,6 +480,8 @@ When a data writer contains depth samples of a given instance, a write of new sa
 When a data reader contains depth samples of a given instance, any incoming samples for that instance are kept and the oldest samples are discarded.
 
 This policy defaults to a “keep last” with a ``depth`` of one.
+
+.. _3.2.5:
 
 DURABILITY
 ==========
@@ -517,6 +533,8 @@ The durability kind values are ordered as follows:
     VOLATILE_DURABILITY_QOS
     
 
+.. _3.2.6:
+
 DURABILITY_SERVICE
 ==================
 
@@ -540,6 +558,8 @@ Below is the IDL related to the durability service QoS policy:
 The history and resource limits members are analogous to, although independent of, those found in the ``HISTORY`` and ``RESOURCE_LIMITS`` policies.
 The ``service_cleanup_delay`` can be set to a desired value.
 By default, it is set to zero, which means never clean up cached samples.
+
+.. _3.2.7:
 
 RESOURCE_LIMITS
 ===============
@@ -566,6 +586,8 @@ The values of all these members default to unlimited (``DDS::LENGTH_UNLIMITED``)
 Resources are used by the data writer to queue samples written to the data writer but not yet sent to all data readers because of backpressure from the transport.
 Resources are used by the data reader to queue samples that have been received, but not yet read/taken from the data reader.
 
+.. _3.2.8:
+
 PARTITION
 =========
 
@@ -591,6 +613,8 @@ Failure to match partitions is not considered a failure and does not trigger any
 
 The value of this policy may be changed at any time.
 Changes to this policy may cause associations to be removed or added.
+
+.. _3.2.9:
 
 DEADLINE
 ========
@@ -620,6 +644,8 @@ In the case where the policy of a data reader or data writer is made, the change
 If the policy of a topic is changed, it will affect only data readers and writers that are created after the change has been made.
 Any existing readers or writers, and any existing associations between them, will not be affected by the topic policy value change.
 
+.. _3.2.10:
+
 LIFESPAN
 ========
 
@@ -643,6 +669,8 @@ The current OpenDDS implementation may not remove samples from the data writer a
 The value of this policy may be changed at any time.
 Changes to this policy affect only data written after the change.
 
+.. _3.2.11:
+
 USER_DATA
 =========
 
@@ -663,6 +691,8 @@ The value of the ``USER_DATA`` policy is available in respective built-in topic 
 The remote application can obtain the information via the built-in topic and use it for its own purposes.
 For example, the application could attach security credentials via the ``USER_DATA`` policy that can be used by the remote application to authenticate the source.
 
+.. _3.2.12:
+
 TOPIC_DATA
 ==========
 
@@ -681,6 +711,8 @@ By default, the ``value`` is not set.
 It can be set to attach additional information to the created topic.
 The value of the ``TOPIC_DATA`` policy is available in data writer, data reader, and topic built-in topic data.
 The remote application can obtain the information via the built-in topic and use it in an application-defined way.
+
+.. _3.2.13:
 
 GROUP_DATA
 ==========
@@ -701,6 +733,8 @@ It can be set to attach additional information to the created entities.
 The value of the ``GROUP_DATA`` policy is propagated via built-in topics.
 The data writer built-in topic data contains the ``GROUP_DATA`` from the publisher and the data reader built-in topic data contains the ``GROUP_DATA`` from the subscriber.
 The ``GROUP_DATA`` policy could be used to implement matching mechanisms similar to those of the ``PARTITION`` policy described in 1.1.6 except the decision could be made based on an application-defined policy.
+
+.. _3.2.14:
 
 TRANSPORT_PRIORITY
 ==================
@@ -739,6 +773,8 @@ Priority values from 1 through 63 are then mapped to the corresponding codepoint
 
 OpenDDS does not currently support modifications of the transport_priority policy values after creation of the data writer.
 This can be worked around by creating new data writers as different priority values are required.
+
+.. _3.2.15:
 
 LATENCY_BUDGET
 ==============
@@ -863,6 +899,8 @@ In the following example, we assume that reader is initialized correctly by call
       }
     
 
+.. _3.2.16:
+
 ENTITY_FACTORY
 ==============
 
@@ -885,6 +923,8 @@ The application must then manually enable the entity by calling the entity’s `
 
 The value of this policy may be changed at any time.
 Changes to this policy affect only entities created after the change.
+
+.. _3.2.17:
 
 PRESENTATION
 ============
@@ -932,6 +972,8 @@ By default, ``ordered_access`` is ``false``.
 .. note:: This policy controls the ordering and scope of samples made available to the subscriber, but the subscriber application must use the proper logic in reading samples to guarantee the requested behavior.
   For more details, see Section 2.2.2.5.1.9 of the Version 1.4 DDS Specification.
 
+.. _3.2.18:
+
 DESTINATION_ORDER
 =================
 
@@ -959,6 +1001,8 @@ To enforce this type of ordering, the ``BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS
 The ``BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS`` value indicates that samples within an instance are ordered based on a timestamp provided by the data writer.
 It should be noted that if multiple data writers write to the same instance, care should be taken to ensure that clocks are synchronized to prevent incorrect ordering on the data reader.
 
+.. _3.2.19:
+
 WRITER_DATA_LIFECYCLE
 =====================
 
@@ -977,6 +1021,8 @@ When ``autodispose_unregistered_instances`` is set to ``true`` (the default), a 
 In some cases, it may be desirable to prevent an instance from being disposed when an instance is unregistered.
 This policy could, for example, allow an ``EXCLUSIVE`` data writer to gracefully defer to the next data writer without affecting the instance state.
 Deleting a data writer implicitly unregisters all of its instances prior to deletion.
+
+.. _3.2.20:
 
 READER_DATA_LIFECYCLE
 =====================
@@ -1004,6 +1050,8 @@ By default, ``autopurge_nowriter_samples_delay`` is infinite.
 The ``autopurge_disposed_samples_delay`` controls how long the data reader waits before reclaiming resources once an instance transitions to the ``NOT_ALIVE_DISPOSED`` state.
 By default, ``autopurge_disposed_samples_delay`` is infinite.
 
+.. _3.2.21:
+
 TIME_BASED_FILTER
 =================
 
@@ -1023,6 +1071,8 @@ This interval defines a minimum delay between instance value changes; this permi
 By default, minimum_separation is zero, which indicates that no data is filtered.
 This QoS policy does not conserve bandwidth as instance value changes are still sent to the subscriber process.
 It only affects which samples are made available via the data reader.
+
+.. _3.2.22:
 
 OWNERSHIP
 =========
@@ -1049,6 +1099,8 @@ If the kind member is set to ``EXCLUSIVE_OWNERSHIP_QOS``, only one Data Writer i
 The owner of the instance is determined by value of the ``OWNERSHIP_STRENGTH`` policy; the data writer with the highest value of strength is considered the owner of the data-object instance.
 Other factors may also influence ownership, such as whether the data writer with the highest strength is “alive” (as defined by the ``LIVELINESS`` policy) and has not violated its offered publication deadline constraints (as defined by the ``DEADLINE`` policy).
 
+.. _3.2.23:
+
 OWNERSHIP_STRENGTH
 ==================
 
@@ -1065,6 +1117,8 @@ Below is the IDL related to the Ownership Strength QoS policy:
 
 The value member is used to determine which Data Writer is the *owner* of the data-object instance.
 The default value is zero.
+
+.. _3.3:
 
 **************
 Policy Example

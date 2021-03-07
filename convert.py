@@ -477,12 +477,15 @@ Developer's Guide
 
 
 class Info:
-  def __init__(self, doc):
+  def __init__(self, doc, sections=None):
     self.doc = doc
     self.data = []
     self.all_style_prop_groups = {}
-    self.sections = {}
-    self.push(section_level=0, section_number=0, section_ref="")
+    if sections is None:
+      self.sections = {}
+      self.push(section_level=0, section_number=0, section_id="")
+    else:
+      self.sections = iter(sections.items())
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -651,18 +654,20 @@ def handle_header(info, node, out=None):
   if out: # in convert_node
     if level == 0:
       out.open(name)
+    section_id, section_info = next(info.sections)
+    out.writeln('.. _{}:\n'.format(section_id))
     out.write(get_header(name, level))
 
   else: # in reference_builder
     level += 1
     section_level = info.get('section_level', ignore_last=False)
     section_number = info.get('section_number', ignore_last=False)
-    section_ref = info.get('section_ref', ignore_last=False)
+    section_id = info.get('section_id', ignore_last=False)
     if level > section_level:
       if section_number > 0:
-        section_ref += str(section_number) + "."
+        section_id += str(section_number) + "."
       section_number = 1
-      info.push(section_level=level, section_ref=section_ref, section_number=section_number)
+      info.push(section_level=level, section_id=section_id, section_number=section_number)
     elif level < section_level:
       for i in range(section_level - level):
         info.pop()
@@ -671,8 +676,8 @@ def handle_header(info, node, out=None):
     else:
       section_number = info.get('section_number', ignore_last=False) + 1
       info.set(section_number=section_number)
-    section_ref = info.get('section_ref', ignore_last=False) + str(section_number)
-    print('  ' * (level - 1), section_ref, name)
+    section_id = info.get('section_id', ignore_last=False) + str(section_number)
+    info.sections[section_id] = dict(name=name)
 
 
 def reference_builder(info, node):
@@ -776,9 +781,13 @@ def convert_node(info, node, out):
     elif kind in ('bookmark-ref', 'sequence-ref', 'reference-ref'):
       reference_format_attr = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'reference-format')
       reference_formats = ("category-and-value", "chapter", "number", "number-all-superior", "page", "text")
-      # print(kind, node.attributes.get(reference_format_attr, None), get_text(info, node))
-
-      convert_child_nodes(info, node, out)
+      reference_format = node.attributes.get(reference_format_attr, None)
+      value = get_text(info, node)
+      if kind in ('bookmark-ref', 'reference-ref') and reference_format in ('chapter', 'number'):
+        out.write(':ref:`{}`'.format(value))
+      else:
+        # print(kind, reference_format, value)
+        convert_child_nodes(info, node, out)
 
     else:
       passthrough = {
@@ -830,9 +839,12 @@ section = doc.getElementsByType(Section)[0]
 
 ref_info = Info(doc)
 reference_builder(ref_info, section)
+with (dump_path / 'sections').open('w') as f:
+  for section_id, section_info in ref_info.sections.items():
+    print(section_id, section_info['name'], file=f)
 
 out = Out()
-info = Info(doc)
+info = Info(doc, ref_info.sections)
 convert_node(info, section, out)
 out.close()
 out.write_index()

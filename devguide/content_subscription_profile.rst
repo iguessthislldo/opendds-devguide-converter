@@ -1,6 +1,10 @@
+.. _5:
+
 ############################
 Content-Subscription Profile
 ############################
+
+.. _5.1:
 
 ************
 Introduction
@@ -24,6 +28,8 @@ Multi topic also has this selection capability as well as the ability to aggrega
 If you are not planning on using the Content-Subscription Profile features in your application, you can configure OpenDDS to remove support for it at build time.
 See page 15 for information on disabling this support.
 
+.. _5.2:
+
 **********************
 Content-Filtered Topic
 **********************
@@ -36,7 +42,7 @@ Creating a content-filtered topic requires the following parameters:
 * Related topicSpecifies the topic that this content-filtered topic is based on.
   This is the same topic that matched data writers will use to publish data samples.
 
-* Filter expressionAn SQL-like expression (see section 5.2.1) which defines the subset of samples published on the related topic that should be received by the content-filtered topic’s data readers.
+* Filter expressionAn SQL-like expression (see section :ref:`5.2.1`) which defines the subset of samples published on the related topic that should be received by the content-filtered topic’s data readers.
 
 * Expression parametersThe filter expression can contain parameter placeholders.
   This argument provides initial values for those parameters.
@@ -53,12 +59,14 @@ Special consideration must be given to how the “missing” samples impact the 
 .. note:: RTPS_UDP transport does not always do Writer-side filtering.
   It does not currently implement transport level filtering, but may be able to filter above the transport layer.
 
+.. _5.2.1:
+
 Filter Expressions
 ==================
 
 The formal grammar for filter expressions is defined in Annex A of the DDS specification.
 This section provides an informal summary of that grammar.
-Query expressions (5.3.1) and topic expressions (5.4.1) are also defined in Annex A.
+Query expressions (:ref:`5.3.1`) and topic expressions (:ref:`5.4.1`) are also defined in Annex A.
 
 Filter expressions are combinations of one or more predicates.
 Each predicate is a logical expression taking one of two forms:
@@ -80,6 +88,8 @@ Each predicate is a logical expression taking one of two forms:
 
 Any number of predicates can be combined through the use of parenthesis and the Boolean operators ``AND``, ``OR``, and ``NOT`` to form a filter expression.
 
+.. _5.2.1.1:
+
 Filtering and Dispose/Unregister Samples
 ----------------------------------------
 
@@ -87,6 +97,8 @@ DataReaders without filtering can see samples with the ``valid_data`` field of S
 This happens when the matching DataWriter disposes or unregisters the instance.
 Content filtering (whether achieved through Content-Filtered Topics, Query Conditions, or Multi Topics) will filter such samples when the filter expression explicitly uses key fields.
 Filter expressions that don’t meet that criteria will result in no such samples passing the filter.
+
+.. _5.2.2:
 
 Content-Filtered Topic Example
 ==============================
@@ -126,19 +138,21 @@ Next we have the code that creates the data reader:
 
 The data reader ‘``dr``’ will only receive samples that have values of ‘``id``’ greater than 1.
 
+.. _5.3:
+
 ***************
 Query Condition
 ***************
 
 The query condition interface inherits from the read condition interface, therefore query conditions have all of the capabilities of read conditions along with the additional capabilities described in this section.
-One of those inherited capabilities is that the query condition can be used like any other condition with a wait set (see Section 4.4).
+One of those inherited capabilities is that the query condition can be used like any other condition with a wait set (see Section :ref:`4.4`).
 
 The ``DataReader`` interface contains operations for creating (``create_querycondition``) and deleting (``delete_readcondition``) a query condition.
 Creating a query condition requires the following parameters:
 
 * Sample, view, and instance state masksThese are the same state masks that would be passed to ``create_readcondition()``, ``read()``, or ``take()``.
 
-* Query expressionAn SQL-like expression (see 5.3.1) describing a subset of samples which cause the condition to be triggered.
+* Query expressionAn SQL-like expression (see :ref:`5.3.1`) describing a subset of samples which cause the condition to be triggered.
   This same expression is used to filter the data set returned from a ``read_w_condition()`` or ``take_w_condition()`` operation.
   It may also impose a sort order (``ORDER BY``) on that data set.
 
@@ -150,10 +164,12 @@ A particular query condition can be used with a wait set (``attach_condition``),
 When used with a wait set, the ``ORDER BY`` clause has no effect on triggering the wait set.
 When used with a data reader’s ``read*()`` or ``take*()`` operation, the resulting data set will only contain samples which match the query expression and they will be ordered by the ``ORDER BY`` fields, if an ``ORDER BY`` clause is present.
 
+.. _5.3.1:
+
 Query Expressions
 =================
 
-Query expressions are a superset of filter expressions (see section 5.2.1).
+Query expressions are a superset of filter expressions (see section :ref:`5.2.1`).
 Following the filter expression, the query expression can optionally have an ``ORDER BY`` keyword followed by a comma-separated list of field references.
 If the ``ORDER BY`` clause is present, the filter expression may be empty.
 The following strings are examples of query expressions:
@@ -164,6 +180,7 @@ The following strings are examples of query expressions:
 
 * NOT v LIKE 'z%'
 
+.. _5.3.2:
 
 Query Condition Example
 =======================
@@ -195,6 +212,8 @@ The following code snippet creates and uses a query condition for a type that us
 
 Any sample received with ``key <= 1`` would neither trigger the condition (to satisfy the wait) nor be returned in the ‘data’ sequence from ``take_w_condition()``.
 
+.. _5.4:
+
 ***********
 Multi Topic
 ***********
@@ -206,7 +225,7 @@ A data reader created for the multi topic is known as a “multi topic data read
 These topics are known as its “constituent topics.” The multi topic has a DCPS data type known as the “resulting type.” The multi topic data reader implements the type-specific data reader interface for the resulting type.
 For example, if the resulting type is Message, then the multi topic data reader can be narrowed to the ``MessageDataReader`` interface.
 
-The multi topic’s topic expression (see section 5.4.1) describes how the distinct fields of the incoming data (on the constituent topics) are mapped to the fields of the resulting type.
+The multi topic’s topic expression (see section :ref:`5.4.1`) describes how the distinct fields of the incoming data (on the constituent topics) are mapped to the fields of the resulting type.
 
 The domain participant interface contains operations for creating and deleting a multi topic.
 Creating a multi topic requires the following parameters:
@@ -216,7 +235,7 @@ Creating a multi topic requires the following parameters:
 * Type nameSpecifies the resulting type of the multi topic.
   This type must have its type support registered before creating the multi topic.
 
-* Topic expression (also known as subscription expression)An SQL-like expression (see section 5.4.1) which defines the mapping of constituent topic fields to resulting type fields.
+* Topic expression (also known as subscription expression)An SQL-like expression (see section :ref:`5.4.1`) which defines the mapping of constituent topic fields to resulting type fields.
   It can also specify a filter (``WHERE`` clause).
 
 * Expression parametersThe topic expression can contain parameter placeholders.
@@ -225,7 +244,9 @@ Creating a multi topic requires the following parameters:
 
 Once the multi topic has been created, it is used by the subscriber’s ``create_datareader()`` operation to obtain a multi topic data reader.
 This data reader is used by the application to receive the constructed samples of the resulting type.
-The manner in which these samples are constructed is described below in section 5.4.2.2.
+The manner in which these samples are constructed is described below in section :ref:`5.4.2.2`.
+
+.. _5.4.1:
 
 Topic Expressions
 =================
@@ -241,7 +262,7 @@ Topic expressions use a syntax that is very similar to a complete SQL query:
 
 * * <constituent_field> [[AS] <resulting_field>]]
 
-  * ``constituent_field`` is a field reference (see section 5.2.1) to a field in one of the constituent topics (which topic is not specified).
+  * ``constituent_field`` is a field reference (see section :ref:`5.2.1`) to a field in one of the constituent topics (which topic is not specified).
 
   * The optional resulting_field is a field reference to a field in the resulting type.
     If present, the ``resulting_field`` is the destination for the constituent_field in the constructed sample.
@@ -262,21 +283,24 @@ Topic expressions use a syntax that is very similar to a complete SQL query:
   * The semantics of the natural join are that any fields with the same name are treated as “join keys” for the purpose of combining data from the topics in which those keys appear.
     The join operation is described in more detail in the subsequent sections of this chapter.
 
-* The condition has the exact same syntax and semantics as the filter expression (see section 5.2.1).
+* The condition has the exact same syntax and semantics as the filter expression (see section :ref:`5.2.1`).
   Field references in the condition must match field names in the resulting types, not field names in the constituent topic types.
 
+.. _5.4.2:
 
 Usage Notes
 ===========
 
+.. _5.4.2.1:
+
 Join Keys and DCPS Data Keys
 ----------------------------
 
-The concept of DCPS data keys (``@key``) has already been discussed in Section 2.1.1.
+The concept of DCPS data keys (``@key``) has already been discussed in Section :ref:`2.1.1`.
 Join keys for the multi topic are a distinct but related concept.
 
 A join key is any field name that occurs in the struct for more than one constituent topic.
-The existence of the join key enforces a constraint on how data samples of those topics are combined into a constructed sample (see section 5.4.2.2).
+The existence of the join key enforces a constraint on how data samples of those topics are combined into a constructed sample (see section :ref:`5.4.2.2`).
 Specifically, the value of that key must be equal for those data samples from the constituent topics to be combined into a sample of the resulting type.
 If multiple join keys are common to the same two or more topics, the values of all keys must be equal in order for the data to be combined.
 
@@ -287,8 +311,10 @@ Additionally, OpenDDS imposes two requirements on how the IDL must define DCPS d
 
 #. The resulting type must contain each of the join keys, and those fields must be DCPS data keys for the resulting type.
 
-The example in section 5.4.3.1 meets both of these requirements.
+The example in section :ref:`5.4.3.1` meets both of these requirements.
 Note that it is not necessary to list the join keys in the aggregation (``SELECT`` clause).
+
+.. _5.4.2.2:
 
 How Resulting Samples are Constructed
 -------------------------------------
@@ -313,6 +339,7 @@ Specifically, the arrival of a sample on constituent topic “``A``” with type
 #. If any constructed samples result, they are inserted into the multi topic data reader’s internal data structures as if they had arrived via the normal mechanisms.
    Application listeners and conditions are notified.
 
+.. _5.4.2.3:
 
 Use with Subscriber Listeners
 -----------------------------
@@ -320,11 +347,15 @@ Use with Subscriber Listeners
 If the application has registered a subscriber listener for read condition status changes (``DATA_ON_READERS_STATUS``) with the same subscriber that also contains a multi topic, then the application must invoke ``notify_datareaders()`` in its implementation of the subscriber listener’s ``on_data_on_readers()`` callback method.
 This requirement is necessary because the multi topic internally uses data reader listeners, which are preempted when a subscriber listener is registered.
 
+.. _5.4.3:
+
 Multi Topic Example
 ===================
 
 This example is based on the example topic expression used in Annex A section A.3 of the DDS specification.
 It illustrates how the properties of the multi topic join operation can be used to correlate data from separate topics (and possibly distinct publishers).
+
+.. _5.4.3.1:
 
 IDL and Topic Expression
 ------------------------
@@ -382,6 +413,8 @@ The instance of the resulting type will only come into existence once the corres
 Some other domain participant or participants within the domain will publish data on those topics, and they don’t even need to be aware of one another.
 Since they each use the same ``flight_id`` to refer to flights, the multi topic can correlate the incoming data from disparate sources.
 
+.. _5.4.3.2:
+
 Creating the Multi Topic Data Reader
 ------------------------------------
 
@@ -405,6 +438,8 @@ First the type support for the resulting type is registered, then the multi topi
                                DATAREADER_QOS_DEFAULT,
                                NULL,
                                OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+
+.. _5.4.3.3:
 
 Reading Data with the Multi Topic Data Reader
 ---------------------------------------------

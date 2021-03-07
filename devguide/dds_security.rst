@@ -1,6 +1,10 @@
+.. _14:
+
 ############
 DDS Security
 ############
+
+.. _14.1:
 
 **************************************
 Building OpenDDS with Security Enabled
@@ -8,6 +12,8 @@ Building OpenDDS with Security Enabled
 
 Prior to utilizing DDS Security, OpenDDS must be built to include security elements into the resulting libraries.
 The following instructions show how this is to be completed on various platforms.
+
+.. _14.1.1:
 
 Prerequisites
 =============
@@ -36,6 +42,7 @@ Building OpenDDS with security enabled requires the following dependencies:
 
   * If tests are enabled, the configure script can run CMake and build Google Test
 
+.. _14.1.2:
 
 Building OpenDDS with Security on Windows
 =========================================
@@ -134,6 +141,8 @@ It will write to “C:\Program Files” or “C:\Program Files (x86)” dependin
 
 ``msbuild /m DDS_TAOv2_all.sln``
 
+.. _14.1.3:
+
 Building OpenDDS with Security on Linux
 =======================================
 
@@ -141,16 +150,22 @@ Xerces-C++ and OpenSSL may be installed using the system package manager, or bui
 If using the system package manager (that is, headers can be found under /usr/include), invoke the configure script with the --security option.
 If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar`` command line options.
 
+.. _14.1.4:
+
 Building OpenDDS with Security on macOS
 =======================================
 
 Xerces-C++ and OpenSSL may be installed using homebrew or another developer-focused package manager, or built from source.
 The instructions above for Linux also apply to macOS but the package manager will not install directly in ``/usr`` so make sure to specify the library locations to the configure script.
 
+.. _14.1.5:
+
 Building OpenDDS with Security for Android
 ==========================================
 
 See the ``docs/android.md`` file included in the OpenDDS source code.
+
+.. _14.2:
 
 **********************************************
 Architecture of the DDS Security Specification
@@ -161,6 +176,8 @@ These APIs provide a level of abstraction for DDS implementations as well as all
 Additionally, the specification defines Built-In implementations of each of these plugins, which allows for a baseline of functionality and interoperability between DDS implementations.
 OpenDDS implements these Built-In plugins, and this document assumes that the Built-In plugins are being used.
 Developers using OpenDDS may also implement their own custom plugins, but those efforts are well beyond the scope of this document.
+
+.. _14.3:
 
 *************************
 Terms and Background Info
@@ -191,9 +208,13 @@ As such, this document makes use of several security concepts which may warrant 
 
 **Table 14-1**
 
+.. _14.4:
+
 *******************************
 Required DDS Security Artifacts
 *******************************
+
+.. _14.4.1:
 
 Per-Domain Artifacts
 ====================
@@ -207,6 +228,8 @@ These are shared by all participants within the secured DDS Domain:
 * Governance Document
 
 - Signed by Permissions CA using its private key
+
+.. _14.4.2:
 
 Per-Participant Artifacts
 =========================
@@ -223,6 +246,8 @@ These are specific to the individual Domain Participants within the DDS Domain:
 
 - Signed by Permissions CA using its private key
 
+.. _14.5:
+
 ******************************
 Required OpenDDS Configuration
 ******************************
@@ -237,6 +262,7 @@ The following configuration steps are required to enable OpenDDS Security featur
 
   * Via config file: ``“DCPSSecurity=1”`` in the ``[common]`` section.
 
+.. _14.5.1:
 
 DDS Security Configuration via PropertyQosPolicy
 ================================================
@@ -264,6 +290,8 @@ Except where noted, these values take the form of a URI starting with either the
 +---------------------------------------+----------------------------------+------------------------------------------+
 
 **Table 14-2**
+
+.. _14.5.2:
 
 PropertyQosPolicy Example Code
 ==============================
@@ -322,16 +350,22 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
     …
     
 
+.. _14.5.3:
+
 Identity Certificates and Certificate Authorities
 =================================================
 
 All certificate inputs to OpenDDS, including self-signed CA certificates, are expected to be an X.509 v3 certificate in PEM format for either a 2048-bit RSA key or a 256-bit Elliptic Curve key (using the prime256v1 curve).
+
+.. _14.5.4:
 
 Identity, Permissions, and Subject Names
 ========================================
 
 The “subject_name” element for a signed permissions XML document must match the “Subject:” field provided by the accompanying Identity Certificate which is transmitted during participant discovery, authentication, and authorization.
 This ensures that the permissions granted by the Permissions CA do, in fact, correspond to the identity provided.
+
+.. _14.5.5:
 
 Examples in the OpenDDS Source Code Repository
 ==============================================
@@ -359,6 +393,8 @@ The following table describes the various examples and where to find them in the
 +-----------------------------------------------------------------------------------+------------------------------------------------------------+
 
 **Table 14-3**
+
+.. _14.5.6:
 
 Using OpenSSL Utilities for OpenDDS
 ===================================
@@ -417,6 +453,8 @@ Sign a document using existing CA & CA private key:
 
     openssl smime -sign -in doc.xml -text -out doc_signed.p7s -signer ca_cert.pem -inkey ca_private_key.pem
 
+.. _14.6:
+
 **************************
 Domain Governance Document
 **************************
@@ -424,11 +462,15 @@ Domain Governance Document
 The signed governance document is used by the DDS Security built-in access control plugin in order to determine both per-domain and per-topic security configuration options for specific domains.
 For full details regarding the content of the governance document, see the OMG DDS Security specification section 9.4.1.2.
 
+.. _14.6.1:
+
 Global Governance Model
 =======================
 
 It’s worth noting that the DDS Security Model expects the governance document to be globally shared by all participants making use of the relevant domains described within the governance document.
 Even if this is not the case, the local participant will verify incoming authentication and access control requests as if the remote participant shared the same governance document and accept or reject the requests accordingly.
+
+.. _14.6.2:
 
 Key Governance Elements
 =======================
@@ -466,6 +508,8 @@ Recognized values are: ``{NONE, SIGN, or ENCRYPT}``
 A wildcard-capable string used to match topic names.
 Recognized values will conform to POSIX ``fnmatch()`` function as specified in POSIX 1003.2-1992, Section B.6.
 
+.. _14.6.3:
+
 Domain Rule Configuration Options
 =================================
 
@@ -489,6 +533,8 @@ The following XML elements are used to configure domain participant behaviors.
 +------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 **Table 14-4**
+
+.. _14.6.4:
 
 Topic Rule Configuration Options
 ================================
@@ -520,6 +566,8 @@ Specifies the protection kind used for the RTPS SubMessages sent by any DataWrit
 <data_protection_kind> : **BasicProtectionKind**
 
 Specifies the basic protection kind used for the RTPS SerializedPayload SubMessage element sent by any DataWriter whose associated Topic name matches the rule’s topic expression.
+
+.. _14.6.5:
 
 Governance XML Example
 ======================
@@ -580,12 +628,16 @@ Governance XML Example
          </domain_access_rules>
     </dds>
 
+.. _14.7:
+
 ********************************
 Participant Permissions Document
 ********************************
 
 The signed permissions document is used by the DDS Security built-in access control plugin in order to determine participant permissions to join domains and to create endpoints for reading, writing, and relaying domain data.
 For full details regarding the content of the permissions document, see the OMG DDS Security specification section 9.4.1.3.
+
+.. _14.7.1:
 
 Key Permissions Elements
 ========================
@@ -656,6 +708,8 @@ When no data tag list is given for an “allow” PSR rule, the empty set of dat
 For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the data tags listed.
 When no data tag list is given for a “deny” PSR rule, the set of “all possible tags” is used as the default value.
 
+.. _14.7.2:
+
 Permissions XML Example
 =======================
 
@@ -713,6 +767,8 @@ Permissions XML Example
              </grant>
          </permissions>
     </dds>
+
+.. _14.8:
 
 **********************************
 DDS Security Implementation Status
