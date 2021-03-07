@@ -16,9 +16,7 @@ For example,
 
 ::
 
-    
     opendds_idl [options...] Foo.idl
-    
 
 The remaining sections of this chapter describe all of the command-line options and the ways that ``opendds_idl`` can be used to generate alternate mappings.
 

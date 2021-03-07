@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import io
+import re
 
 import odf
 from odf import text, element
@@ -44,10 +45,49 @@ def one_sentence_per_line(text, indent_following_lines=''):
 
 # RST Helpers =================================================================
 
+code_regex = {
+  'omg-idl': re.compile(r'@key|@topic|module DDS|interface|enum|boolean|struct'),
+  'ini': re.compile('\[common]|\[transport|\[domain|\[config'),
+  'xml': re.compile('xml version="1.0"'),
+  'cpp': re.compile('int main|#include.*\.h[">]|int ACE_TMAIN|_var |OpenDDS::DCPS::|std::|\w->'),
+  'java': re.compile('public static void main|System.out.println|Helper|null'),
+  'bash': re.compile('\$(ACE|DDS)'),
+  'doscon': re.compile('\%(ACE|DDS)'),
+  None: re.compile('project\('),
+}
 def write_code(out, lines):
-  out.writeln('::\n')
+  # Detect
+  code = '\n'.join(lines)
+  names = []
+  for name, regex in code_regex.items():
+    if regex.search(code):
+      names.append(name)
+  # if None not in names:
+  #   if len(names) == 0:
+  #     print('Could not find name for:')
+  #     print('=' * 80)
+  #     print(code)
+  #     print('=' * 80)
+  name = None
+  if names:
+    if len(names) > 1:
+      print('Matched more than one name for code:', ', '.join(names), file=sys.stderr)
+      print('=' * 80, file=sys.stderr)
+      print(code, file=sys.stderr)
+      print('=' * 80, file=sys.stderr)
+      sys.exit(1)
+    name = names[0]
+
+  # Write
+  if name is None:
+    out.writeln('::\n')
+  else:
+    out.writeln('.. code-block:: {}\n'.format(name))
   for line in lines:
-    out.writeln('   ', line)
+    if line:
+      out.write('   ', line)
+    out.write('\n')
+
   out.writeln('')
 
 

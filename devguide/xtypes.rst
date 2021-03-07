@@ -111,7 +111,7 @@ Mutable Extensibility
 
 The type published by the weather stations can be made extensible with the @mutable annotation:
 
-::
+.. code-block:: omg-idl
 
     // Version 1
     @topic
@@ -124,7 +124,7 @@ The type published by the weather stations can be made extensible with the @muta
 
 Suppose that some time in the future, a subset of the weather stations are upgraded to monitor wind speed and direction:
 
-::
+.. code-block:: omg-idl
 
     enum WindDir {N, NE, NW, S, SE, SW, W, E};
     // Version 2@topic
@@ -158,7 +158,7 @@ Member IDs
 Member ids are assigned using various annotations.
 A policy for a type can be set with either @autoid(SEQUENTIAL) or @autoid(HASH):
 
-::
+.. code-block:: omg-idl
 
     // Version 3
     @topic
@@ -167,8 +167,7 @@ A policy for a type can be set with either @autoid(SEQUENTIAL) or @autoid(HASH):
     struct StationData {  short temperature;
       double pressure;
       double humidity;};
-    
-    
+
     // Version 4
     @topic
     @mutable
@@ -184,10 +183,10 @@ If no @autoid annotation is specified, the policy is SEQUENTIAL.
 Suppose that Version 3 was used in the initial deployment of the weather stations and the decision was made to switch to @autoid(HASH) when adding the new fields for wind speed and direction.
 In this case, the ids of the pre-existing members can be set with @id:
 
-::
+.. code-block:: omg-idl
 
     enum WindDir {N, NE, NW, S, SE, SW, W, E};
-    
+
     // Version 5@topic
     @mutable
     @autoid(HASH)
@@ -211,7 +210,7 @@ A more efficient but less flexible form of extensibility is @appendable.
 Extensibility with @appendable is limited in that members can only be added to or removed from the end of the type.
 With @appendable, the initial version of the weather station IDL would be:
 
-::
+.. code-block:: omg-idl
 
     // Version 6
     @topic
@@ -222,10 +221,10 @@ With @appendable, the initial version of the weather station IDL would be:
 
 And the subsequent addition of the wind speed and direction members would be:
 
-::
+.. code-block:: omg-idl
 
     enum WindDir {N, NE, NW, S, SE, SW, W, E};
-    
+
     // Version 7@topic
     @appendable
     struct StationData {  short temperature;
@@ -233,7 +232,6 @@ And the subsequent addition of the wind speed and direction members would be:
       double humidity;
       short wind_speed;
       WindDir wind_direction;};
-    
 
 As with @mutable, when a Version 7 Writer interacts with a Version 6 Reader, the additional fields will be ignored by the reader.
 When a Version 6 Writer interacts with a Version 7 Reader, the additional fields will be initialized to default values based on Table 9 of the XTypes specification.
@@ -264,11 +262,11 @@ In this case, the reader must try to construct its value from the corresponding 
 
 Suppose that the weather stations also publish a topic containing station information:
 
-::
+.. code-block:: omg-idl
 
     typedef string<8> StationID;
     typedef string<256> StationName;
-    
+
     // Version 1
     @topic
     @mutable
@@ -277,11 +275,11 @@ Suppose that the weather stations also publish a topic containing station inform
 
 Eventually, the pool of station IDs is exhausted so the IDL must be refined as follows:
 
-::
+.. code-block:: omg-idl
 
     typedef string<16> StationID;
     typedef string<256> StationName;
-    
+
     // Version 2
     @topic
     @mutable
@@ -324,7 +322,7 @@ This is interpreted by the middleware as XCDR2 for DataWriters and the alternati
 A writer or reader without an explicitly-set DataRepresentationQoS will therefore be able to communicate with another reader or writer which is compatible with XCDR2.
 The example below shows a possible configuration for an XCDR1 DataWriter.
 
-::
+.. code-block:: cpp
 
     DDS::DataWriterQos qos;
     pub->get_default_datawriter_qos(qos);

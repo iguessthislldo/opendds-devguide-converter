@@ -66,9 +66,7 @@ The following directive:
 
 ::
 
-    
     static PersistenceUpdater_Static_Service "-file info.pr -reset 1"
-    
 
 will persist ``DCPSInfoRepo`` updates to local file ``info.pr``.
 If a file by that name already exists, its contents will be erased.
@@ -78,9 +76,7 @@ This allows existing clients to reconnect to a restarted InfoRepo.
 
 ::
 
-    
     -ORBListenEndpoints iiop://:<port>
-    
 
 .. _9.2:
 
@@ -147,9 +143,7 @@ It has a command format syntax of:
 
 ::
 
-    
        repoctl <cmd> <arguments>
-    
 
 Where each individual command has its own format as shown in Table 9-3.
 Some options contain endpoint information.
@@ -178,9 +172,7 @@ A join command specifies two repository servers (by endpoint) and asks the secon
 
 ::
 
-    
        repoctl join 2112 otherhost:1812
-    
 
 This generates a CORBA object reference of ``corbaloc::otherhost:1812/Federator`` that the federator connects to and invokes a join operation.
 The join operation invocation passes the default Federation Domain value (because we did not specify one) and the location of the joining repository which is obtained by resolving the object reference ``corbaloc::localhost:2112/Federator``.
@@ -221,24 +213,22 @@ There are two configuration files to create for this example one each for the me
 
 The Message Publisher configuration ``pub.ini`` for this example is as follows:
 
-::
+.. code-block:: ini
 
-    
         [common]
         DCPSDebugLevel=0
-    
+
         [domain/information]
         DomainId=42
         DomainRepoKey=1
-    
+
         [repository/primary]
         RepositoryKey=1
         RepositoryIor=corbaloc::localhost:2112/InfoRepo
-    
+
         [repository/secondary]
         RepositoryKey=2
         RepositoryIor=file://repo.ior
-    
 
 Note that the ``DCPSInfo`` attribute/value pair has been omitted from the ``[common]`` section.
 This has been replaced by the ``[domain/user]`` section as described in 7.5.
@@ -252,24 +242,22 @@ The secondary repository is expected to provide an IOR value via a file named ``
 
 The subscriber process is configured with the ``sub.ini`` file as follows:
 
-::
+.. code-block:: ini
 
-    
         [common]
         DCPSDebugLevel=0
-    
+
         [domain/information]
         DomainId=42
         DomainRepoKey=1
-    
+
         [repository/primary]
         RepositoryKey=1
         RepositoryIor=file://repo.ior
-    
+
         [repository/secondary]
         RepositoryKey=2
         RepositoryIor=corbaloc::localhost:2112/InfoRepo
-    
 
 Note that this is the same as the ``pub.ini`` file except the subscriber has specified that the repository located at port 2112 of the ``localhost`` is the secondary and the repository located by the ``repo.ior`` file is the primary.
 This is opposite of the assignment for the publisher.
@@ -287,11 +275,9 @@ The example is executed by first starting the repositories and federating them, 
 
 Start the first repository as:
 
-::
+.. code-block:: bash
 
-    
         $DDS/bin/DCPSInfoRepo -ORBSvcConf tcp.conf -o repo.ior -FederationId 1024
-    
 
 The ``-o repo.ior`` option ensures that the repository IOR will be placed into the file as expected by the configuration files.
 The ``-FederationId 1024`` option assigns the value 1024 to this repository as its unique id within the federation.
@@ -299,13 +285,11 @@ The ``-ORBSvcConf tcp.conf`` option is the same as in the previous example.
 
 Start the second repository as:
 
-::
+.. code-block:: bash
 
-    
         $DDS/bin/DCPSInfoRepo -ORBSvcConf tcp.conf \
           -ORBListenEndpoints iiop://localhost:2112 \
           -FederationId 2048 -FederateWith file://repo.ior
-    
 
 Note that this is all intended to be on a single command line.
 The ``-ORBSvcConftcp.conf`` option is the same as in the previous example.

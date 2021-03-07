@@ -68,7 +68,7 @@ Support for the RtpsRelay is activated via configuration.
 See Table 7-5 RTPS Discovery Configuration Options and Table 7-17 RTPS_UDP Configuration Options.
 As an example:
 
-::
+.. code-block:: ini
 
     [common]DCPSGlobalTransportConfig=$file[domain/4]DiscoveryConfig=rtps[rtps_discovery/rtps]SpdpRtpsRelayAddress=1.2.3.4:4444SedpRtpsRelayAddress=1.2.3.4:4445UseRtpsRelay=1[transport/the_rtps_transport]transport_type=rtps_udpDataRtpsRelayAddress=1.2.3.4:4446UseRtpsRelay=1
 
@@ -165,7 +165,7 @@ ICE is enabled through configuration.
 The minimum configuration involves setting the ``UseIce`` flag and providing addresses for the STUN servers.
 See Table 7-5 RTPS Discovery Configuration Options and Table 7-17 RTPS_UDP Configuration Options for details.
 
-::
+.. code-block:: ini
 
     [common]DCPSGlobalTransportConfig=$fileDCPSDefaultDiscovery=DEFAULT_RTPS[transport/the_rtps_transport]transport_type=rtps_udpDataRtpsRelayAddress=5.6.7.8:4446UseIce=1DataStunServerAddress=1.2.3.4:3478[domain/42]DiscoveryConfig=DiscoveryConfig1
     [rtps_discovery/DiscoveryConfig1]SpdpRtpsRelayAddress=5.6.7.8:4444SedpRtpsRelayAddress=5.6.7.8:4445UseIce=1SedpStunServerAddress=1.2.3.4:3478

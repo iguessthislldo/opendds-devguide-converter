@@ -33,10 +33,10 @@ to identify the data types that it transmits and processes.
 These data types are processed by the TAO IDL compiler and the OpenDDS IDL compiler to generate the necessary code to transmit data of these types with OpenDDS.
 Here is the IDL file that defines our Message data type:
 
-::
+.. code-block:: omg-idl
 
     module Messenger {
-    
+
          @topic
          struct Message {
              string from;
@@ -46,7 +46,6 @@ Here is the IDL file that defines our Message data type:
              long count;
          };
     };
-    
 
 The ``@topic`` annotation marks a data type that can be used as a topic’s type.
 This must be a structure or a union.
@@ -77,17 +76,17 @@ Since we are using the default QoS policies, subsequent samples with the same su
 * Other structures that have a defined key or set of keys.
   For example:
 
-::
+.. code-block:: omg-idl
 
     struct StructA {
          @key long key;
     };
-    
+
     struct StructB {
          @key StructA main_info;
          long other_info;
     };
-    
+
     @topic
     struct StructC {
          @key StructA keya; // keya.key is one key
@@ -101,32 +100,31 @@ That isn’t strictly necessary though, as the next section shows.
 * Other structures that don’t have any defined keys.
   In the following example, it’s implied that all the fields in InnerStruct are keys.
 
-::
+.. code-block:: omg-idl
 
     struct InnerStruct {
       long a;
       short b;
       char c;
     };
-    
+
     @topic
     struct OuterStruct {
       @key InnerStruct value;
     // value.a, value.b, and value.c are all keys
     };
-    
 
 If none of the fields in a struct are marked with ``@key`` or ``@key(TRUE)``, then when the struct is used in another struct and marked as a key, all the fields in the struct are assumed to keys.
 Fields marked with ``@key(FALSE)`` are always excluded from being a key, such as in this example:
 
-::
+.. code-block:: omg-idl
 
     struct InnerStruct {
       long a;
       short b;
       @key(FALSE) char c;
     };
-    
+
     @topic
     struct OuterStruct {
       @key InnerStruct value;
@@ -149,14 +147,14 @@ Union Topic Types
 Unions can be used as topic types.
 Here is an example:
 
-::
+.. code-block:: omg-idl
 
     enum TypeKind {
          STRING_TYPE,
          LONG_TYPE,
          FLOAT_TYPE
     };
-    
+
     @topic
     union MyUnionType switch (@key TypeKind) {
     case STRING_TYPE:
@@ -208,7 +206,6 @@ The OpenDDS IDL is first processed by the TAO IDL compiler.
 ::
 
     tao_idl Messenger.idl
-    
 
 In addition, we need to process the IDL file with the OpenDDS IDL compiler to generate the serialization and key support code that OpenDDS requires to marshal and demarshal the Message, as well as the type support code for the data readers and writers.
 This IDL compiler is located in ``$DDS_ROOT/bin`` and generates three files for each IDL file processed.
@@ -225,7 +222,6 @@ For example, running ``opendds_idl`` as follows
 ::
 
     opendds_idl Messenger.idl
-    
 
 generates ``MessengerTypeSupport.idl``, ``MessengerTypeSupportImpl.h``, and ``MessengerTypeSupportImpl.cpp``.
 The IDL file contains the ``MessageTypeSupport``, ``MessageDataWriter``, and ``MessageDataReader`` interface definitions.
@@ -255,13 +251,12 @@ Here is the MPC file section common to both the publisher and subscriber
 
     project(*idl): dcps {
          // This project ensures the common components get built first.
-    
+
          TypeSupport_Files {
              Messenger.idl
          }
          custom_only = 1
     }
-    
 
 The dcps parent project adds the Type Support custom build rules.
 The TypeSupport_Files section above tells MPC to generate the Message type support files from ``Messenger.idl`` using the OpenDDS IDL complier.
@@ -272,16 +267,15 @@ Here is the publisher section:
     project(*Publisher): dcpsexe_with_tcp {
          exename  = publisher
          after  += *idl
-    
+
          TypeSupport_Files {
              Messenger.idl
          }
-    
+
          Source_Files {
              Publisher.cpp
          }
     }
-    
 
 The ``dcpsexe_with_tcp`` project links in the DCPS library.
 
@@ -290,14 +284,14 @@ For completeness, here is the subscriber section of the MPC file:
 ::
 
     project(*Subscriber): dcpsexe_with_tcp {
-    
+
          exename  = subscriber
          after  += *idl
-    
+
          TypeSupport_Files {
              Messenger.idl
          }
-    
+
          Source_Files {
              Subscriber.cpp
              DataReaderListenerImpl.cpp
@@ -321,7 +315,7 @@ Initializing the Participant
 
 The first section of ``main()`` initializes the current process as an OpenDDS participant.
 
-::
+.. code-block:: cpp
 
     int main (int argc, char *argv[]) {
          try {
@@ -336,7 +330,6 @@ The first section of ``main()`` initializes the current process as an OpenDDS pa
                  std::cerr << "create_participant failed." << std::endl;
                  return 1;
              }
-    
 
 The ``TheParticipantFactoryWithArgs`` macro is defined in ``Service_Participant.h`` and initializes the Domain Participant Factory with the command line arguments.
 These command line arguments are used to initialize the ORB that the OpenDDS service uses as well as the service itself.
@@ -361,23 +354,21 @@ First, we create a ``MessageTypeSupportImpl`` object, then register the type wit
 In this example, we register the type with a nil string type name, which causes the ``MessageTypeSupport`` interface repository identifier to be used as the type name.
 A specific type name such as “*Message*” can be used as well.
 
-::
+.. code-block:: cpp
 
-    
          Messenger::MessageTypeSupport_var mts =
              new Messenger::MessageTypeSupportImpl();
          if (DDS::RETCODE_OK != mts->register_type(participant, "")) {
              std::cerr << "register_type failed." << std::endl;
              return 1;
          }
-    
 
 Next, we obtain the registered type name from the type support object and create the topic by passing the type name to the participant in the ``create_topic()`` operation.
 
-::
+.. code-block:: cpp
 
       CORBA::String_var type_name = mts->get_type_name ();
-    
+
              DDS::Topic_var topic =
                  participant->create_topic ("Movie Discussion List",
                                                                        type_name,
@@ -388,7 +379,6 @@ Next, we obtain the registered type name from the type support object and create
                  std::cerr << "create_topic failed." << std::endl;
                  return 1;
              }
-    
 
 We have created a topic named “*Movie Discussion List*” with the registered type and the default QoS policies.
 
@@ -399,9 +389,8 @@ Creating a Publisher
 
 Now, we are ready to create the publisher with the default publisher QoS.
 
-::
+.. code-block:: cpp
 
-    
              DDS::Publisher_var pub =
                  participant->create_publisher(PUBLISHER_QOS_DEFAULT,
                                                                              0,  // No listener required
@@ -418,7 +407,7 @@ Creating a DataWriter and Waiting for the Subscriber
 
 With the publisher in place, we create the data writer.
 
-::
+.. code-block:: cpp
 
       // Create the datawriter
              DDS::DataWriter_var writer =
@@ -430,17 +419,14 @@ With the publisher in place, we create the data writer.
                  std::cerr << "create_datawriter failed." << std::endl;
                  return 1;
              }
-    
 
 When we create the data writer we pass the topic object reference, the default QoS policies, and a null listener reference.
 We now narrow the data writer reference to a ``MessageDataWriter`` object reference so we can use the type-specific publication operations.
 
-::
+.. code-block:: cpp
 
-    
              Messenger::MessageDataWriter_var message_writer =
                        Messenger::MessageDataWriter::_narrow(writer);
-    
 
 The example code uses *conditions* and *wait* sets so the publisher waits for the subscriber to become connected and fully initialized.
 In a simple example like this, failure to wait for the subscriber may cause the publisher to publish its samples before the subscriber is connected.
@@ -465,17 +451,16 @@ The basic steps involved in waiting for the subscriber are:
 
 Here is the corresponding code:
 
-::
+.. code-block:: cpp
 
-    
              // Block until Subscriber is available
              DDS::StatusCondition_var condition = writer->get_statuscondition();
              condition->set_enabled_statuses(
                      DDS::PUBLICATION_MATCHED_STATUS);
-    
+
              DDS::WaitSet_var ws = new DDS::WaitSet;
              ws->attach_condition(condition);
-    
+
              while (true) {
                  DDS::PublicationMatchedStatus matches;
                  if (writer->get_publication_matched_status(matches)
@@ -484,22 +469,21 @@ Here is the corresponding code:
                                          << std::endl;
                      return 1;
                  }
-    
+
                  if (matches.current_count >= 1) {
                      break;
                  }
-    
+
                  DDS::ConditionSeq conditions;
                  DDS::Duration_t timeout = { 60, 0 };
                  if (ws->wait(conditions, timeout) != DDS::RETCODE_OK) {
                      std::cerr << "wait failed!" << std::endl;
                      return 1;
                  }
-    
+
              }
-    
+
              ws->detach_condition(condition);
-    
 
 For more details about status, conditions, and wait sets, see Chapter :ref:`4`.
 
@@ -510,7 +494,7 @@ Sample Publication
 
 The message publication is quite straightforward:
 
-::
+.. code-block:: cpp
 
              // Write samples
              Messenger::Message message;
@@ -528,7 +512,6 @@ The message publication is quite straightforward:
                      return 1;
                  }
              }
-    
 
 For each loop iteration, calling ``write()`` causes a message to be distributed to all connected subscribers that are registered for our topic.
 Since the subject_id is the key for Message, each time subject_id is incremented and ``write()`` is called, a new instance is created (see :ref:`1.1.1.3`).
@@ -553,7 +536,7 @@ Initializing the Participant
 
 The beginning of the subscriber is identical to the publisher as we initialize the service and join our domain:
 
-::
+.. code-block:: cpp
 
     int main (int argc, char *argv[])
     {
@@ -580,7 +563,7 @@ Note that if the topic has already been initialized in this domain with the same
 If the type or QoS specified in our ``create_topic()`` invocation do not match that of the existing topic then the invocation fails.
 There is also a ``find_topic()`` operation our subscriber could use to simply retrieve an existing topic.
 
-::
+.. code-block:: cpp
 
              Messenger::MessageTypeSupport_var mts =
                  new Messenger::MessageTypeSupportImpl();
@@ -588,9 +571,9 @@ There is also a ``find_topic()`` operation our subscriber could use to simply re
                  std::cerr << "Failed to register the MessageTypeSupport." << std::endl;
                  return 1;
              }
-    
+
              CORBA::String_var type_name = mts->get_type_name ();
-    
+
              DDS::Topic_var topic =
                  participant->create_topic("Movie Discussion List",
      type_name,
@@ -609,7 +592,7 @@ Creating the subscriber
 
 Next, we create the subscriber with the default QoS.
 
-::
+.. code-block:: cpp
 
              // Create the subscriber
              DDS::Subscriber_var sub =
@@ -630,7 +613,7 @@ We need to associate a listener object with the data reader we create, so we can
 The code below constructs the listener object.
 The ``DataReaderListenerImpl`` class is shown in the next subsection.
 
-::
+.. code-block:: cpp
 
              DDS::DataReaderListener_var listener(new DataReaderListenerImpl);
 
@@ -640,7 +623,7 @@ This usage is typical for heap allocations in OpenDDS application code and frees
 
 Now we can create the data reader and associate it with our topic, the default QoS properties, and the listener object we just created.
 
-::
+.. code-block:: cpp
 
              // Create the Datareader
              DDS::DataReader_var dr =
@@ -652,7 +635,6 @@ Now we can create the data reader and associate it with our topic, the default Q
                  std::cerr << "create_datareader failed." << std::endl;
                  return 1;
              }
-    
 
 This thread is now free to perform other application work.
 Our listener object will be called on an OpenDDS thread when a sample is available.
@@ -668,7 +650,7 @@ The interface defines a number of operations we must implement, each of which is
 The ``OpenDDS::DCPS::DataReaderListener`` defines operations for OpenDDS’s special needs such as disconnecting and reconnected event updates.
 Here is the interface definition:
 
-::
+.. code-block:: omg-idl
 
     module DDS {
          local interface DataReaderListener : Listener {
@@ -686,17 +668,16 @@ Here is the interface definition:
              void on_sample_lost(in DataReader reader, in SampleLostStatus status);
          };
     };
-    
 
 Our example listener class stubs out most of these listener operations with simple print statements.
 The only operation that is really needed for this example is ``on_data_available()`` and it is the only member function of this class we need to explore.
 
-::
+.. code-block:: cpp
 
     void DataReaderListenerImpl::on_data_available(DDS::DataReader_ptr reader)
     {
          ++num_reads_;
-    
+
          try {
              Messenger::MessageDataReader_var reader_i =
                          Messenger::MessageDataReader::_narrow(reader);
@@ -704,22 +685,21 @@ The only operation that is really needed for this example is ``on_data_available
                  std::cerr << "read: _narrow failed." << std::endl;
                  return;
              }
-    
 
 The code above narrows the generic data reader passed into the listener to the type-specific ``MessageDataReader`` interface.
 The following code takes the next sample from the message reader.
 If the take is successful and returns valid data, we print out each of the message’s fields.
 
-::
+.. code-block:: cpp
 
              Messenger::Message message;
              DDS::SampleInfo si;
              DDS::ReturnCode_t status = reader_i->take_next_sample(message, si);
-    
+
              if (status == DDS::RETCODE_OK) {
-    
+
                  if (si.valid_data == 1) {
-    
+
                          std::cout << "Message: subject  = " << message.subject.in() << std::endl
                              << "  subject_id = " << message.subject_id  << std::endl
                              << "  from  = " << message.from.in()  << std::endl
@@ -744,7 +724,6 @@ If the take is successful and returns valid data, we print out each of the messa
              } else {
                      cerr << "ERROR: read Message: Error: " <<  status << std::endl;
              }
-    
 
 Note the sample read may contain invalid data.
 The valid_data flag indicates if the sample has valid data.
@@ -765,12 +744,11 @@ Cleaning up in OpenDDS Clients
 
 After we are finished in the publisher and subscriber, we can use the following code to clean up the OpenDDS-related objects:
 
-::
+.. code-block:: cpp
 
              participant->delete_contained_entities();
              dpf->delete_participant(participant);
              TheServiceParticipant->shutdown ();
-    
 
 The domain participant’s ``delete_contained_entities()`` operation deletes all the topics, subscribers, and publishers created with that participant.
 Once this is done, we can use the domain participant factory to delete our domain participant.
@@ -781,7 +759,7 @@ Data readers must have a ``RELIABLE`` setting for the ``RELIABILITY`` QoS (which
 This operation is called on individual ``DataWriters`` and includes a timeout value to bound the time to wait.
 The following code illustrates the use of ``wait_for_acknowledgements()`` to block for up to 15 seconds to wait for subscriptions to acknowledge receipt of all written data:
 
-::
+.. code-block:: cpp
 
          DDS::Duration_t shutdown_delay = {15, 0};
          DDS::ReturnCode_t result;
@@ -815,17 +793,15 @@ From your current directory type:
 
 Windows:
 
-::
+.. code-block:: doscon
 
     %DDS_ROOT%\bin\DCPSInfoRepo -o simple.ior
-    
 
 Unix:
 
-::
+.. code-block:: bash
 
     $DDS_ROOT/bin/DCPSInfoRepo -o simple.ior
-    
 
 The ``-o`` parameter instructs the ``DCPSInfoRepo`` to generate its connection information to the file ``simple.ior`` for use by the publisher and subscriber.
 In a separate window navigate to the same directory that contains the ``simple.ior`` file and start the subscriber application in our example by typing:
@@ -835,14 +811,12 @@ Windows:
 ::
 
     subscriber -DCPSInfoRepo `file://simple.ior <smb://simple.ior/>`_
-    
 
 Unix:
 
 ::
 
     ./subscriber -DCPSInfoRepo file://simple.ior
-    
 
 The command line parameters direct the application to use the specified file to locate the ``DCPSInfoRepo``.
 Our subscriber is now waiting for messages to be sent, so we will now start the publisher in a separate window with the same parameters:
@@ -852,14 +826,12 @@ Windows:
 ::
 
     publisher -DCPSInfoRepo file://simple.ior
-    
 
 Unix
 
 ::
 
     ./publisher -DCPSInfoRepo file://simple.ior
-    
 
 The publisher connects to the ``DCPSInfoRepo`` to find the location of any subscribers and begins to publish messages as well as write them to the console.
 In the subscriber window, you should also now be seeing console output from the subscriber that is reading messages from the topic demonstrating a simple publish and subscribe application.
@@ -884,12 +856,12 @@ Chapter 7 will cover more details concerning the configuration of all the availa
 Navigate to the directory where your publisher and subscriber have been built.
 Create a new text file named ``rtps.ini`` and populate it with the following content:
 
-::
+.. code-block:: ini
 
     [common]
     DCPSGlobalTransportConfig=$file
     DCPSDefaultDiscovery=DEFAULT_RTPS
-    
+
     [transport/the_rtps_transport]
     transport_type=rtps_udp
 
@@ -905,14 +877,12 @@ Windows:
 ::
 
     subscriber -DCPSConfigFile rtps.ini
-    
 
 Unix:
 
 ::
 
     ./subscriber -DCPSConfigFile rtps.ini
-    
 
 Now start the publisher with the same parameter...
 
@@ -921,14 +891,12 @@ Windows:
 ::
 
     publisher -DCPSConfigFile rtps.ini
-    
 
 Unix:
 
 ::
 
     ./publisher -DCPSConfigFile rtps.ini
-    
 
 Since there is no centralized discovery in the RTPS specification, there are provisions to allow for wait times to allow discovery to occur.
 The specification sets the default to 30 seconds.
@@ -954,7 +922,7 @@ The previous example implicitly specifies the instance it is publishing via the 
 When ``write()`` is called, the data writer queries the sample’s key fields to determine the instance.
 The publisher also has the option to explicitly register the instance by calling ``register_instance()`` on the data writer:
 
-::
+.. code-block:: cpp
 
              Messenger::Message message;
              message.subject_id = 99;
@@ -965,7 +933,7 @@ The instance is identified by the subject_id value of 99 (because we earlier spe
 
 We can later use the returned instance handle when we publish a sample:
 
-::
+.. code-block:: cpp
 
              DDS::ReturnCode_t ret = data_writer->write(message, handle);
 
@@ -994,7 +962,7 @@ There are also “read” operations corresponding to each of these “take” o
 Since these other operations read a sequence of values, they are more efficient when samples are arriving quickly.
 Here is a sample call to ``take()`` that reads up to 5 samples at a time.
 
-::
+.. code-block:: cpp
 
              MessageSeq messages(5);
              DDS::SampleInfoSeq sampleInfos(5);
@@ -1004,7 +972,6 @@ Here is a sample call to ``take()`` that reads up to 5 samples at a time.
                                                        DDS::ANY_SAMPLE_STATE,
                                                        DDS::ANY_VIEW_STATE,
                                                        DDS::ANY_INSTANCE_STATE);
-    
 
 The three state parameters potentially specialize which samples are returned from the reader.
 See the DDS specification for details on their usage.
@@ -1022,11 +989,11 @@ The application developer can specify the use of the zero-copy read optimization
 The message sequence and sample info sequence constructors both take max_len as their first parameter and specify a default value of zero.
 The following example code is taken from ``DevGuideExamples/DCPS/Messenger_ZeroCopy/DataReaderListenerImpl.cpp``:
 
-::
+.. code-block:: cpp
 
                  Messenger::MessageSeq messages;
                  DDS::SampleInfoSeq info;
-    
+
                  // get references to the samples  (zero-copy read of the samples)
                  DDS::ReturnCode_t status = dr->take(messages,
                                                                                          info,
@@ -1034,17 +1001,15 @@ The following example code is taken from ``DevGuideExamples/DCPS/Messenger_ZeroC
                                                                                          DDS::ANY_SAMPLE_STATE,
                                                                                          DDS::ANY_VIEW_STATE,
                                                                                          DDS::ANY_INSTANCE_STATE);
-    
 
 After both zero-copy takes/reads and single-copy takes/reads, the sample and info sequences’ length are set to the number of samples read.
 For the zero-copy reads, the ``max_len`` is set to a ``value >= length``.
 
 Since the application code has asked for a zero-copy loan of the data, it must return that loan when it is finished with the data:
 
-::
+.. code-block:: cpp
 
                  dr->return_loan(messages, info);
-    
 
 Calling ``return_loan()`` results in the sequences’ ``max_len`` being set to 0 and its owns member set to false, allowing the same sequences to be used for another zero-copy read.
 

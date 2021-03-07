@@ -300,15 +300,13 @@ The application will need to include the ``Traits`` header, in addition to the `
 These will include everything required to build a publishing application.
 Here is the ``#include`` section of an example publishing application, ``MinimalPublisher.cpp``.
 
-::
+.. code-block:: cpp
 
-    
     #ifdef ACE_AS_STATIC_LIBS
     #include <dds/DCPS/transport/tcp/Tcp.h>
     #endif
-    
+
     #include "model/MinimalTraits.h"
-    
 
 .. _11.3.3.2:
 
@@ -317,9 +315,8 @@ Exception Handling
 
 It is recommended that Modeling SDK applications catch both ``CORBA::Exception`` objects and ``std::exception`` objects.
 
-::
+.. code-block:: cpp
 
-    
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
       try {
@@ -333,7 +330,6 @@ It is recommended that Modeling SDK applications catch both ``CORBA::Exception``
       }
       return 0;
     }
-    
 
 .. _11.3.3.3:
 
@@ -347,9 +343,8 @@ The service is then used to create OpenDDS entities.
 The specific entity to create is specified using one of the enumerated identifiers specified in the ``Elements`` class.
 The Service provides this interface for entity creation:
 
-::
+.. code-block:: cpp
 
-    
     DDS::DomainParticipant_var participant(Elements::Participants::Values part);
     DDS::TopicDescription_var topic(Elements::Participants::Values part,
                                     Elements::Topics::Values topic);
@@ -357,7 +352,6 @@ The Service provides this interface for entity creation:
     DDS::Subscriber_var subscriber(Elements::Subscribers::Values subscriber);
     DDS::DataWriter_var writer(Elements::DataWriters::Values writer);
     DDS::DataReader_var reader(Elements::DataReaders::Values reader);
-    
 
 It is important to note that the service also creates any required intermediate entities, such as ``DomainParticipants``, ``Publishers``, ``Subscribers``, and ``Topics``, when necessary.
 
@@ -368,24 +362,21 @@ Publisher Code
 
 Using the ``writer()`` method shown above, ``MinimalPublisher.cpp`` continues:
 
-::
+.. code-block:: cpp
 
-    
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
       try {
         OpenDDS::Model::Application application(argc, argv);
         MinimalLib::DefaultMinimalType model(application, argc, argv);
-    
+
         using OpenDDS::Model::MinimalLib::Elements;
         DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);
-    
 
 What remains is to narrow the ``DataWriter`` to a type-specific data writer, and send samples.
 
-::
+.. code-block:: cpp
 
-    
         data1::MessageDataWriter_var msg_writer =
             data1::MessageDataWriter::_narrow(writer);
         data1::Message message;
@@ -395,28 +386,26 @@ What remains is to narrow the ``DataWriter`` to a type-specific data writer, and
         if (error != DDS::RETCODE_OK) {
           // Handle error
         }
-    
 
 In total our publishing application, ``MinimalPublisher.cpp``, looks like this:
 
-::
+.. code-block:: cpp
 
-    
     #ifdef ACE_AS_STATIC_LIBS
     #include <dds/DCPS/transport/tcp/Tcp.h>
     #endif
-    
+
     #include "model/MinimalTraits.h"
-    
+
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
       try {
         OpenDDS::Model::Application application(argc, argv);
         MinimalLib::DefaultMinimalType model(application, argc, argv);
-    
+
         using OpenDDS::Model::MinimalLib::Elements;
         DDS::DataWriter_var writer = model.writer(Elements::DataWriters::writer);
-    
+
         data1::MessageDataWriter_var msg_writer =
             data1::MessageDataWriter::_narrow(writer);
         data1::Message message;
@@ -433,7 +422,6 @@ In total our publishing application, ``MinimalPublisher.cpp``, looks like this:
       }
       return 0;
     }
-    
 
 Note this minimal example ignores logging and synchronization, which are issues that are not specific to the OpenDDS Modeling SDK.
 
@@ -448,31 +436,30 @@ The ``NullReaderListener`` implements the entire ``DataReaderListener`` interfac
 
 Subscribers can create a listener by deriving a class from ``NullReaderListener`` and overriding the interfaces of interest, for example on_data_available.
 
-::
+.. code-block:: cpp
 
-    
     #ifdef ACE_AS_STATIC_LIBS
     #include <dds/DCPS/transport/tcp/Tcp.h>
     #endif
-    
+
     #include "model/MinimalTraits.h"
     #include <model/NullReaderListener.h>
-    
+
     class ReaderListener : public OpenDDS::Model::NullReaderListener {
     public:
       virtual void on_data_available(DDS::DataReader_ptr reader)
                             ACE_THROW_SPEC((CORBA::SystemException)) {
         data1::MessageDataReader_var reader_i =
           data1::MessageDataReader::_narrow(reader);
-    
+
         if (!reader_i) {
           // Handle error
           ACE_OS::exit(-1);
         }
-    
+
         data1::Message msg;
         DDS::SampleInfo info;
-    
+
         // Read until no more messages
         while (true) {
           DDS::ReturnCode_t error = reader_i->take_next_sample(msg, info);
@@ -489,54 +476,48 @@ Subscribers can create a listener by deriving a class from ``NullReaderListener`
         }
       }
     };
-    
 
 In the main function, create a data reader from the service object:
 
-::
+.. code-block:: cpp
 
-    
         DDS::DataReader_var reader = model.reader(Elements::DataReaders::reader);
-    
 
 Naturally, the ``DataReaderListener`` must be associated with the data reader in order to get its callbacks.
 
-::
+.. code-block:: cpp
 
-    
         DDS::DataReaderListener_var listener(new ReaderListener);
         reader->set_listener(listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-    
 
 The remaining subscriber code has the same requirements of any OpenDDS Modeling SDK application, in that it must initialize the OpenDDS library through an ``OpenDDS::Modeling::Application`` object, and create a Service object with the proper DCPS model Elements class and traits class.
 
 An example subscribing application, ``MinimalSubscriber.cpp``, follows.
 
-::
+.. code-block:: cpp
 
-    
     #ifdef ACE_AS_STATIC_LIBS
     #include <dds/DCPS/transport/tcp/Tcp.h>
     #endif
-    
+
     #include "model/MinimalTraits.h"
     #include <model/NullReaderListener.h>
-    
+
     class ReaderListener : public OpenDDS::Model::NullReaderListener {
     public:
       virtual void on_data_available(DDS::DataReader_ptr reader)
                             ACE_THROW_SPEC((CORBA::SystemException)) {
         data1::MessageDataReader_var reader_i =
           data1::MessageDataReader::_narrow(reader);
-    
+
         if (!reader_i) {
           // Handle error
           ACE_OS::exit(-1);
         }
-    
+
         data1::Message msg;
         DDS::SampleInfo info;
-    
+
         // Read until no more messages
         while (true) {
           DDS::ReturnCode_t error = reader_i->take_next_sample(msg, info);
@@ -553,26 +534,26 @@ An example subscribing application, ``MinimalSubscriber.cpp``, follows.
         }
       }
     };
-    
+
     int ACE_TMAIN(int argc, ACE_TCHAR* argv[])
     {
       try {
         OpenDDS::Model::Application application(argc, argv);
         MinimalLib::DefaultMinimalType model(application, argc, argv);
-    
+
         using OpenDDS::Model::MinimalLib::Elements;
-    
+
         DDS::DataReader_var reader = model.reader(Elements::DataReaders::reader);
-    
+
         DDS::DataReaderListener_var listener(new ReaderListener);
         reader->set_listener(listener, OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-    
+
         // Call on_data_available in case there are samples which are waiting
         listener->on_data_available(reader);
-    
+
         // At this point the application can wait for an exteral “stop” indication
         // such as blocking until the user terminates the program with Ctrl-C.
-    
+
       } catch (const CORBA::Exception& e) {
         e._tao_print_exception("Exception caught in main():");
         return -1;
@@ -582,7 +563,6 @@ An example subscribing application, ``MinimalSubscriber.cpp``, follows.
       }
       return 0;
     }
-    
 
 .. _11.3.3.6:
 
@@ -594,34 +574,28 @@ This is in addition to the dcpsexe base from which non-Modeling SDK projects inh
 
 ::
 
-    
     project(*Publisher) : dcpsexe, dds_model {
       // project configuration
     }
-    
 
 The generated model library will generate an MPC project file and base project file in the target directory, and take care of building the model shared library.
 OpenDDS modeling applications must both (1) include the generated model library in their build and (2) ensure their projects are built after the generated model libraries.
 
 ::
 
-    
     project(*Publisher) : dcpsexe, dds_model {
       // project configuration
       libs  += Minimal
       after += Minimal
     }
-    
 
 Both of these can be accomplished by inheriting from the model library's project base, named after the model library.
 
 ::
 
-    
     project(*Publisher) : dcpsexe, dds_model, Minimal {
       // project configuration
     }
-    
 
 Note that the ``Minimal.mpb`` file must now be found by MPC during project file creation.
 This can be accomplished through the -include command line option.
@@ -630,12 +604,10 @@ Using either form, the MPC file must tell the build system where to look for the
 
 ::
 
-    
     project(*Publisher) : dcpsexe, dds_model, Minimal {
       // project configuration
       libpaths += model
     }
-    
 
 This setting based upon what was provided to the Target Folder setting in the Codegen file editor.
 
@@ -643,41 +615,35 @@ Finally, like any other MPC project, its source files must be included:
 
 ::
 
-    
       Source_Files {
         MinimalPublisher.cpp
       }
-    
 
 The final MPC project looks like this for the publisher:
 
 ::
 
-    
     project(*Publisher) : dcpsexe, dds_model, Minimal {
       exename   = publisher
       libpaths += model
-    
+
       Source_Files {
         MinimalPublisher.cpp
       }
     }
-    
 
 And similar for the subscriber:
 
 ::
 
-    
     project(*Subscriber) : dcpsexe, dds_model, Minimal {
       exename   = subscriber
       libpaths += model
-    
+
       Source_Files {
         MinimalSubscriber.cpp
       }
     }
-    
 
 .. _11.3.3.7:
 
@@ -695,24 +661,22 @@ Our full MPC file looks like this:
 
 ::
 
-    
     project(*Publisher) : dcpsexe, dds_model, Minimal, Minimal_paths {
       exename   = publisher
       libpaths += model
-    
+
       Source_Files {
         MinimalPublisher.cpp
       }
     }
-    
+
     project(*Subscriber) : dcpsexe, dds_model, Minimal, Minimal_paths {
       exename   = subscriber
       libpaths += model
-    
+
       Source_Files {
         MinimalSubscriber.cpp
       }
     }
-    
-    
+
 

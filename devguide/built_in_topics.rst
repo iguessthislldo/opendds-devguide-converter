@@ -50,14 +50,12 @@ DCPSParticipant Topic
 The ``DCPSParticipant`` topic publishes information about the Domain Participants of the Domain.
 Here is the IDL that defines the structure published for this topic:
 
-::
+.. code-block:: omg-idl
 
-    
         struct ParticipantBuiltinTopicData {
           BuiltinTopicKey_t key;
           UserDataQosPolicy user_data;
         };
-    
 
 Each Domain Participant is defined by a unique key and is its own instance within this topic.
 
@@ -72,9 +70,8 @@ DCPSTopic Topic
 The ``DCPSTopic`` topic publishes information about the topics in the domain.
 Here is the IDL that defines the structure published for this topic:
 
-::
+.. code-block:: omg-idl
 
-    
         struct TopicBuiltinTopicData {
           BuiltinTopicKey_t key;
           string name;
@@ -92,7 +89,6 @@ Here is the IDL that defines the structure published for this topic:
           OwnershipQosPolicy ownership;
           TopicDataQosPolicy topic_data;
         };
-    
 
 Each topic is identified by a unique key and is its own instance within this built-in topic.
 The members above identify the name of the topic, the name of the topic type, and the set of QoS policies for that topic.
@@ -106,9 +102,8 @@ DCPSPublication Topic
 The ``DCPSPublication`` topic publishes information about the Data Writers in the Domain.
 Here is the IDL that defines the structure published for this topic:
 
-::
+.. code-block:: omg-idl
 
-    
         struct PublicationBuiltinTopicData {
           BuiltinTopicKey_t key;
           BuiltinTopicKey_t participant_key;
@@ -127,7 +122,6 @@ Here is the IDL that defines the structure published for this topic:
           TopicDataQosPolicy topic_data;
           GroupDataQosPolicy group_data;
         };
-    
 
 Each Data Writer is assigned a unique key when it is created and defines its own instance within this topic.
 The fields above identify the Domain Participant (via its key) that the Data Writer belongs to, the topic name and type, and the various QoS policies applied to the Data Writer.
@@ -141,9 +135,8 @@ DCPSSubscription Topic
 The ``DCPSSubscription`` topic publishes information about the Data Readers in the Domain.
 Here is the IDL that defines the structure published for this topic:
 
-::
+.. code-block:: omg-idl
 
-    
         struct SubscriptionBuiltinTopicData {
           BuiltinTopicKey_t key;
           BuiltinTopicKey_t participant_key;
@@ -162,7 +155,6 @@ Here is the IDL that defines the structure published for this topic:
           TopicDataQosPolicy topic_data;
           GroupDataQosPolicy group_data;
         };
-    
 
 Each Data Reader is assigned a unique key when it is created and defines its own instance within this topic.
 The fields above identify the Domain Participant (via its key) that the Data Reader belongs to, the topic name and type, and the various QoS policies applied to the Data Reader.
@@ -176,24 +168,22 @@ Built-In Topic Subscription Example
 The following code uses a domain participant to get the built-in subscriber.
 It then uses the subscriber to get the Data Reader for the ``DCPSParticipant`` topic and subsequently reads samples for that reader.
 
-::
+.. code-block:: cpp
 
-    
         Subscriber_var bit_subscriber = participant->get_builtin_subscriber();
         DDS::DataReader_var dr =
           bit_subscriber->lookup_datareader(BUILT_IN_PARTICIPANT_TOPIC);
         DDS::ParticipantBuiltinTopicDataDataReader_var part_dr =
           DDS::ParticipantBuiltinTopicDataDataReader::_narrow(dr);
-    
+
         DDS::ParticipantBuiltinTopicDataSeq part_data;
         DDS::SampleInfoSeq infos;
         DDS::ReturnCode_t ret = part_dr->read(part_data, infos, 20,
                                               DDS::ANY_SAMPLE_STATE,
                                               DDS::ANY_VIEW_STATE,
                                               DDS::ANY_INSTANCE_STATE);
-    
+
         // Check return status and read the participant data
-    
 
 The code for the other built-in topics is similar.
 

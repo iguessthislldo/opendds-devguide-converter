@@ -56,49 +56,43 @@ These values are used in discovery's reader/writer matching.
 See the section on QoS processing below for how the ``Recorder`` and ``Replayer`` use QoS.
 Here is the code needed to create a recorder:
 
-::
+.. code-block:: cpp
 
-    
      OpenDDS::DCPS::Recorder_var recorder =
           service_participant->create_recorder(domain_participant,
                                                topic.in(),
                                                sub_qos,
                                                dr_qos,
                                                recorder_listener);
-    
 
 Data samples are made available to the application via the ``RecorderListener`` using a simple “one callback per sample” model.
 The sample is delivered as an ``OpenDDS::DCPS::RawDataSample`` object.
 This object includes the timestamp for that data sample as well as the marshaled sample value.
 Here is a class definition for a user-defined Recorder Listener.
 
-::
+.. code-block:: cpp
 
-    
     class MessengerRecorderListener : public OpenDDS::DCPS::RecorderListener
     {
     public:
       MessengerRecorderListener();
-    
+
       virtual void on_sample_data_received(OpenDDS::DCPS::Recorder*,
                                            const OpenDDS::DCPS::RawDataSample& sample);
-    
+
       virtual void on_recorder_matched(OpenDDS::DCPS::Recorder*,
                                        const DDS::SubscriptionMatchedStatus& status );
-    
+
     };
-    
 
 The application can store the data wherever it sees fit (in memory, file system, database, etc.).
 At any later time, the application can provide that same sample to a ``Replayer`` object configured for the same topic.
 It’s the application’s responsibility to make sure the topic types match.
 Here is an example call that replays a sample to all readers connected on a replayer’s topic:
 
-::
+.. code-block:: cpp
 
-    
          replayer->write(sample);
-    
 
 Because the stored data is dependent on the definition of the data structure, it can’t be used across different versions of OpenDDS or different versions of the IDL used by the OpenDDS participants.
 
@@ -207,7 +201,7 @@ The class EntityImpl (in ``dds/DCPS/EntityImpl.h``) is OpenDDS’s base class fo
 EntityImpl includes public methods for Observer registration: set_observer and get_observer.
 These methods are not part of the IDL interfaces, so invoking them the requires a cast to the implementation (Impl) of Entity.
 
-::
+.. code-block:: cpp
 
          DDS::DataWriter_var dw = /* … */;
      EntityImpl* entity = dynamic_cast<EntityImpl*>(dw.in());

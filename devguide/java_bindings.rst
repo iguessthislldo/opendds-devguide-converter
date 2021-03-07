@@ -75,18 +75,16 @@ To the right of each file name is the name of the tool that generates it, follow
 | ``{h,cpp}``                          |                                                      |
 +--------------------------------------+------------------------------------------------------+
 
-::
+.. code-block:: omg-idl
 
-    
     Foo.idl:
-    
+
     module Baz {
          @topic
       struct Bar {
         long x;
       };
     };
-    
 
 .. _10.3:
 
@@ -111,40 +109,37 @@ These instructions assume you have completed the installation steps in the ``$DD
 
 Unix:
 
-::
+.. code-block:: bash
 
     $ACE_ROOT/bin/generate_export_file.pl Foo > Foo_Export.h
-    
 
 Windows:
 
-::
+.. code-block:: doscon
 
     %ACE_ROOT%\bin\generate_export_file.pl Foo > Foo_Export.h
-    
 
 * Create an MPC file, Foo.mpc, from this template:
 
 ::
 
          project: dcps_java {
-    
+
          idlflags      += -Wb,stub_export_include=Foo_Export.h \
                           -Wb,stub_export_macro=Foo_Export
          dcps_ts_flags += -Wb,export_macro=Foo_Export
          idl2jniflags  += -Wb,stub_export_include=Foo_Export.h \
                           -Wb,stub_export_macro=Foo_Export
          dynamicflags  += FOO_BUILD_DLL
-    
+
          specific {
            jarname      = DDS_Foo_types
          }
-    
+
          TypeSupport_Files {
            Foo.idl
          }
        }
-    
 
 You can leave out the specific {...} block if you do not need to create a jar file.
 In this case you can directly use the Java .class files which will be generated under the classes subdirectory of the current directory.
@@ -153,13 +148,13 @@ In this case you can directly use the Java .class files which will be generated 
 
 Unix:
 
-::
+.. code-block:: bash
 
     $ACE_ROOT/bin/mwc.pl -type gnuace
 
 Windows:
 
-::
+.. code-block:: doscon
 
     %ACE_ROOT%\bin\mwc.pl -type [CompilerType]
 
@@ -174,7 +169,6 @@ Unix:
 ::
 
     make (GNU make, so this may be "gmake" on Solaris systems)
-    
 
 Windows:
 
@@ -191,22 +185,18 @@ Unix:
 ::
 
     libFoo.so
-    
 
 Windows:
 
 ::
 
     Foo.dll (Release) or Food.dll (Debug)
-    
 
 You can change the locations of these libraries (including the ``.jar`` file) by adding a line such as the following to the ``Foo.mpc`` file:
 
 ::
 
-    
     libout = $(PROJECT_ROOT)/lib
-    
 
 where ``PROJECT_ROOT`` can be any environment variable defined at build-time.
 
@@ -250,11 +240,10 @@ A call to the static method ``TheParticipantFactory.WithArgs()`` returns a Facto
 This also transparently initializes the C++ Participant Factory.
 We can then create Participants for specific domains.
 
-::
+.. code-block:: java
 
-    
         public static void main(String[] args) {
-    
+
             DomainParticipantFactory dpf =
                 TheParticipantFactory.WithArgs(new StringSeqHolder(args));
             if (dpf == null) {
@@ -268,7 +257,6 @@ We can then create Participants for specific domains.
               System.err.println ("Domain Participant creation failed");
               return;
             }
-    
 
 Object creation failure is indicated by a null return.
 The third argument to ``create_participant()`` takes a Participant events listener.
@@ -285,24 +273,20 @@ Passing an empty string indicates that the middleware should simply use the iden
 
 ::
 
-    
             MessageTypeSupportImpl servant = new MessageTypeSupportImpl();
             if (servant.register_type(dp, "") != RETCODE_OK.value) {
               System.err.println ("register_type failed");
               return;
             }
-    
 
 Next we create a topic using the type support servant’s registered name.
 
-::
+.. code-block:: java
 
-    
             Topic top = dp.create_topic("Movie Discussion List",
                                         servant.get_type_name(),
                                         TOPIC_QOS_DEFAULT.get(), null,
                                         DEFAULT_STATUS_MASK.value);
-    
 
 Now we have a topic named “*Movie Discussion List*” with the registered data type and default QoS policies.
 
@@ -313,14 +297,12 @@ Creating a Publisher
 
 Next, we create a publisher:
 
-::
+.. code-block:: java
 
-    
             Publisher pub = dp.create_publisher(
               PUBLISHER_QOS_DEFAULT.get(),
               null,
               DEFAULT_STATUS_MASK.value);
-    
 
 .. _10.4.4:
 
@@ -329,12 +311,10 @@ Creating a DataWriter and Registering an Instance
 
 With the publisher, we can now create a DataWriter:
 
-::
+.. code-block:: java
 
-    
             DataWriter dw = pub.create_datawriter(
               top, DATAWRITER_QOS_DEFAULT.get(), null, DEFAULT_STATUS_MASK.value);
-    
 
 The ``DataWriter`` is for a specific topic.
 For our example, we use the default ``DataWriter`` QoS policies and a null ``DataWriterListener``.
@@ -342,27 +322,23 @@ For our example, we use the default ``DataWriter`` QoS policies and a null ``Dat
 Next, we narrow the generic ``DataWriter`` to the type-specific ``DataWriter`` and register the instance we wish to publish.
 In our data definition IDL we had specified the subject_id field as the key, so it needs to be populated with the instance id (99 in our example):
 
-::
+.. code-block:: java
 
-    
             MessageDataWriter mdw = MessageDataWriterHelper.narrow(dw);
             Message msg = new Message();
             msg.subject_id = 99;
             int handle = mdw.register(msg);
-    
 
 Our example waits for any peers to be initialized and connected.
 It then publishes a few messages which are distributed to any subscribers of this topic in the same domain.
 
 ::
 
-    
             msg.from = "OpenDDS-Java";
             msg.subject = "Review";
             msg.text = "Worst. Movie. Ever.";
             msg.count = 0;
             int ret = mdw.write(msg, handle);
-    
 
 .. _10.5:
 
@@ -373,11 +349,10 @@ Setting up the Subscriber
 Much of the initialization code for a subscriber is identical to the publisher.
 The subscriber needs to create a participant in the same domain, register an identical data type, and create the same named topic.
 
-::
+.. code-block:: java
 
-    
         public static void main(String[] args) {
-    
+
             DomainParticipantFactory dpf =
                 TheParticipantFactory.WithArgs(new StringSeqHolder(args));
             if (dpf == null) {
@@ -390,7 +365,7 @@ The subscriber needs to create a participant in the same domain, register an ide
               System.err.println("Domain Participant creation failed");
               return;
             }
-    
+
             MessageTypeSupportImpl servant = new MessageTypeSupportImpl();
                                                    if (servant.register_type(dp, "") != RETCODE_OK.value) {
               System.err.println ("register_type failed");
@@ -400,7 +375,6 @@ The subscriber needs to create a participant in the same domain, register an ide
                                         servant.get_type_name(),
                                         TOPIC_QOS_DEFAULT.get(), null,
                                         DEFAULT_STATUS_MASK.value);
-    
 
 .. _10.5.1:
 
@@ -409,12 +383,10 @@ Creating a Subscriber
 
 As with the publisher, we create a subscriber:
 
-::
+.. code-block:: java
 
-    
             Subscriber sub = dp.create_subscriber(
               SUBSCRIBER_QOS_DEFAULT.get(), null, DEFAULT_STATUS_MASK.value);
-    
 
 .. _10.5.2:
 
@@ -426,12 +398,10 @@ We therefore create an instance of a ``DataReaderListenerImpl`` and pass it as a
 
 ::
 
-    
             DataReaderListenerImpl listener = new DataReaderListenerImpl();
              DataReader dr = sub.create_datareader(
                top, DATAREADER_QOS_DEFAULT.get(), listener,
                DEFAULT_STATUS_MASK.value);
-    
 
 Any incoming messages will be received by the Listener in the middleware’s thread.
 The application thread is free to perform other tasks at this time.
@@ -449,13 +419,12 @@ The application’s listener class extends this abstract class and implements th
 Our example ``DataReaderListener`` stubs out most of the Listener methods.
 The only method implemented is the message available callback from the middleware:
 
-::
+.. code-block:: java
 
-    
     public class DataReaderListenerImpl extends DDS._DataReaderListenerLocalBase {
-    
+
         private int num_reads_;
-    
+
         public synchronized void on_data_available(DDS.DataReader reader) {
             ++num_reads_;
             MessageDataReader mdr = MessageDataReaderHelper.narrow(reader);
@@ -463,34 +432,30 @@ The only method implemented is the message available callback from the middlewar
               System.err.println ("read: narrow failed.");
               return;
             }
-    
 
 The Listener callback is passed a reference to a generic ``DataReader``.
 The application narrows it to a type-specific ``DataReader``:
 
 ::
 
-    
             MessageHolder mh = new MessageHolder(new Message());
             SampleInfoHolder sih = new SampleInfoHolder(new SampleInfo(0, 0, 0,
                 new DDS.Time_t(), 0, 0, 0, 0, 0, 0, 0, false));
             int status  = mdr.take_next_sample(mh, sih);
-    
 
 It then creates holder objects for the actual message and associated ``SampleInfo`` and takes the next sample from the ``DataReader``.
 Once taken, that sample is removed from the ``DataReader``’s available sample pool.
 
-::
+.. code-block:: java
 
-    
             if (status == RETCODE_OK.value) {
-    
+
               System.out.println ("SampleInfo.sample_rank = "+ sih.value.sample_rank);
               System.out.println ("SampleInfo.instance_state = "+
                                   sih.value.instance_state);
-    
+
               if (sih.value.valid_data) {
-    
+
                 System.out.println("Message: subject    = " + mh.value.subject);
                 System.out.println("         subject_id = " + mh.value.subject_id);
                 System.out.println("         from       = " + mh.value.from);
@@ -512,16 +477,15 @@ Once taken, that sample is removed from the ``DataReader``’s available sample 
                                     "received unknown instance state "+
                                     sih.value.instance_state);
               }
-    
+
             } else if (status == RETCODE_NO_DATA.value) {
               System.err.println ("ERROR: reader received DDS::RETCODE_NO_DATA!");
             } else {
               System.err.println ("ERROR: read Message: Error: "+ status);
             }
         }
-    
+
     }
-    
 
 The ``SampleInfo`` contains meta-information regarding the message such as the message validity, instance state, etc.
 
@@ -535,25 +499,19 @@ An application should clean up its OpenDDS environment with the following steps:
 
 ::
 
-    
             dp.delete_contained_entities();
-    
 
 Cleans up all topics, subscribers and publishers associated with that ``Participant``.
 
 ::
 
-    
             dpf.delete_participant(dp);
-    
 
 The ``DomainParticipantFactory`` reclaims any resources associated with the ``DomainParticipant``.
 
 ::
 
-    
             TheServiceParticipant.shutdown();
-    
 
 Shuts down the ``ServiceParticipant``.
 This cleans up all OpenDDS associated resources.
@@ -571,22 +529,18 @@ The properties are divided into named sections corresponding to common and indiv
 
 The Messenger example has common properties for the ``DCPSInfoRepo`` objects location and the global transport configuration:
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSInfoRepo=file://repo.ior
     DCPSGlobalTransportConfig=$file
-    
 
 and a transport instance section with a transport type property:
 
-::
+.. code-block:: ini
 
-    
     [transport/1]
     transport_type=tcp
-    
 
 The ``[transport/1]`` section contains configuration information for the transport instance named “``1``”.
 It is defined to be of type ``tcp``.
@@ -602,15 +556,13 @@ Running the Example
 
 To run the Messenger Java OpenDDS application, use the following commands:
 
-::
+.. code-block:: bash
 
-    
     $DDS_ROOT/bin/DCPSInfoRepo -o repo.ior
-    
+
     $JAVA_HOME/bin/java -ea -cp classes:$DDS_ROOT/lib/i2jrt.jar:$DDS_ROOT/lib/OpenDDS_DCPS.jar:classes TestPublisher -DCPSConfigFile pub_tcp.ini
-    
+
     $JAVA_HOME/bin/java -ea -cp classes:$DDS_ROOT/lib/i2jrt.jar:$DDS_ROOT/lib/OpenDDS_DCPS.jar:classes TestSubscriber -DCPSConfigFile sub_tcp.ini
-    
 
 The ``-DCPSConfigFile`` command-line argument passes the location of the OpenDDS configuration file.
 

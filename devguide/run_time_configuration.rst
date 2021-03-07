@@ -73,40 +73,37 @@ Windows:
 ::
 
         publisher -DCPSConfigFile pub.ini
-    
 
 Unix:
 
 ::
 
         ./publisher -DCPSConfigFile pub.ini
-    
 
 Command-line arguments are passed to the service participant singleton when initializing the domain participant factory.
 This is accomplished by using the ``TheParticipantFactoryWithArgs`` macro:
 
-::
+.. code-block:: cpp
 
-    
     #include <dds/DCPS/Service_Participant.h>
-    
+
     int main (int argc, char* argv[])
     {
-    
+
          DDS::DomainParticipantFactory_var dpf =
              TheParticipantFactoryWithArgs(argc, argv);
 
 To set a default configuration file to load, use ``TheServiceParticipant->default_configuration_file(ACE_TCHAR* path)``, like in the following example:
 
-::
+.. code-block:: cpp
 
     #include <dds/DCPS/Service_Participant.h>
-    
+
     int main (int argc, char* argv[])
     {
-    
+
          TheServiceParticipant->default_configuration_file(ACE_TEXT(“pub.ini”));
-    
+
          DDS::DomainParticipantFactory_var dpf =
              TheParticipantFactoryWithArgs(argc, argv);
 
@@ -126,9 +123,8 @@ Common Configuration Options
 The ``[common]`` section of an OpenDDS configuration file contains options such as the debugging output level, the location of the ``DCPSInfoRepo`` process, and memory preallocation settings.
 A sample ``[common]`` section follows:
 
-::
+.. code-block:: ini
 
-    
         [common]
         DCPSDebugLevel=0
         DCPSInfoRepo=localhost:12345
@@ -137,8 +133,7 @@ A sample ``[common]`` section follows:
         DCPSChunksAssociationMultiplier=10
         DCPSBitLookupDurationMsec=2000
         DCPSPendingTimeout=30
-    
-    
+
 
 It is not necessary to specify every option.
 
@@ -148,9 +143,7 @@ For example:
 
 ::
 
-    
         subscriber -DCPSInfoRepo localhost:12345
-    
 
 The following table summarizes the ``[common]`` configuration options:
 
@@ -303,26 +296,22 @@ See Sections :ref:`7.3.2` for configuring ``[repository]`` sections, :ref:`7.3.3
 Ultimately a domain is assigned an integer value and a configuration file can support this in two ways.
 The first is to simply make the instance value the integer value assigned to the domain as shown here:
 
-::
+.. code-block:: ini
 
-    
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
         (more properties...)
-    
 
 Our example configures a single domain identified by the domain keyword and followed by an instance value of ``/1``.
 The instance value after the slash in this case is the integer value assigned to the domain.
 An alternative syntax for this same content is to use a more recognizable (friendly) name instead of a number for the domain name and then add the ``DomainId`` property to the section to give the integer value.
 Here is an example:
 
-::
+.. code-block:: ini
 
-    
     [domain/books]
     DomainId=1
     DiscoveryConfig=DiscoveryConfig1
-    
 
 The domain is given a friendly name of books.
 The ``DomainId`` property assigns the integer value of ``1`` needed by a DDS application reading the configuration.
@@ -336,14 +325,13 @@ This instance name must be associated with a section type of either ``[repositor
 
 Here is an extension of our example:
 
-::
+.. code-block:: ini
 
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [repository/DiscoveryConfig1]
     RepositoryIor=host1.mydomain.com:12345
-    
 
 In this case our domain points to a ``[repository]`` section which is used for an OpenDDS ``DCPSInfoRepo`` service.
 See Section :ref:`7.3.2` for more details.
@@ -351,18 +339,17 @@ See Section :ref:`7.3.2` for more details.
 There are going to be occasions when specific domains are not identified in the configuration file.
 For example, if an OpenDDS application assigns a domain ID of 3 to its participants and the above example does not supply a configuration for domain id of 3 then the following can be used:
 
-::
+.. code-block:: ini
 
     [common]
     DCPSInfoRepo=host3.mydomain.com:12345
     DCPSDefaultDiscovery=DEFAULT_REPO
-    
+
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [repository/DiscoveryConfig1]
     RepositoryIor=host1.mydomain.com:12345
-    
 
 The ``DCPSDefaultDiscovery`` property tells the application to assign any participant that doesn’t have a domain id found in the configuration file to use a discovery type of ``DEFAULT_REPO`` which means “use a ``DCPSInfoRepo`` service”  and that ``DCPSInfoRepo`` service can be found at ``host3.mydomain.com:12345``.
 
@@ -373,23 +360,22 @@ Similarly, the ``DEFAULT_STATIC`` constant value informs the participants that d
 The final option for the ``DCPSDefaultDiscovery`` property is to tell an application to use one of the defined discovery configurations to be the default configuration for any participant domain that isn’t called out in the file.
 Here is an example:
 
-::
+.. code-block:: ini
 
     [common]
     DCPSDefaultDiscovery=DiscoveryConfig2
-    
+
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [repository/DiscoveryConfig1]
     RepositoryIor=host1.mydomain.com:12345
-    
+
     [domain/2]
     DiscoveryConfig=DiscoveryConfig2
-    
+
     [repository/DiscoveryConfig2]
     RepositoryIor=host2.mydomain.com:12345
-    
 
 By adding the ``DCPSDefaultDiscovery`` property to the ``[common]`` section, any participant that hasn’t been assigned to a domain id of ``1`` or ``2`` will use the configuration of ``DiscoveryConfig2``.
 For more explanation of a similar configuration for RTPS discovery see Section :ref:`7.3.3`.
@@ -430,86 +416,74 @@ In our Getting Started example from 2.1.7, “Running the Example” the executa
 ::
 
     publisher -DCPSInfoRepo file://repo.ior
-    
 
 This assumes that the ``DCPSInfoRepo`` has been started with the following syntax:
 
 Windows:
 
-::
+.. code-block:: doscon
 
     %DDS_ROOT%\bin\DCPSInfoRepo -o repo.ior
-    
 
 Unix:
 
-::
+.. code-block:: bash
 
     $DDS_ROOT/bin/DCPSInfoRepo -o repo.ior
-    
 
 The ``DCPSInfoRepo`` service generates its location object information in this file and participants need to read this file to ultimately connect.
 The use of file based IORs to find a discovery service, however, is not practical in most production environments, so applications instead can use a command line option like the following to simply point to the host and port where the ``DCPSInfoRepo`` is running.
 
 ::
 
-    
     publisher -DCPSInfoRepo myhost.mydomain.com:12345
-    
 
 The above assumes that the ``DCPSInfoRepo`` has been started on a host (``myhost.mydomain.com``) as follows:
 
 Windows:
 
-::
+.. code-block:: doscon
 
     %DDS_ROOT%\bin\DCPSInfoRepo -ORBListenEndpoints iiop://:12345
-    
 
 Unix:
 
-::
+.. code-block:: bash
 
     $DDS_ROOT/bin/DCPSInfoRepo -ORBListenEndpoints iiop://:12345
-    
 
 If an application needs to use a configuration file for other settings, it would become more convenient to place discovery content in the file and reduce command line complexity and clutter.
 The use of a configuration file also introduces the opportunity for multiple application processes to share common OpenDDS configuration.
 The above example can easily be moved to the ``[common]`` section of a configuration file (assume a file of ``pub.ini``):
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSInfoRepo=myhost.mydomain.com:12345
-    
 
 The command line to start our executable would now change to the following:
 
 ::
 
     publisher -DCSPConfigFile pub.ini
-    
 
 Reinforcing our example from the discussion of domains in section , a configuration file can specify domains with discovery configuration assigned to those domains.
 In this case the ``RepositoryIor`` property is used to take the same information that would be supplied on a command line to point to a running ``DCPSInfoRepo`` service.
 Two domains are configured here:
 
-::
+.. code-block:: ini
 
-    
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [repository/DiscoveryConfig1]
     RepositoryIor=myhost.mydomain.com:12345
-    
+
     [domain/2]
     DiscoveryConfig=DiscoveryConfig2
-    
+
     [repository/DiscoveryConfig2]
     RepositoryIor=host2.mydomain.com:12345
-    
 
 The ``DiscoveryConfig`` property under ``[domain/1]`` instructs all participants in domain ``1`` to use the configuration defined in an instance called ``DiscoveryConfig1``.
 In the above, this is mapped to a ``[repository]`` section that gives the ``RepositoryIor`` value of ``myhost.mydomain.com:12345``.
@@ -517,30 +491,26 @@ In the above, this is mapped to a ``[repository]`` section that gives the ``Repo
 Finally, when configuring a ``DCPSInfoRepo`` the ``DiscoveryConfig`` property under a domain instance entry can also contain the value of ``DEFAULT_REPO`` which instructs a participant using this instance to use the definition of the property ``DCPSInfoRepo`` wherever it has been supplied.
 Consider the following configuration file as an example:
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSInfoRepo=localhost:12345
-    
+
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [repository/DiscoveryConfig1]
     RepositoryIor=myhost.mydomain.com:12345
-    
+
     [domain/2]
     DiscoveryConfig=DEFAULT_REPO
-    
 
 In this case any participant in domain 2 would be instructed to refer to the discovery property of ``DCPSInfoRepo``, which is defined in the ``[common]`` section of our example.
 If the ``DCPSInfoRepo`` value is not supplied in the ``[common]`` section, it could alternatively be supplied as a parameter to the command line like so:
 
 ::
 
-    
     publisher -DCPSInfoRepo localhost:12345 -DCPSConfigFile pub.ini
-    
 
 This sets the value of ``DCPSInfoRepo`` such that if participants reading the configuration file pub.ini encounters ``DEFAULT_REPO``, there is a value for it.
 If ``DCPSInfoRepo`` is not defined in a configuration file or on the command line, then the OpenDDS default value for ``DCPSInfoRepo`` is ``file://repo.ior``.
@@ -575,22 +545,21 @@ What allows this configuration to work can be found in the ``configE.ini`` file.
 We will now look at the configuration file (referred to as ``configE.ini``) to demonstrate how Process ``E`` can communicate to both domains and separate ``DCPSInfoRepo`` services.
 For this example we will only show the discovery aspects of the configuration and not show transport content.
 
-::
+.. code-block:: ini
 
     configE.ini
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [repository/DiscoveryConfig1]
     RepositoryIor=host1.mydomain.com:12345
-    
+
     [domain/2]
     DiscoveryConfig=DiscoveryConfig2
-    
+
     [repository/DiscoveryConfig2]
     RepositoryIor=host2.mydomain.com:12345
-    
-    
+
 
 When Process ``E`` in Figure 7-1 reads in the above configuration it finds the occurrence of multiple domain sections.
 As described in Section  each domain has an instance integer and a property of ``DiscoveryConfig`` defined.
@@ -649,26 +618,23 @@ DDSI-RTPS can be configured for a single domain or for multiple domains as was d
 
 A simple configuration is achieved by specifying a property in the ``[common]`` section of our example configuration file.
 
-::
+.. code-block:: ini
 
     configE.ini (for RTPS)
     [common]
     DCPSDefaultDiscovery=DEFAULT_RTPS
-    
 
 All default values for DDSI-RTPS discovery are adopted in this form.
 A variant of this same basic configuration is to specify a section to hold more specific parameters of RTPS discovery.
 The following example uses the ``[common]`` section to point to an instance of an ``[rtps_discovery]`` section followed by an instance name of ``TheRTPSConfig`` which is supplied by the user.
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSDefaultDiscovery=TheRTPSConfig
-    
+
     [rtps_discovery/TheRTPSConfig]
     ResendPeriod=5
-    
 
 The instance ``[rtps_discovery/TheRTPSConfig]`` is now the location where properties that vary the default DDSI-RTPS settings get specified.
 In our example the ``ResendPeriod=5`` entry sets the number of seconds between periodic announcements of available data readers / data writers and to detect the presence of other data readers / data writers on the network.
@@ -677,26 +643,24 @@ This would override the default of 30 seconds.
 If your OpenDDS deployment uses multiple domains, the following configuration approach combines the use of the ``[domain]`` section title with ``[rtps_discovery]`` to allow a user to specify particular settings by domain.
 It might look like this:
 
-::
+.. code-block:: ini
 
-    
     configE.ini
     [common]
     DCPSDebugLevel=0
-    
+
     [domain/1]
     DiscoveryConfig=DiscoveryConfig1
-    
+
     [rtps_discovery/DiscoveryConfig1]
     ResendPeriod=5
-    
+
     [domain/2]
     DiscoveryConfig=DiscoveryConfig2
-    
+
     [rtps_discovery/DiscoveryConfig2]
     ResendPeriod=5
     SedpMulticast=0
-    
 
 Some important implementation notes regarding DDSI-RTPS discovery in OpenDDS are as follows:
 
@@ -889,11 +853,11 @@ The representation of this octet sequence occurs in the ``participant`` value of
 Similarly, the ``user_data`` of the ``DataReaderQos`` or ``DataWriterQos`` must be set to an octet sequence of length 3 corresponding to the ``entity`` value in the ``[endpoint/*]`` section.
 For example, suppose the configuration file contains the following:
 
-::
+.. code-block:: ini
 
     [topic/MyTopic]
     type_name=TestMsg::TestMsg
-    
+
     [endpoint/MyReader]
     type=reader
     topic=MyTopic
@@ -901,19 +865,18 @@ For example, suppose the configuration file contains the following:
     domain=34
     participant=0123456789ab
     entity=cdef01
-    
+
     [config/MyConfig]
     transports=MyTransport
-    
+
     [transport/MyTransport]
     transport_type=rtps_udp
     use_multicast=0
     local_address=1.2.3.4:30000
-    
 
 The corresponding code to configure the ``DomainParticipantQos`` is:
 
-::
+.. code-block:: cpp
 
     DDS::DomainParticipantQos dp_qos;
     domainParticipantFactory->get_default_participant_qos(dp_qos);
@@ -924,11 +887,10 @@ The corresponding code to configure the ``DomainParticipantQos`` is:
     dp_qos.user_data.value[3] = 0x67;
     dp_qos.user_data.value[4] = 0x89;
     dp_qos.user_data.value[5] = 0xab;
-    
 
 The code to configure the DataReaderQos is similar:
 
-::
+.. code-block:: cpp
 
     DDS::DataReaderQos qos;
     subscriber->get_default_datareader_qos(qos);
@@ -936,7 +898,6 @@ The code to configure the DataReaderQos is similar:
     qos.user_data.value[0] = 0xcd;
     qos.user_data.value[1] = 0xef;
     qos.user_data.value[2] = 0x01;
-    
 
 The domain id, which is 34 in the example, should be passed to the call to ``create_participant``.
 
@@ -1208,19 +1169,17 @@ Single Transport Configuration
 The simplest way to provide a transport configuration for your application is to use the OpenDDS configuration file.
 Here is a sample configuration file that might be used by an application running on a computer with two network interfaces that only wants to communicate using one of them:
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSGlobalTransportConfig=myconfig
-    
+
     [config/myconfig]
     transports=mytcp
-    
+
     [transport/mytcp]
     transport_type=tcp
     local_address=myhost
-    
 
 This file does the following (starting from the bottom up):
 
@@ -1240,21 +1199,19 @@ Using Mixed Transports
 This example configures an application to primarily use multicast and to “fall back” to tcp when it is unable to use multicast.
 Here is the configuration file:
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSGlobalTransportConfig=myconfig
-    
+
     [config/myconfig]
     transports=mymulticast,mytcp
-    
+
     [transport/mymulticast]
     transport_type=multicast
-    
+
     [transport/mytcp]
     transport_type=tcp
-    
 
 The transport configuration named ``myconfig`` now includes two transport instances, ``mymulticast`` and ``mytcp``.
 Neither of these transport instances specify any parameters besides transport_type, so they use the default configuration of these transport implementations.
@@ -1274,26 +1231,24 @@ These applications must create multiple Transport Configurations and then assign
 For this example consider an application hosted on a computer with two network interfaces that requires communication of some data over one interface and the remainder over the other interface.
 Here is our configuration file:
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSGlobalTransportConfig=config_a
-    
+
     [config/config_a]
     transports=tcp_a
-    
+
     [config/config_b]
     transports=tcp_b
-    
+
     [transport/tcp_a]
     transport_type=tcp
     local_address=hosta
-    
+
     [transport/tcp_b]
     transport_type=tcp
     local_address=hostb
-    
 
 Assuming ``hosta`` and ``hostb`` are the host names assigned to the two network interfaces, we now have separate configurations that can use tcp on the respective networks.
 The above file sets the “``A``” side configuration as the default, meaning we must manually bind any entities we want to use the other side to the “``B``” side configuration.
@@ -1306,17 +1261,15 @@ OpenDDS provides two mechanisms to assign configurations to entities:
 
 Here is the source code mechanism (using a domain participant):
 
-::
+.. code-block:: cpp
 
-    
       DDS::DomainParticipant_var dp =
               dpf->create_participant(MY_DOMAIN,
                                       PARTICIPANT_QOS_DEFAULT,
                                       DDS::DomainParticipantListener::_nil(),
                                       OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-    
+
      OpenDDS::DCPS::TransportRegistry::instance()->bind_config("config_b", dp);
-    
 
 Any Data Writers or Readers owned by this Domain Participant should now use the “``B``” side configuration.
 
@@ -1335,41 +1288,35 @@ The ``TransportConfig`` and ``TransportInst`` classes contain public data member
 This section contains the code equivalent of the simple transport configuration file described in .
 First, we need to include the correct header files:
 
-::
+.. code-block:: cpp
 
-    
     #include <dds/DCPS/transport/framework/TransportRegistry.h>
     #include <dds/DCPS/transport/framework/TransportConfig.h>
     #include <dds/DCPS/transport/framework/TransportInst.h>
     #include <dds/DCPS/transport/tcp/TcpInst.h>
-    
+
     using namespace OpenDDS::DCPS;
-    
 
 Next we create the transport configuration, create the transport instance, configure the transport instance, and then add the instance to the configuration’s collection of instances:
 
-::
+.. code-block:: cpp
 
-    
       TransportConfig_rch cfg = TheTransportRegistry->create_config("myconfig");
       TransportInst_rch inst = TheTransportRegistry->create_inst("mytcp", // name
                                                                  "tcp");  // type
-    
+
       // Must cast to TcpInst to get access to transport-specific options
       TcpInst_rch tcp_inst = dynamic_rchandle_cast<TcpInst>(inst);
       tcp_inst->local_address_str_ = "myhost";
-    
+
       // Add the inst to the config
       cfg->instances_.push_back(inst);
-    
 
 Lastly, we can make our newly defined transport configuration the global transport configuration:
 
-::
+.. code-block:: cpp
 
-    
       TheTransportRegistry->global_config(cfg);
-    
 
 This code should be executed before any Data Readers or Writers are enabled.
 
@@ -1627,9 +1574,7 @@ Given the values of ``syn_backoff`` and ``syn_interval``, it is possible to calc
 
 ::
 
-    
         delay = syn_interval * syn_backoff ^ number_of_retries
-    
 
 For example, if the default configuration options are assumed, the delays between handshake attempts would be: 0, 250, 1000, 2000, 4000, and 8000 milliseconds respectively.
 
@@ -1719,38 +1664,34 @@ This section will discuss the options available to the developer for configuring
 To provide an RTPS variant of the single configuration example from Section , the configuration file below simply modifies the ``transport_type`` property to the value ``rtps_udp``.
 All other items remain the same.
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSGlobalTransportConfig=myconfig
-    
+
     [config/myconfig]
     transports=myrtps
-    
+
     [transport/myrtps]
     transport_type=rtps_udp
     local_address=myhost
-    
 
 To extend our examples to a mixed transport configuration as shown in Section , below shows the use of an ``rtps_udp`` transport mixed with a ``tcp`` transport.
 The interesting pattern that this allows for is a deployed OpenDDS application that can be, for example, communicating using ``tcp`` with other OpenDDS participants while communicating in an interoperability configuration with a non-OpenDDS participant using ``rtps_udp``.
 
-::
+.. code-block:: ini
 
-    
     [common]
     DCPSGlobalTransportConfig=myconfig
-    
+
     [config/myconfig]
     transports=mytcp,myrtps
-    
+
     [transport/myrtps]
     transport_type=rtps_udp
-    
+
     [transport/mytcp]
     transport_type=tcp
-    
 
 Some implementation notes related to using the ``rtps_udp`` transport protocol are as follows:
 
@@ -1891,7 +1832,7 @@ They are similar to ``[transport]`` sections and use the same configuration prop
 To associate a transport template with a domain range in a configuration file, set the ``DCPSGlobalTransportConfig`` property in the ``[common]`` section to the name of the ``[config]`` whose transports property is the name of the transport template.
 For example, for a global config setting
 
-::
+.. code-block:: ini
 
     [common]
 
@@ -1899,14 +1840,14 @@ For example, for a global config setting
 
 a corresponding config could be
 
-::
+.. code-block:: ini
 
     [config/primary_config]
     transports=auto_config_rtps
 
 and the partial transport template would be
 
-::
+.. code-block:: ini
 
     [transport_template/auto_config_rtps]
     transport_type=rtps_udp
@@ -1939,28 +1880,28 @@ Example Config.ini
 The following is an example configuration file for domains 2 through 10.
 It includes customizations to add the domain ID to the discovery ``InteropMulticastOverride`` address and customizations to add the domain ID to the transport’s multicast group IP address and port.
 
-::
+.. code-block:: ini
 
     [common]
     DCPSGlobalTransportConfig=the_config
-    
+
     [DomainRange/2-10]
     DiscoveryTemplate=DiscoveryConfigTemplate
-    
+
     [Customization/discovery_customization]
     InteropMulticastOverride=AddDomainId
-    
+
     [Customization/transport_customization]
     multicast_group_address=add_domain_id_to_ip_addr,add_domain_id_to_port
-    
+
     [rtps_discovery/DiscoveryConfigTemplate]
     InteropMulticastOverride=239.255.4.0
     Customization=discovery_customization
     SedpMulticast=1
-    
+
     [config/the_config]
     transports=auto_config_rtps
-    
+
     [transport_template/auto_config_rtps]
     transport_type=rtps_udp
     instantiation_rule=per_participant
@@ -1984,11 +1925,9 @@ DCPS Layer Logging
 Logging in the DCPS layer of OpenDDS is controlled by the ``DCPSDebugLevel`` configuration option and command-line option.
 It can also be set programmatically in application code using:
 
-::
+.. code-block:: cpp
 
-    
     OpenDDS::DCPS::set_DCPS_debug_level(level)
-    
 
 The *level* defaults to a value of 0 and has values of 0 to 10 as defined below:
 
@@ -2016,17 +1955,13 @@ For example, to add transport layer logging to any OpenDDS application, add the 
 
 ::
 
-    
     -DCPSTransportDebugLevel level
-    
 
 The transport layer logging level can also be programmatically configured by appropriately setting the variable:
 
-::
+.. code-block:: cpp
 
-    
     OpenDDS::DCPS::Transport_debug_level = level;
-    
 
 Valid transport logging levels range from 0 to 5 with increasing verbosity of output.
 
@@ -2083,9 +2018,8 @@ Unknown categories will cause error messages, but will not cause the ``Participa
 Like the other debug levels, security logging can also be programmatically configured.
 All the following are equivalent:
 
-::
+.. code-block:: cpp
 
-    
     OpenDDS::DCPS::security_debug.access_warn = true;
     OpenDDS::DCPS::security_debug.set_debug_level(1);
     OpenDDS::DCPS::security_debug.parse_flags(ACE_TEXT(“access_warn”));

@@ -69,7 +69,6 @@ As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and l
 
 ::
 
-    
 
 **Manual Build**
 
@@ -298,7 +297,7 @@ PropertyQosPolicy Example Code
 
 Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPolicy in order to configure DDS Security.
 
-::
+.. code-block:: cpp
 
     // DDS Security artifact file locations
     const char auth_ca_file[] = "file:identity_ca_cert.pem";
@@ -307,7 +306,7 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
     const char id_key_file[] = "file:test_participant_01_private_key.pem";
     const char governance_file[] = "file:governance_signed.p7s";
     const char permissions_file[] = "file:permissions_01_signed.p7s";
-    
+
     // DDS Security property names
     const char DDSSEC_PROP_IDENTITY_CA[] = "dds.sec.auth.identity_ca";
     const char DDSSEC_PROP_IDENTITY_CERT[] = "dds.sec.auth.identity_certificate";
@@ -315,7 +314,7 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
     const char DDSSEC_PROP_PERM_CA[] = "dds.sec.access.permissions_ca";
     const char DDSSEC_PROP_PERM_GOV_DOC[] = "dds.sec.access.governance";
     const char DDSSEC_PROP_PERM_DOC[] = "dds.sec.access.permissions";
-    
+
     void append(DDS::PropertySeq& props, const char* name, const char* value)
     {
          const DDS::Property_t prop = {name, value, false /*propagate*/};
@@ -323,16 +322,16 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
          props.length(len + 1);
          props[len] = prop;
     }
-    
+
     int main(int argc, char* argv[])
     {
          DDS::DomainParticipantFactory_var dpf =
              TheParticipantFactoryWithArgs(argc, argv);
-    
+
          // Start with the default Participant QoS
          DDS::DomainParticipantQos part_qos;
          dpf->get_default_participant_qos(part_qos);
-    
+
          // Add properties required by DDS Security
          DDS::PropertySeq& props = part_qos.property.value;
          append(props, DDSSEC_PROP_IDENTITY_CA, auth_ca_file);
@@ -341,14 +340,13 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
          append(props, DDSSEC_PROP_PERM_CA, perm_ca_file);
          append(props, DDSSEC_PROP_PERM_GOV_DOC, governance_file);
          append(props, DDSSEC_PROP_PERM_DOC, permissions_file);
-    
+
          // Create the participant
          participant = dpf->create_participant(4, // DomainID
                                                                                      part_qos,
                                                                                      0, // No listener
                                                                                      OpenDDS::DCPS::DEFAULT_STATUS_MASK);
     …
-    
 
 .. _14.5.3:
 
@@ -416,7 +414,6 @@ Generate a self-signed 2048-bit RSA CA:
     openssl genrsa -out ca_key.pem 2048
     openssl req -config openssl.cnf -new -key ca_key.pem -out ca.csr
     openssl x509 -req -days 3650 -in ca.csr -signkey ca_key.pem -out ca_cert.pem
-    
 
 Generate self-signed 256-bit Elliptic Curve CA:
 
@@ -443,7 +440,6 @@ Generate a signed 256-bit Elliptic Curve certificate:
     openssl ecparam -name prime256v1 -genkey -out cert_2_key.pem
     openssl req -new -key cert_2_key.pem -out cert_2.csr
     openssl ca -config openssl.cnf -days 3650 -in cert_2.csr -out cert_2.pem
-    
 
 **Signing Documents with SMIME**
 
@@ -572,7 +568,7 @@ Specifies the basic protection kind used for the RTPS SerializedPayload SubMessa
 Governance XML Example
 ======================
 
-::
+.. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8"?>
     <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.omg.org/spec/DDS- Security/20170801/omg_shared_ca_domain_governance.xsd">
@@ -713,7 +709,7 @@ When no data tag list is given for a “deny” PSR rule, the set of “all poss
 Permissions XML Example
 =======================
 
-::
+.. code-block:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
     <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.omg.org/spec/DDS-Security/20170801/omg_shared_ca_permissions.xsd">

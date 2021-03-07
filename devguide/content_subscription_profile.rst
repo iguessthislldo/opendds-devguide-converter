@@ -106,7 +106,7 @@ Content-Filtered Topic Example
 The code snippet below creates a content-filtered topic for the Message type.
 First, here is the IDL for Message:
 
-::
+.. code-block:: omg-idl
 
       module Messenger {
            @topic
@@ -117,7 +117,7 @@ First, here is the IDL for Message:
 
 Next we have the code that creates the data reader:
 
-::
+.. code-block:: cpp
 
       CORBA::String_var type_name = message_type_support->get_type_name();
       DDS::Topic_var topic = dp->create_topic("MyTopic",
@@ -187,7 +187,7 @@ Query Condition Example
 
 The following code snippet creates and uses a query condition for a type that uses struct ‘Message’ with field ‘key’ (an integral type).
 
-::
+.. code-block:: cpp
 
       DDS::QueryCondition_var dr_qc =
         dr->create_querycondition(DDS::ANY_SAMPLE_STATE,
@@ -208,7 +208,6 @@ The following code snippet creates and uses a query condition for a type that us
       ret = mdr->take_w_condition(data, infoseq, DDS::LENGTH_UNLIMITED, dr_qc);
         // error handling not shown
       dr->delete_readcondition(dr_qc);
-    
 
 Any sample received with ``key <= 1`` would neither trigger the condition (to satisfy the wait) nor be returned in the ‘data’ sequence from ``take_w_condition()``.
 
@@ -365,7 +364,7 @@ In this example we will use distinct strings for the type names and topic names,
 
 Here is the IDL for the constituent topic data types:
 
-::
+.. code-block:: omg-idl
 
     @topic
     struct LocationInfo {
@@ -374,21 +373,20 @@ Here is the IDL for the constituent topic data types:
       long y;
       long z;
     };
-    
+
     @topic
     struct PlanInfo {
       @key unsigned long flight_id;
       string flight_name;
       string tailno;
     };
-    
 
 Note that the names and types of the key fields match, so they are designed to be used as join keys.
 The resulting type (below) also has that key field.
 
 Next we have the IDL for the resulting data type:
 
-::
+.. code-block:: omg-idl
 
     @topic
     struct Resulting {
@@ -398,14 +396,12 @@ Next we have the IDL for the resulting data type:
       long y;
       long height;
     };
-    
 
 Based on this IDL, the following topic expression can be used to combine data from a topic ``Location`` which uses type ``LocationInfo`` and a topic ``FlightPlan`` which uses type ``PlanInfo``:
 
 ::
 
     SELECT flight_name, x, y, z AS height FROM Location NATURAL JOIN FlightPlan WHERE height < 1000 AND x <23
-    
 
 Taken together, the IDL and the topic expression describe how this multi topic will work.
 The multi topic data reader will construct samples which belong to instances keyed by ``flight_id``.
@@ -421,7 +417,7 @@ Creating the Multi Topic Data Reader
 Creating a data reader for the multi topic consists of a few steps.
 First the type support for the resulting type is registered, then the multi topic itself is created, followed by the data reader:
 
-::
+.. code-block:: cpp
 
       ResultingTypeSupport_var ts_res = new ResultingTypeSupportImpl;
       ts_res->register_type(dp, "");
@@ -447,7 +443,7 @@ Reading Data with the Multi Topic Data Reader
 From an API perspective, the multi topic data reader is identical to any other typed data reader for the resulting type.
 This example uses a wait set and a read condition in order to block until data is available.
 
-::
+.. code-block:: cpp
 
       DDS::WaitSet_var ws = new DDS::WaitSet;
       DDS::ReadCondition_var rc =
