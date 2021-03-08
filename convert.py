@@ -53,7 +53,7 @@ code_regex = {
   'java': re.compile('public static void main|System.out.println|Helper|null'),
   'bash': re.compile('\$(ACE|DDS)'),
   'doscon': re.compile('\%(ACE|DDS)'),
-  None: re.compile('project\('),
+  'mpc': re.compile('project[\(:]'),
 }
 def write_code(out, lines):
   # Detect

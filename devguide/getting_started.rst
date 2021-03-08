@@ -232,7 +232,7 @@ For more details on using CMake, see the included documentation in the OpenDDS r
 The code generation process is simplified when using MPC, by inheriting from the dcps base project.
 Here is the MPC file section common to both the publisher and subscriber
 
-::
+.. code-block:: mpc
 
     project(*idl): dcps {
       // This project ensures the common components get built first.
@@ -247,7 +247,7 @@ The dcps parent project adds the Type Support custom build rules.
 The TypeSupport_Files section above tells MPC to generate the Message type support files from ``Messenger.idl`` using the OpenDDS IDL complier.
 Here is the publisher section:
 
-::
+.. code-block:: mpc
 
     project(*Publisher): dcpsexe_with_tcp {
       exename  = publisher
@@ -266,7 +266,7 @@ The ``dcpsexe_with_tcp`` project links in the DCPS library.
 
 For completeness, here is the subscriber section of the MPC file:
 
-::
+.. code-block:: mpc
 
     project(*Subscriber): dcpsexe_with_tcp {
 

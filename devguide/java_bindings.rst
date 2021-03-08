@@ -114,7 +114,7 @@ Windows:
 
 * Create an MPC file, Foo.mpc, from this template:
 
-::
+.. code-block:: mpc
 
          project: dcps_java {
 

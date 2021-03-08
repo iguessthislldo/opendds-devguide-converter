@@ -1,344 +1,344 @@
-1 Introduction
-1.1 DCPS Overview
-1.1.1 Basic Concepts
-1.1.1.1 Domain
-1.1.1.2 DomainParticipant
-1.1.1.3 Topic
-1.1.1.4 DataWriter
-1.1.1.5 Publisher
-1.1.1.6 Subscriber
-1.1.1.7 DataReader
-1.1.2 Built-In Topics
-1.1.3 Quality of Service Policies
-1.1.4 Listeners
-1.1.5 Conditions
-1.2 OpenDDS Implementation
-1.2.1 Compliance
-1.2.1.1 DDS Compliance
-1.2.1.2 DDSI-RTPS Compliance
-1.2.1.2.1 OpenDDS RTPS Implementation Notes
-1.2.1.3 IDL Compliance
-1.2.2 Extensions to the DDS Specification
-1.2.3 OpenDDS Architecture
-1.2.3.1 Design Philosophy
-1.2.3.2 Extensible Transport Framework (ETF)
-1.2.3.3 DDS Discovery
-1.2.3.3.1 Centralized Discovery with DCPSInfoRepo
-1.2.3.3.2 Peer-to-Peer Discovery with RTPS
-1.2.3.4 Threading
-1.2.3.5 Configuration
-1.3 Installation
-1.3.1 Building With a Feature Enabled or Disabled
-1.3.2 Disabling the Building of Built-In Topic Support
-1.3.3 Disabling the Building of Compliance Profile Features
-1.3.3.1 Content-Subscription Profile
-1.3.3.2 Persistence Profile
-1.3.3.3 Ownership Profile
-1.3.3.4 Object Model Profile
-1.4 Building Applications that use OpenDDS
-1.4.1 MPC: The Makefile, Project, and Workspace Creator
-1.4.2 CMake
-1.4.3 Custom Build systems
-2 Getting Started
-2.1 Using DCPS
-2.1.1 Defining Data Types with IDL
-2.1.1.1 Identifying Topic Types
-2.1.1.2 Keys
-2.1.1.3 Union Topic Types
-2.1.1.4 Topic Types vs. Nested Types
-2.1.2 Processing the IDL
-2.1.3 A Simple Message Publisher
-2.1.3.1 Initializing the Participant
-2.1.3.2 Registering the Data Type and Creating a Topic
-2.1.3.3 Creating a Publisher
-2.1.3.4 Creating a DataWriter and Waiting for the Subscriber
-2.1.3.5 Sample Publication
-2.1.4 Setting up the Subscriber
-2.1.4.1 Initializing the Participant
-2.1.4.2 Registering the Data Type and Creating a Topic
-2.1.4.3 Creating the subscriber
-2.1.4.4 Creating a DataReader and Listener
-2.1.5 The Data Reader Listener Implementation
-2.1.6 Cleaning up in OpenDDS Clients
-2.1.7 Running the Example
-2.1.8 Running Our Example with RTPS
-2.2 Data Handling Optimizations
-2.2.1 Registering and Using Instances in the Publisher
-2.2.2 Reading Multiple Samples
-2.2.3 Zero-Copy Read
-3 Quality of Service
-3.1 Introduction
-3.2 QoS Policies
-3.2.1 Default QoS Policy Values
-3.2.2 LIVELINESS
-3.2.3 RELIABILITY
-3.2.4 HISTORY
-3.2.5 DURABILITY
-3.2.6 DURABILITY_SERVICE
-3.2.7 RESOURCE_LIMITS
-3.2.8 PARTITION
-3.2.9 DEADLINE
-3.2.10 LIFESPAN
-3.2.11 USER_DATA
-3.2.12 TOPIC_DATA
-3.2.13 GROUP_DATA
-3.2.14 TRANSPORT_PRIORITY
-3.2.15 LATENCY_BUDGET
-3.2.16 ENTITY_FACTORY
-3.2.17 PRESENTATION
-3.2.18 DESTINATION_ORDER
-3.2.19 WRITER_DATA_LIFECYCLE
-3.2.20 READER_DATA_LIFECYCLE
-3.2.21 TIME_BASED_FILTER
-3.2.22 OWNERSHIP
-3.2.23 OWNERSHIP_STRENGTH
-3.3 Policy Example
-4 Conditions and Listeners
-4.1 Introduction
-4.2 Communication Status Types
-4.2.1 Topic Status Types
-4.2.1.1 Inconsistent Topic Status
-4.2.2 Subscriber Status Types
-4.2.2.1 Data On Readers Status
-4.2.3 Data Reader Status Types
-4.2.3.1 Sample Rejected Status
-4.2.3.2 Liveliness Changed Status
-4.2.3.3 Requested Deadline Missed Status
-4.2.3.4 Requested Incompatible QoS Status
-4.2.3.5 Data Available Status
-4.2.3.6 Sample Lost Status
-4.2.3.7 Subscription Matched Status
-4.2.4 Data Writer Status Types
-4.2.4.1 Liveliness Lost Status
-4.2.4.2 Offered Deadline Missed Status
-4.2.4.3 Offered Incompatible QoS Status
-4.2.4.4 Publication Matched Status
-4.3 Listeners
-4.3.1 Topic Listener
-4.3.2 Data Writer Listener
-4.3.3 Publisher Listener
-4.3.4 Data Reader Listener
-4.3.5 Subscriber Listener
-4.3.6 Domain Participant Listener
-4.4 Conditions
-4.4.1 Status Condition 
-4.4.1.1 Status Condition Example
-4.4.2 Additional Condition Types
-4.4.2.1 Read Conditions
-4.4.2.2 Query Conditions
-4.4.2.3 Guard Conditions
-5 Content-Subscription Profile
-5.1 Introduction
-5.2 Content-Filtered Topic
-5.2.1 Filter Expressions
-5.2.1.1 Filtering and Dispose/Unregister Samples
-5.2.2 Content-Filtered Topic Example
-5.3 Query Condition
-5.3.1 Query Expressions
-5.3.2 Query Condition Example
-5.4 Multi Topic
-5.4.1 Topic Expressions
-5.4.2 Usage Notes
-5.4.2.1 Join Keys and DCPS Data Keys
-5.4.2.2 How Resulting Samples are Constructed
-5.4.2.3 Use with Subscriber Listeners
-5.4.3 Multi Topic Example
-5.4.3.1 IDL and Topic Expression
-5.4.3.2 Creating the Multi Topic Data Reader
-5.4.3.3 Reading Data with the Multi Topic Data Reader
-6 Built-In Topics
-6.1 Introduction
-6.2 Built-In Topics for DCPSInfoRepo Configuration
-6.3 DCPSParticipant Topic
-6.4 DCPSTopic Topic
-6.5 DCPSPublication Topic
-6.6 DCPSSubscription Topic
-6.7 Built-In Topic Subscription Example
-6.8 OpenDDS-specific Built-In Topics
-6.8.1 OpenDDSParticipantLocation Topic
-6.8.2 OpenDDSConnectionRecord Topic
-6.8.3 OpenDDSInternalThread Topic
-7 Run-time Configuration
-7.1 Configuration Approach
-7.2 Common Configuration Options
-7.3 Discovery Configuration
-7.3.1 Domain Configuration
-7.3.2 Configuring Applications for DCPSInfoRepo
-7.3.2.1 Configuring for Multiple DCPSInfoRepo Instances
-7.3.3 Configuring for DDSI-RTPS Discovery
-7.3.4 Configuring for Static Discovery
-7.4 Transport Configuration
-7.4.1 Overview
-7.4.1.1 Transport Concepts
-7.4.1.2 How OpenDDS Selects a Transport
-7.4.2 Configuration File Examples
-7.4.2.1 Single Transport Configuration
-7.4.2.2 Using Mixed Transports
-7.4.2.3 Using Multiple Configurations
-7.4.3 Transport Registry Example
-7.4.4 Transport Configuration Options
-7.4.5 Transport Instance Options
-7.4.5.1 Configuration Options Common to All Transports
-7.4.5.2 TCP/IP Transport Configuration Options
-7.4.5.2.1 TCP/IP Reconnection Options
-7.4.5.3 UDP/IP Transport Configuration Options
-7.4.5.4 IP Multicast Transport Configuration Options
-7.4.5.5 RTPS_UDP Transport Configuration Options
-7.4.5.6 Shared-Memory Transport Configuration Options
-7.5 Discovery and Transport Configuration Templates
-7.5.1 Configuring Discovery for a Set of Similar Domains
-7.5.2 Configuring a Set of Similar Transports
-7.5.3 Adding Customizations
-7.5.4 Example Config.ini
-7.6 Logging
-7.6.1 DCPS Layer Logging
-7.6.2 Transport Layer Logging
-7.6.3 Security Logging
-8 opendds_idl
-8.1 opendds_idl Command Line Options
-8.2 Using the IDL-to-C++11 Mapping
-9 The DCPS Information Repository
-9.1 DCPS Information Repository Options
-9.2 Repository Federation
-9.2.1 Federation Management
-9.2.2 Federation Example
-9.2.2.1 Configuring the Federation Example
-9.2.2.2 Running the Federation Example
-10 Java Bindings
-10.1 Introduction
-10.2 IDL and Code Generation
-10.3 Setting up an OpenDDS Java Project
-10.4 A Simple Message Publisher
-10.4.1 Initializing the Participant
-10.4.2 Registering the Data Type and Creating a Topic
-10.4.3 Creating a Publisher
-10.4.4 Creating a DataWriter and Registering an Instance
-10.5 Setting up the Subscriber
-10.5.1 Creating a Subscriber
-10.5.2 Creating a DataReader and Listener
-10.6 The DataReader Listener Implementation
-10.7 Cleaning up OpenDDS Java Clients
-10.8 Configuring the Example
-10.9 Running the Example
-10.10 Java Message Service (JMS) Support
-11 Modeling SDK
-11.1 Overview
-11.1.1 Model Capture
-11.1.2 Code Generation
-11.1.3 Programming
-11.2 Installation and Getting Started
-11.2.1 Prerequisites
-11.2.2 Installation
-11.2.3 Getting Started
-11.3 Developing Applications
-11.3.1 Modeling Support Library
-11.3.1.1 The Application Class
-11.3.1.2 The Service Class
-11.3.2 Generated Code
-11.3.2.1 The DCPS Model Class
-11.3.2.2 The Traits Class
-11.3.2.3 The Service Typedef
-11.3.2.4 Data Library Generated Code
-11.3.2.5 QoS Policy Library Generated Code
-11.3.3 Application Code Requirements
-11.3.3.1 Required headers
-11.3.3.2 Exception Handling
-11.3.3.3 Instantiation
-11.3.3.4 Publisher Code
-11.3.3.5 Subscriber Code
-11.3.3.6 MPC Projects
-11.3.3.7 Dependencies Between Models
-12 Alternate Interfaces to Data
-12.1 Recorder and Replayer
-12.1.1 API Structure
-12.1.2 Usage Model
-12.1.3 QoS Processing
-12.1.3.1 Durability details
-12.2 Observer
-12.2.1 Attaching Observers to Entities
-12.2.2 Writing Observer-Derived Classes
-12.2.3 The Observer::Sample structure
-13 Safety Profile
-13.1 Overview
-13.2 Safety Profile Subset of OpenDDS
-13.3 Safety Profile Configurations of ACE
-13.4 Run-time Configurable Options
-13.5 Running ACE and OpenDDS Tests
-13.6 Using the Memory Pool in Applications
-14 DDS Security
-14.1 Building OpenDDS with Security Enabled
-14.1.1 Prerequisites
-14.1.2 Building OpenDDS with Security on Windows
-14.1.3 Building OpenDDS with Security on Linux
-14.1.4 Building OpenDDS with Security on macOS
-14.1.5 Building OpenDDS with Security for Android
-14.2 Architecture of the DDS Security Specification
-14.3 Terms and Background Info
-14.4 Required DDS Security Artifacts
-14.4.1 Per-Domain Artifacts
-14.4.2 Per-Participant Artifacts
-14.5 Required OpenDDS Configuration
-14.5.1 DDS Security Configuration via PropertyQosPolicy
-14.5.2 PropertyQosPolicy Example Code
-14.5.3 Identity Certificates and Certificate Authorities
-14.5.4 Identity, Permissions, and Subject Names
-14.5.5 Examples in the OpenDDS Source Code Repository
-14.5.6 Using OpenSSL Utilities for OpenDDS
-14.6 Domain Governance Document
-14.6.1 Global Governance Model
-14.6.2 Key Governance Elements
-14.6.3 Domain Rule Configuration Options
-14.6.4 Topic Rule Configuration Options
-14.6.5 Governance XML Example
-14.7 Participant Permissions Document
-14.7.1 Key Permissions Elements
-14.7.2 Permissions XML Example
-14.8 DDS Security Implementation Status
-15 Internet-Enabled RTPS
-15.1 Overview
-15.2 The RtpsRelay
-15.2.1 Using the RtpsRelay
-15.2.2 Usage
-15.2.3 Deployment Considerations
-15.3 Interactive Connectivity Establishment (ICE) for RTPS
-16 XTypes
-16.1 Overview
-16.2 Features
-16.2.1 Extensibility
-16.2.2 Assignability
-16.2.3 Interoperability with non-XTypes Implementations
-16.3 Examples and Explanation
-16.3.1 Mutable Extensibility
-16.3.2 Assignability
-16.3.3 Member IDs
-16.3.4 Appendable Extensibility
-16.3.5 Final Extensibility
-16.3.6 Try Construct
-16.4 Data Representation
-16.5 IDL Annotations
-16.5.1 Indicating which Types can be topic types
-16.5.1.1 @topic
-16.5.1.2 @nested
-16.5.1.3 @default_nested
-16.5.2 Specifying allowed Data Representations
-16.5.2.1 @OpenDDS::data_representation(XML)
-16.5.2.2 @OpenDDS::data_representation(XCDR1)
-16.5.2.3 @OpenDDS::data_representation(XCDR2)
-16.5.3 Determining Extensibility
-16.5.3.1 @mutable
-16.5.3.2 @appendable
-16.5.3.3 @final
-16.5.4 Customizing XTypes per-member
-16.5.4.1 @try_construct(USE_DEFAULT)
-16.5.4.2 @try_construct(TRIM)
-16.5.4.3 @try_construct(DISCARD)
-16.5.5 Member ID assignment
-16.5.5.1 @id(value)
-16.5.5.2 @autoid(value)
-16.5.5.3 @hashid(value)
-16.5.6 Determining the Key Fields of a Type
-16.5.6.1 @key
-16.6 Unsupported Features
-16.6.1 Annotations
-16.6.2 Type System
-16.7 Differences from the specification
+1 'Introduction' 'introduction'
+1.1 'DCPS Overview' 'introduction'
+1.1.1 'Basic Concepts' 'introduction'
+1.1.1.1 'Domain' 'introduction'
+1.1.1.2 'DomainParticipant' 'introduction'
+1.1.1.3 'Topic' 'introduction'
+1.1.1.4 'DataWriter' 'introduction'
+1.1.1.5 'Publisher' 'introduction'
+1.1.1.6 'Subscriber' 'introduction'
+1.1.1.7 'DataReader' 'introduction'
+1.1.2 'Built-In Topics' 'introduction'
+1.1.3 'Quality of Service Policies' 'introduction'
+1.1.4 'Listeners' 'introduction'
+1.1.5 'Conditions' 'introduction'
+1.2 'OpenDDS Implementation' 'introduction'
+1.2.1 'Compliance' 'introduction'
+1.2.1.1 'DDS Compliance' 'introduction'
+1.2.1.2 'DDSI-RTPS Compliance' 'introduction'
+1.2.1.2.1 'OpenDDS RTPS Implementation Notes' 'introduction'
+1.2.1.3 'IDL Compliance' 'introduction'
+1.2.2 'Extensions to the DDS Specification' 'introduction'
+1.2.3 'OpenDDS Architecture' 'introduction'
+1.2.3.1 'Design Philosophy' 'introduction'
+1.2.3.2 'Extensible Transport Framework (ETF)' 'introduction'
+1.2.3.3 'DDS Discovery' 'introduction'
+1.2.3.3.1 'Centralized Discovery with DCPSInfoRepo' 'introduction'
+1.2.3.3.2 'Peer-to-Peer Discovery with RTPS' 'introduction'
+1.2.3.4 'Threading' 'introduction'
+1.2.3.5 'Configuration' 'introduction'
+1.3 'Installation' 'introduction'
+1.3.1 'Building With a Feature Enabled or Disabled' 'introduction'
+1.3.2 'Disabling the Building of Built-In Topic Support' 'introduction'
+1.3.3 'Disabling the Building of Compliance Profile Features' 'introduction'
+1.3.3.1 'Content-Subscription Profile' 'introduction'
+1.3.3.2 'Persistence Profile' 'introduction'
+1.3.3.3 'Ownership Profile' 'introduction'
+1.3.3.4 'Object Model Profile' 'introduction'
+1.4 'Building Applications that use OpenDDS' 'introduction'
+1.4.1 'MPC: The Makefile, Project, and Workspace Creator' 'introduction'
+1.4.2 'CMake' 'introduction'
+1.4.3 'Custom Build systems' 'introduction'
+2 'Getting Started' 'getting_started'
+2.1 'Using DCPS' 'getting_started'
+2.1.1 'Defining Data Types with IDL' 'getting_started'
+2.1.1.1 'Identifying Topic Types' 'getting_started'
+2.1.1.2 'Keys' 'getting_started'
+2.1.1.3 'Union Topic Types' 'getting_started'
+2.1.1.4 'Topic Types vs. Nested Types' 'getting_started'
+2.1.2 'Processing the IDL' 'getting_started'
+2.1.3 'A Simple Message Publisher' 'getting_started'
+2.1.3.1 'Initializing the Participant' 'getting_started'
+2.1.3.2 'Registering the Data Type and Creating a Topic' 'getting_started'
+2.1.3.3 'Creating a Publisher' 'getting_started'
+2.1.3.4 'Creating a DataWriter and Waiting for the Subscriber' 'getting_started'
+2.1.3.5 'Sample Publication' 'getting_started'
+2.1.4 'Setting up the Subscriber' 'getting_started'
+2.1.4.1 'Initializing the Participant' 'getting_started'
+2.1.4.2 'Registering the Data Type and Creating a Topic' 'getting_started'
+2.1.4.3 'Creating the subscriber' 'getting_started'
+2.1.4.4 'Creating a DataReader and Listener' 'getting_started'
+2.1.5 'The Data Reader Listener Implementation' 'getting_started'
+2.1.6 'Cleaning up in OpenDDS Clients' 'getting_started'
+2.1.7 'Running the Example' 'getting_started'
+2.1.8 'Running Our Example with RTPS' 'getting_started'
+2.2 'Data Handling Optimizations' 'getting_started'
+2.2.1 'Registering and Using Instances in the Publisher' 'getting_started'
+2.2.2 'Reading Multiple Samples' 'getting_started'
+2.2.3 'Zero-Copy Read' 'getting_started'
+3 'Quality of Service' 'quality_of_service'
+3.1 'Introduction' 'quality_of_service'
+3.2 'QoS Policies' 'quality_of_service'
+3.2.1 'Default QoS Policy Values' 'quality_of_service'
+3.2.2 'LIVELINESS' 'quality_of_service'
+3.2.3 'RELIABILITY' 'quality_of_service'
+3.2.4 'HISTORY' 'quality_of_service'
+3.2.5 'DURABILITY' 'quality_of_service'
+3.2.6 'DURABILITY_SERVICE' 'quality_of_service'
+3.2.7 'RESOURCE_LIMITS' 'quality_of_service'
+3.2.8 'PARTITION' 'quality_of_service'
+3.2.9 'DEADLINE' 'quality_of_service'
+3.2.10 'LIFESPAN' 'quality_of_service'
+3.2.11 'USER_DATA' 'quality_of_service'
+3.2.12 'TOPIC_DATA' 'quality_of_service'
+3.2.13 'GROUP_DATA' 'quality_of_service'
+3.2.14 'TRANSPORT_PRIORITY' 'quality_of_service'
+3.2.15 'LATENCY_BUDGET' 'quality_of_service'
+3.2.16 'ENTITY_FACTORY' 'quality_of_service'
+3.2.17 'PRESENTATION' 'quality_of_service'
+3.2.18 'DESTINATION_ORDER' 'quality_of_service'
+3.2.19 'WRITER_DATA_LIFECYCLE' 'quality_of_service'
+3.2.20 'READER_DATA_LIFECYCLE' 'quality_of_service'
+3.2.21 'TIME_BASED_FILTER' 'quality_of_service'
+3.2.22 'OWNERSHIP' 'quality_of_service'
+3.2.23 'OWNERSHIP_STRENGTH' 'quality_of_service'
+3.3 'Policy Example' 'quality_of_service'
+4 'Conditions and Listeners' 'conditions_and_listeners'
+4.1 'Introduction' 'conditions_and_listeners'
+4.2 'Communication Status Types' 'conditions_and_listeners'
+4.2.1 'Topic Status Types' 'conditions_and_listeners'
+4.2.1.1 'Inconsistent Topic Status' 'conditions_and_listeners'
+4.2.2 'Subscriber Status Types' 'conditions_and_listeners'
+4.2.2.1 'Data On Readers Status' 'conditions_and_listeners'
+4.2.3 'Data Reader Status Types' 'conditions_and_listeners'
+4.2.3.1 'Sample Rejected Status' 'conditions_and_listeners'
+4.2.3.2 'Liveliness Changed Status' 'conditions_and_listeners'
+4.2.3.3 'Requested Deadline Missed Status' 'conditions_and_listeners'
+4.2.3.4 'Requested Incompatible QoS Status' 'conditions_and_listeners'
+4.2.3.5 'Data Available Status' 'conditions_and_listeners'
+4.2.3.6 'Sample Lost Status' 'conditions_and_listeners'
+4.2.3.7 'Subscription Matched Status' 'conditions_and_listeners'
+4.2.4 'Data Writer Status Types' 'conditions_and_listeners'
+4.2.4.1 'Liveliness Lost Status' 'conditions_and_listeners'
+4.2.4.2 'Offered Deadline Missed Status' 'conditions_and_listeners'
+4.2.4.3 'Offered Incompatible QoS Status' 'conditions_and_listeners'
+4.2.4.4 'Publication Matched Status' 'conditions_and_listeners'
+4.3 'Listeners' 'conditions_and_listeners'
+4.3.1 'Topic Listener' 'conditions_and_listeners'
+4.3.2 'Data Writer Listener' 'conditions_and_listeners'
+4.3.3 'Publisher Listener' 'conditions_and_listeners'
+4.3.4 'Data Reader Listener' 'conditions_and_listeners'
+4.3.5 'Subscriber Listener' 'conditions_and_listeners'
+4.3.6 'Domain Participant Listener' 'conditions_and_listeners'
+4.4 'Conditions' 'conditions_and_listeners'
+4.4.1 'Status Condition ' 'conditions_and_listeners'
+4.4.1.1 'Status Condition Example' 'conditions_and_listeners'
+4.4.2 'Additional Condition Types' 'conditions_and_listeners'
+4.4.2.1 'Read Conditions' 'conditions_and_listeners'
+4.4.2.2 'Query Conditions' 'conditions_and_listeners'
+4.4.2.3 'Guard Conditions' 'conditions_and_listeners'
+5 'Content-Subscription Profile' 'content_subscription_profile'
+5.1 'Introduction' 'content_subscription_profile'
+5.2 'Content-Filtered Topic' 'content_subscription_profile'
+5.2.1 'Filter Expressions' 'content_subscription_profile'
+5.2.1.1 'Filtering and Dispose/Unregister Samples' 'content_subscription_profile'
+5.2.2 'Content-Filtered Topic Example' 'content_subscription_profile'
+5.3 'Query Condition' 'content_subscription_profile'
+5.3.1 'Query Expressions' 'content_subscription_profile'
+5.3.2 'Query Condition Example' 'content_subscription_profile'
+5.4 'Multi Topic' 'content_subscription_profile'
+5.4.1 'Topic Expressions' 'content_subscription_profile'
+5.4.2 'Usage Notes' 'content_subscription_profile'
+5.4.2.1 'Join Keys and DCPS Data Keys' 'content_subscription_profile'
+5.4.2.2 'How Resulting Samples are Constructed' 'content_subscription_profile'
+5.4.2.3 'Use with Subscriber Listeners' 'content_subscription_profile'
+5.4.3 'Multi Topic Example' 'content_subscription_profile'
+5.4.3.1 'IDL and Topic Expression' 'content_subscription_profile'
+5.4.3.2 'Creating the Multi Topic Data Reader' 'content_subscription_profile'
+5.4.3.3 'Reading Data with the Multi Topic Data Reader' 'content_subscription_profile'
+6 'Built-In Topics' 'built_in_topics'
+6.1 'Introduction' 'built_in_topics'
+6.2 'Built-In Topics for DCPSInfoRepo Configuration' 'built_in_topics'
+6.3 'DCPSParticipant Topic' 'built_in_topics'
+6.4 'DCPSTopic Topic' 'built_in_topics'
+6.5 'DCPSPublication Topic' 'built_in_topics'
+6.6 'DCPSSubscription Topic' 'built_in_topics'
+6.7 'Built-In Topic Subscription Example' 'built_in_topics'
+6.8 'OpenDDS-specific Built-In Topics' 'built_in_topics'
+6.8.1 'OpenDDSParticipantLocation Topic' 'built_in_topics'
+6.8.2 'OpenDDSConnectionRecord Topic' 'built_in_topics'
+6.8.3 'OpenDDSInternalThread Topic' 'built_in_topics'
+7 'Run-time Configuration' 'run_time_configuration'
+7.1 'Configuration Approach' 'run_time_configuration'
+7.2 'Common Configuration Options' 'run_time_configuration'
+7.3 'Discovery Configuration' 'run_time_configuration'
+7.3.1 'Domain Configuration' 'run_time_configuration'
+7.3.2 'Configuring Applications for DCPSInfoRepo' 'run_time_configuration'
+7.3.2.1 'Configuring for Multiple DCPSInfoRepo Instances' 'run_time_configuration'
+7.3.3 'Configuring for DDSI-RTPS Discovery' 'run_time_configuration'
+7.3.4 'Configuring for Static Discovery' 'run_time_configuration'
+7.4 'Transport Configuration' 'run_time_configuration'
+7.4.1 'Overview' 'run_time_configuration'
+7.4.1.1 'Transport Concepts' 'run_time_configuration'
+7.4.1.2 'How OpenDDS Selects a Transport' 'run_time_configuration'
+7.4.2 'Configuration File Examples' 'run_time_configuration'
+7.4.2.1 'Single Transport Configuration' 'run_time_configuration'
+7.4.2.2 'Using Mixed Transports' 'run_time_configuration'
+7.4.2.3 'Using Multiple Configurations' 'run_time_configuration'
+7.4.3 'Transport Registry Example' 'run_time_configuration'
+7.4.4 'Transport Configuration Options' 'run_time_configuration'
+7.4.5 'Transport Instance Options' 'run_time_configuration'
+7.4.5.1 'Configuration Options Common to All Transports' 'run_time_configuration'
+7.4.5.2 'TCP/IP Transport Configuration Options' 'run_time_configuration'
+7.4.5.2.1 'TCP/IP Reconnection Options' 'run_time_configuration'
+7.4.5.3 'UDP/IP Transport Configuration Options' 'run_time_configuration'
+7.4.5.4 'IP Multicast Transport Configuration Options' 'run_time_configuration'
+7.4.5.5 'RTPS_UDP Transport Configuration Options' 'run_time_configuration'
+7.4.5.6 'Shared-Memory Transport Configuration Options' 'run_time_configuration'
+7.5 'Discovery and Transport Configuration Templates' 'run_time_configuration'
+7.5.1 'Configuring Discovery for a Set of Similar Domains' 'run_time_configuration'
+7.5.2 'Configuring a Set of Similar Transports' 'run_time_configuration'
+7.5.3 'Adding Customizations' 'run_time_configuration'
+7.5.4 'Example Config.ini' 'run_time_configuration'
+7.6 'Logging' 'run_time_configuration'
+7.6.1 'DCPS Layer Logging' 'run_time_configuration'
+7.6.2 'Transport Layer Logging' 'run_time_configuration'
+7.6.3 'Security Logging' 'run_time_configuration'
+8 'opendds_idl' 'opendds_idl'
+8.1 'opendds_idl Command Line Options' 'opendds_idl'
+8.2 'Using the IDL-to-C++11 Mapping' 'opendds_idl'
+9 'The DCPS Information Repository' 'the_dcps_information_repository'
+9.1 'DCPS Information Repository Options' 'the_dcps_information_repository'
+9.2 'Repository Federation' 'the_dcps_information_repository'
+9.2.1 'Federation Management' 'the_dcps_information_repository'
+9.2.2 'Federation Example' 'the_dcps_information_repository'
+9.2.2.1 'Configuring the Federation Example' 'the_dcps_information_repository'
+9.2.2.2 'Running the Federation Example' 'the_dcps_information_repository'
+10 'Java Bindings' 'java_bindings'
+10.1 'Introduction' 'java_bindings'
+10.2 'IDL and Code Generation' 'java_bindings'
+10.3 'Setting up an OpenDDS Java Project' 'java_bindings'
+10.4 'A Simple Message Publisher' 'java_bindings'
+10.4.1 'Initializing the Participant' 'java_bindings'
+10.4.2 'Registering the Data Type and Creating a Topic' 'java_bindings'
+10.4.3 'Creating a Publisher' 'java_bindings'
+10.4.4 'Creating a DataWriter and Registering an Instance' 'java_bindings'
+10.5 'Setting up the Subscriber' 'java_bindings'
+10.5.1 'Creating a Subscriber' 'java_bindings'
+10.5.2 'Creating a DataReader and Listener' 'java_bindings'
+10.6 'The DataReader Listener Implementation' 'java_bindings'
+10.7 'Cleaning up OpenDDS Java Clients' 'java_bindings'
+10.8 'Configuring the Example' 'java_bindings'
+10.9 'Running the Example' 'java_bindings'
+10.10 'Java Message Service (JMS) Support' 'java_bindings'
+11 'Modeling SDK' 'modeling_sdk'
+11.1 'Overview' 'modeling_sdk'
+11.1.1 'Model Capture' 'modeling_sdk'
+11.1.2 'Code Generation' 'modeling_sdk'
+11.1.3 'Programming' 'modeling_sdk'
+11.2 'Installation and Getting Started' 'modeling_sdk'
+11.2.1 'Prerequisites' 'modeling_sdk'
+11.2.2 'Installation' 'modeling_sdk'
+11.2.3 'Getting Started' 'modeling_sdk'
+11.3 'Developing Applications' 'modeling_sdk'
+11.3.1 'Modeling Support Library' 'modeling_sdk'
+11.3.1.1 'The Application Class' 'modeling_sdk'
+11.3.1.2 'The Service Class' 'modeling_sdk'
+11.3.2 'Generated Code' 'modeling_sdk'
+11.3.2.1 'The DCPS Model Class' 'modeling_sdk'
+11.3.2.2 'The Traits Class' 'modeling_sdk'
+11.3.2.3 'The Service Typedef' 'modeling_sdk'
+11.3.2.4 'Data Library Generated Code' 'modeling_sdk'
+11.3.2.5 'QoS Policy Library Generated Code' 'modeling_sdk'
+11.3.3 'Application Code Requirements' 'modeling_sdk'
+11.3.3.1 'Required headers' 'modeling_sdk'
+11.3.3.2 'Exception Handling' 'modeling_sdk'
+11.3.3.3 'Instantiation' 'modeling_sdk'
+11.3.3.4 'Publisher Code' 'modeling_sdk'
+11.3.3.5 'Subscriber Code' 'modeling_sdk'
+11.3.3.6 'MPC Projects' 'modeling_sdk'
+11.3.3.7 'Dependencies Between Models' 'modeling_sdk'
+12 'Alternate Interfaces to Data' 'alternate_interfaces_to_data'
+12.1 'Recorder and Replayer' 'alternate_interfaces_to_data'
+12.1.1 'API Structure' 'alternate_interfaces_to_data'
+12.1.2 'Usage Model' 'alternate_interfaces_to_data'
+12.1.3 'QoS Processing' 'alternate_interfaces_to_data'
+12.1.3.1 'Durability details' 'alternate_interfaces_to_data'
+12.2 'Observer' 'alternate_interfaces_to_data'
+12.2.1 'Attaching Observers to Entities' 'alternate_interfaces_to_data'
+12.2.2 'Writing Observer-Derived Classes' 'alternate_interfaces_to_data'
+12.2.3 'The Observer::Sample structure' 'alternate_interfaces_to_data'
+13 'Safety Profile' 'safety_profile'
+13.1 'Overview' 'safety_profile'
+13.2 'Safety Profile Subset of OpenDDS' 'safety_profile'
+13.3 'Safety Profile Configurations of ACE' 'safety_profile'
+13.4 'Run-time Configurable Options' 'safety_profile'
+13.5 'Running ACE and OpenDDS Tests' 'safety_profile'
+13.6 'Using the Memory Pool in Applications' 'safety_profile'
+14 'DDS Security' 'dds_security'
+14.1 'Building OpenDDS with Security Enabled' 'dds_security'
+14.1.1 'Prerequisites' 'dds_security'
+14.1.2 'Building OpenDDS with Security on Windows' 'dds_security'
+14.1.3 'Building OpenDDS with Security on Linux' 'dds_security'
+14.1.4 'Building OpenDDS with Security on macOS' 'dds_security'
+14.1.5 'Building OpenDDS with Security for Android' 'dds_security'
+14.2 'Architecture of the DDS Security Specification' 'dds_security'
+14.3 'Terms and Background Info' 'dds_security'
+14.4 'Required DDS Security Artifacts' 'dds_security'
+14.4.1 'Per-Domain Artifacts' 'dds_security'
+14.4.2 'Per-Participant Artifacts' 'dds_security'
+14.5 'Required OpenDDS Configuration' 'dds_security'
+14.5.1 'DDS Security Configuration via PropertyQosPolicy' 'dds_security'
+14.5.2 'PropertyQosPolicy Example Code' 'dds_security'
+14.5.3 'Identity Certificates and Certificate Authorities' 'dds_security'
+14.5.4 'Identity, Permissions, and Subject Names' 'dds_security'
+14.5.5 'Examples in the OpenDDS Source Code Repository' 'dds_security'
+14.5.6 'Using OpenSSL Utilities for OpenDDS' 'dds_security'
+14.6 'Domain Governance Document' 'dds_security'
+14.6.1 'Global Governance Model' 'dds_security'
+14.6.2 'Key Governance Elements' 'dds_security'
+14.6.3 'Domain Rule Configuration Options' 'dds_security'
+14.6.4 'Topic Rule Configuration Options' 'dds_security'
+14.6.5 'Governance XML Example' 'dds_security'
+14.7 'Participant Permissions Document' 'dds_security'
+14.7.1 'Key Permissions Elements' 'dds_security'
+14.7.2 'Permissions XML Example' 'dds_security'
+14.8 'DDS Security Implementation Status' 'dds_security'
+15 'Internet-Enabled RTPS' 'internet_enabled_rtps'
+15.1 'Overview' 'internet_enabled_rtps'
+15.2 'The RtpsRelay' 'internet_enabled_rtps'
+15.2.1 'Using the RtpsRelay' 'internet_enabled_rtps'
+15.2.2 'Usage' 'internet_enabled_rtps'
+15.2.3 'Deployment Considerations' 'internet_enabled_rtps'
+15.3 'Interactive Connectivity Establishment (ICE) for RTPS' 'internet_enabled_rtps'
+16 'XTypes' 'xtypes'
+16.1 'Overview' 'xtypes'
+16.2 'Features' 'xtypes'
+16.2.1 'Extensibility' 'xtypes'
+16.2.2 'Assignability' 'xtypes'
+16.2.3 'Interoperability with non-XTypes Implementations' 'xtypes'
+16.3 'Examples and Explanation' 'xtypes'
+16.3.1 'Mutable Extensibility' 'xtypes'
+16.3.2 'Assignability' 'xtypes'
+16.3.3 'Member IDs' 'xtypes'
+16.3.4 'Appendable Extensibility' 'xtypes'
+16.3.5 'Final Extensibility' 'xtypes'
+16.3.6 'Try Construct' 'xtypes'
+16.4 'Data Representation' 'xtypes'
+16.5 'IDL Annotations' 'xtypes'
+16.5.1 'Indicating which Types can be topic types' 'xtypes'
+16.5.1.1 '@topic' 'xtypes'
+16.5.1.2 '@nested' 'xtypes'
+16.5.1.3 '@default_nested' 'xtypes'
+16.5.2 'Specifying allowed Data Representations' 'xtypes'
+16.5.2.1 '@OpenDDS::data_representation(XML)' 'xtypes'
+16.5.2.2 '@OpenDDS::data_representation(XCDR1)' 'xtypes'
+16.5.2.3 '@OpenDDS::data_representation(XCDR2)' 'xtypes'
+16.5.3 'Determining Extensibility' 'xtypes'
+16.5.3.1 '@mutable' 'xtypes'
+16.5.3.2 '@appendable' 'xtypes'
+16.5.3.3 '@final' 'xtypes'
+16.5.4 'Customizing XTypes per-member' 'xtypes'
+16.5.4.1 '@try_construct(USE_DEFAULT)' 'xtypes'
+16.5.4.2 '@try_construct(TRIM)' 'xtypes'
+16.5.4.3 '@try_construct(DISCARD)' 'xtypes'
+16.5.5 'Member ID assignment' 'xtypes'
+16.5.5.1 '@id(value)' 'xtypes'
+16.5.5.2 '@autoid(value)' 'xtypes'
+16.5.5.3 '@hashid(value)' 'xtypes'
+16.5.6 'Determining the Key Fields of a Type' 'xtypes'
+16.5.6.1 '@key' 'xtypes'
+16.6 'Unsupported Features' 'xtypes'
+16.6.1 'Annotations' 'xtypes'
+16.6.2 'Type System' 'xtypes'
+16.7 'Differences from the specification' 'xtypes'

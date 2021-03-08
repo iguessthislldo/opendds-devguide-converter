@@ -527,7 +527,7 @@ MPC Projects
 In order to make use of the OpenDDS Modeling SDK support library, OpenDDS Modeling SDK MPC projects should inherit from the dds_model project base.
 This is in addition to the dcpsexe base from which non-Modeling SDK projects inherit.
 
-::
+.. code-block:: mpc
 
     project(*Publisher) : dcpsexe, dds_model {
       // project configuration
@@ -536,7 +536,7 @@ This is in addition to the dcpsexe base from which non-Modeling SDK projects inh
 The generated model library will generate an MPC project file and base project file in the target directory, and take care of building the model shared library.
 OpenDDS modeling applications must both (1) include the generated model library in their build and (2) ensure their projects are built after the generated model libraries.
 
-::
+.. code-block:: mpc
 
     project(*Publisher) : dcpsexe, dds_model {
       // project configuration
@@ -546,7 +546,7 @@ OpenDDS modeling applications must both (1) include the generated model library 
 
 Both of these can be accomplished by inheriting from the model library's project base, named after the model library.
 
-::
+.. code-block:: mpc
 
     project(*Publisher) : dcpsexe, dds_model, Minimal {
       // project configuration
@@ -557,7 +557,7 @@ This can be accomplished through the -include command line option.
 
 Using either form, the MPC file must tell the build system where to look for the generated model library.
 
-::
+.. code-block:: mpc
 
     project(*Publisher) : dcpsexe, dds_model, Minimal {
       // project configuration
@@ -576,7 +576,7 @@ Finally, like any other MPC project, its source files must be included:
 
 The final MPC project looks like this for the publisher:
 
-::
+.. code-block:: mpc
 
     project(*Publisher) : dcpsexe, dds_model, Minimal {
       exename   = publisher
@@ -589,7 +589,7 @@ The final MPC project looks like this for the publisher:
 
 And similar for the subscriber:
 
-::
+.. code-block:: mpc
 
     project(*Subscriber) : dcpsexe, dds_model, Minimal {
       exename   = subscriber
@@ -613,7 +613,7 @@ Inheriting from this paths base project will inherit the needed settings to incl
 
 Our full MPC file looks like this:
 
-::
+.. code-block:: mpc
 
     project(*Publisher) : dcpsexe, dds_model, Minimal, Minimal_paths {
       exename   = publisher
