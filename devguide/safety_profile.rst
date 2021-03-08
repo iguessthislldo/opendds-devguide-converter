@@ -1,10 +1,6 @@
-.. _13:
-
 ##############
 Safety Profile
 ##############
-
-.. _13.1:
 
 ********
 Overview
@@ -16,8 +12,6 @@ OpenDDS Safety Profile (and the corresponding features in ACE) were developed fo
 It can be used along with the support for FACE Transport Services to create FACE-conformant DDS applications, or it can be used by general DDS applications that are not written to the FACE Transport Services APIs.
 This latter use-case is described by this section of the developer's guide.
 For more information on the former use-case see the file FACE/README.txt in the source distribution or contact us at `sales@objectcomputing.com <mailto:sales@ociweb.com>`_ (commercial support) or `opendds-main@lists.sourceforge.net <mailto:opendds-main@lists.sourceforge.net>`_ (community support).
-
-.. _13.2:
 
 ********************************
 Safety Profile Subset of OpenDDS
@@ -43,14 +37,12 @@ When developing the Safety Profile, the following DDS Compliance Profiles were d
 
 * persistence_profile
 
-See Section :ref:`1.3.3` for more details on compliance profiles.
+See Section :ref:`Disabling the Building of Compliance Profile Features` for more details on compliance profiles.
 It is possible that enabling any of these compliance profiles in a Safety Profile build will result in a compile-time or run-time error.
 
 To build OpenDDS Safety Profile, pass the command line argument “--safety-profile” to the configure script along with any other arguments needed for your platform or configuration.
 When safety profile is enabled in the configure script, the four compliance profiles listed above default to disabled.
-See section :ref:`1.3` and the ``INSTALL.md`` file in the source distribution for more information about the configure script.
-
-.. _13.3:
+See section :ref:`Installation` and the ``INSTALL.md`` file in the source distribution for more information about the configure script.
 
 ************************************
 Safety Profile Configurations of ACE
@@ -74,16 +66,12 @@ Remove the macro definition for ACE_HAS_ALLOC_HOOKS to disable the memory pool.
 ACE's safety profile configurations have been tested on Linux and on LynxOS-178 version 2.3.2+patches.
 Other platforms may work too but may require additional configuration.
 
-.. _13.4:
-
 *****************************
 Run-time Configurable Options
 *****************************
 
 The memory pool used by OpenDDS can be configured by setting values in the [common] section of the configuration file.
-See section :ref:`7.2` and the pool_size and pool_granularity rows of table Table 7-2.
-
-.. _13.5:
+See section :ref:`Common Configuration Options` and the pool_size and pool_granularity rows of table Table 7-2.
 
 *****************************
 Running ACE and OpenDDS Tests
@@ -114,8 +102,6 @@ Pass “-Config OPENDDS_SAFETY_PROFILE”, “-Config SAFETY_BASE” (if using s
 
 Alternatively, an individual test can be run using run_test.pl from that test's directory.
 Pass the same set of -Config options to run_test.pl.
-
-.. _13.6:
 
 *************************************
 Using the Memory Pool in Applications

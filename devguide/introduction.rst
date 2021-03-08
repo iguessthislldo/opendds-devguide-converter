@@ -1,5 +1,3 @@
-.. _1:
-
 ############
 Introduction
 ############
@@ -21,15 +19,11 @@ It is available for download from http://www.opendds.org/downloads.html and is c
 .. note:: OpenDDS currently implements the OMG DDS version 1.4 specification.
   See the compliance information in or at http://www.opendds.org/ for more information.
 
-.. _1.1:
-
 *************
 DCPS Overview
 *************
 
 In this section we introduce the main concepts and entities of the DCPS layer and discuss how they interact and work together.
-
-.. _1.1.1:
 
 Basic Concepts
 ==============
@@ -41,8 +35,6 @@ The following subsections define the concepts shown in this diagram.
 
 .. image:: images/10000200000001C1000002026BB287CE5A7FFF6F.png
 
-.. _1.1.1.1:
-
 Domain
 ------
 
@@ -50,15 +42,11 @@ The *domain* is the fundamental partitioning unit within DCPS.
 Each of the other entities belongs to a domain and can only interact with other entities in that same domain.
 Application code is free to interact with multiple domains but must do so via separate entities that belong to the different domains.
 
-.. _1.1.1.2:
-
 DomainParticipant
 -----------------
 
 A *domain participant* is the entry-point for an application to interact within a particular domain.
 The domain participant is a factory for many of the objects involved in writing or reading data.
-
-.. _1.1.1.3:
 
 Topic
 -----
@@ -72,8 +60,6 @@ In DCPS terminology you publish individual data *samples* for different *instanc
 Each instance is associated with a unique value for the key.
 A publishing process publishes multiple data samples on the same instance by using the same key value for each sample.
 
-.. _1.1.1.4:
-
 DataWriter
 ----------
 
@@ -82,22 +68,16 @@ Each data writer is bound to a particular topic.
 The application uses the data writer’s type-specific interface to publish samples on that topic.
 The data writer is responsible for marshaling the data and passing it to the publisher for transmission.
 
-.. _1.1.1.5:
-
 Publisher
 ---------
 
 The *publisher* is responsible for taking the published data and disseminating it to all relevant subscribers in the domain.
 The exact mechanism employed is left to the service implementation.
 
-.. _1.1.1.6:
-
 Subscriber
 ----------
 
 The *subscriber* receives the data from the publisher and passes it to any relevant data readers that are connected to it.
-
-.. _1.1.1.7:
 
 DataReader
 ----------
@@ -105,8 +85,6 @@ DataReader
 The *data reader* takes data from the subscriber, demarshals it into the appropriate type for that topic, and delivers the sample to the application.
 Each data reader is bound to a particular topic.
 The application uses the data reader’s type-specific interfaces to receive the samples.
-
-.. _1.1.2:
 
 Built-In Topics
 ===============
@@ -131,8 +109,6 @@ The following table shows the built-in topics defined within the DDS specificati
 | ``DCPSSubscription`` | Each instance represents a data reader.                 |
 +----------------------+---------------------------------------------------------+
 
-.. _1.1.3:
-
 Quality of Service Policies
 ===========================
 
@@ -147,15 +123,11 @@ The DDS implementation then attempts to match the requested policies with the of
 
 The QoS policies currently implemented by OpenDDS are discussed in detail in Chapter 3.
 
-.. _1.1.4:
-
 Listeners
 =========
 
 The DCPS layer defines a callback interface for each entity that allows an application processes to “listen” for certain state changes or events pertaining to that entity.
 For example, a Data Reader Listener is notified when there are data values available for reading.
-
-.. _1.1.5:
 
 Conditions
 ==========
@@ -174,13 +146,10 @@ The application creates a specific kind of ``Condition`` object, such as a ``Sta
 * ``QueryCondition`` objects are provided as part of the implementation of the Content-Subscription Profile.
   The ``QueryCondition`` interface extends the ``ReadCondition`` interface.
 
-.. _1.2:
 
 **********************
 OpenDDS Implementation
 **********************
-
-.. _1.2.1:
 
 Compliance
 ==========
@@ -188,10 +157,8 @@ Compliance
 OpenDDS complies with the OMG DDS and the OMG DDSI-RTPS specifications.
 Details of that compliance follows here.
 OpenDDS also implements the OMG DDS Security specification.
-Details of compliance to that specification are in section :ref:`14.8`.
-Details of XTypes compliance are in sections :ref:`16.6` and :ref:`16.7`.
-
-.. _1.2.1.1:
+Details of compliance to that specification are in section :ref:`DDS Security Implementation Status`.
+Details of XTypes compliance are in sections :ref:`Unsupported Features` and :ref:`Differences from the specification`.
 
 DDS Compliance
 --------------
@@ -219,14 +186,11 @@ Although version 1.5 of the DDS specification is not yet published, OpenDDS inco
 
 * DDS15-257: The IDL type BuiltinTopicKey_t is a struct containing an array of 16 octets
 
-.. _1.2.1.2:
 
 DDSI-RTPS Compliance
 --------------------
 
 The OpenDDS implementation complies with the requirements of the OMG DDSI-RTPS specification.
-
-.. _1.2.1.2.1:
 
 OpenDDS RTPS Implementation Notes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -256,8 +220,6 @@ Items not implemented in OpenDDS:
 .. note:: Items 3 and 4 above are described in the DDSI-RTPS specification.
   However, they do not have a corresponding concept in the DDS specification.
 
-.. _1.2.1.3:
-
 IDL Compliance
 --------------
 
@@ -284,11 +246,10 @@ OpenDDS supports the following building blocks, with notes/caveats listed below 
 
 * Annotations
 
-  * See sections :ref:`2.1.1` and :ref:`16.5` for details on which built-in annotations are supported.
+  * See sections :ref:`Defining Data Types with IDL` and :ref:`IDL Annotations` for details on which built-in annotations are supported.
 
   * User-defined annotation types are also supported.
 
-.. _1.2.2:
 
 Extensions to the DDS Specification
 ===================================
@@ -300,13 +261,12 @@ Data types, interfaces, and constants in the **DDS** IDL module (C++ namespace, 
 * Type-specific DataReaders (including those for Built-in Topics) have additional operations read_instance_w_condition() and take_instance_w_condition().
 
 Additional extended behavior is provided by various classes and interfaces in the OpenDDS module/namespace/package.
-Those include features like Recorder and Replayer (see chapter :ref:`12`) and also:
+Those include features like Recorder and Replayer (see chapter :ref:`Alternate Interfaces to Data`) and also:
 
 * OpenDDS::DCPS::TypeSupport adds the unregister_type() operation not found in the DDS spec.
 
 * OpenDDS::DCPS::ALL_STATUS_MASK, NO_STATUS_MASK, and DEFAULT_STATUS_MASK are useful constants for the DDS::StatusMask type used by DDS::Entity, DDS::StatusCondition, and the various create_*() operations.
 
-.. _1.2.3:
 
 OpenDDS Architecture
 ====================
@@ -315,8 +275,6 @@ This section gives a brief overview of the OpenDDS implementation, its features,
 The ``$DDS_ROOT`` environment variable should point to the base directory of the OpenDDS distribution.
 Source code for OpenDDS can be found under the ``$DDS_ROOT/dds/`` directory.
 DDS tests can be found under ``$DDS_ROOT/tests``/.
-
-.. _1.2.3.1:
 
 Design Philosophy
 -----------------
@@ -327,8 +285,6 @@ In almost all cases the OMG’s IDL-to-C++ Language Mapping is used to define ho
 The main deviation from the OMG IDL PSM is that local interfaces are used for the entities and various other interfaces.
 These are defined as unconstrained (non-local) interfaces in the DDS specification.
 Defining them as local interfaces improves performance, reduces memory usage, simplifies the client’s interaction with these interfaces, and makes it easier for clients to build their own implementations.
-
-.. _1.2.3.2:
 
 Extensible Transport Framework (ETF)
 ------------------------------------
@@ -349,8 +305,6 @@ Implementing a custom transport involves specializing a number of classes define
 The ``udp`` transport provides a good foundation developers may use when creating their own implementation.
 See the ``$DDS_ROOT/dds/DCPS/transport/udp/`` directory for details.
 
-.. _1.2.3.3:
-
 DDS Discovery
 -------------
 
@@ -366,8 +320,6 @@ OpenDDS provides two options for discovery.
 #. RTPS Discovery: a peer-to-peer style of discovery that utilizes the RTPS protocol to advertise availability and location information.
 
 Interoperability with other DDS implementations must utilize the peer-to-peer method, but can be useful in OpenDDS-only deployments.
-
-.. _1.2.3.3.1:
 
 Centralized Discovery with DCPSInfoRepo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -388,9 +340,7 @@ Application developers are free to run multiple information repositories with ea
 It is also possible to operate domains with more than a single repository, thus forming a distributed virtual repository.
 This is known as *Repository Federation*.
 In order for individual repositories to participate in a federation, each one must specify its own federation identifier value (a 32-bit numeric value) upon start-up.
-See :ref:`9.2` for further information about repository federations.
-
-.. _1.2.3.3.2:
+See :ref:`Repository Federation` for further information about repository federations.
 
 Peer-to-Peer Discovery with RTPS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -400,7 +350,7 @@ This style of discovery is accomplished only through the use of the RTPS protoco
 This simple form of discovery is accomplished through simple configuration of DDS application data readers and data writers running in application processes as shown in Figure 1-4.
 As each participating process activates the DDSI-RTPS discovery mechanisms in OpenDDS for their data readers and writers, network endpoints are created with either default or configured network ports such that DDS participants can begin advertising the availability of their data readers and data writers.
 After a period of time, those seeking one another based on criteria will find each other and establish a connection based on the configured pluggable transport as discussed in Extensible Transport Framework (ETF).
-A more detailed description of this flexible configuration approach is discussed in Section :ref:`7.4.1.1` and Section :ref:`7.4.5.5`.
+A more detailed description of this flexible configuration approach is discussed in Section :ref:`Transport Concepts` and Section :ref:`RTPS_UDP Transport Configuration Options`.
 
 .. image:: images/10000201000003FC0000025ECF72BC11D66015DF.png
 
@@ -417,8 +367,6 @@ The following are additional implementation limits that developers need to take 
 
 For more details in how RTPS discovery occurs, a very good reference to read can be found in Section 8.5 of the Real-time Publish-Subscribe Wire Protocol DDS Interoperability Wire Protocol Specification (DDSI-RTPS) v2.2 (OMG Document ``formal/2014-09-01``).
 
-.. _1.2.3.4:
-
 Threading
 ---------
 
@@ -434,8 +382,6 @@ This behavior depends on the QoS policies described in Chapter 3.
 All incoming data in the subscriber is read by a service thread and queued for reading by the application.
 DataReader listeners are called from the service thread.
 
-.. _1.2.3.5:
-
 Configuration
 -------------
 
@@ -443,22 +389,18 @@ OpenDDS includes a file-based configuration framework for configuring both globa
 Configuration can also be achieved directly in code, however, it is recommended that configuration be externalized for ease of maintenance and reduction in runtime errors.
 The complete set of configuration options are described in Chapter 7.
 
-.. _1.3:
-
 ************
 Installation
 ************
 
 The steps on how to build OpenDDS can be found in ``$DDS_ROOT/INSTALL.md``.
 
-To build OpenDDS with DDS Security, see section :ref:`14.1` below.
+To build OpenDDS with DDS Security, see section :ref:`Building OpenDDS with Security Enabled` below.
 
 To avoid compiling OpenDDS code that you will not be using, there are certain features than can be excluded from being built.
 The features are discussed below.
 
-Users requiring a small-footprint configuration or compatibility with safety-oriented platforms should consider using the OpenDDS Safety Profile, which is described in chapter :ref:`13` of this guide.
-
-.. _1.3.1:
+Users requiring a small-footprint configuration or compatibility with safety-oriented platforms should consider using the OpenDDS Safety Profile, which is described in chapter :ref:`Safety Profile` of this guide.
 
 Building With a Feature Enabled or Disabled
 ===========================================
@@ -482,17 +424,13 @@ To explicitly enable the feature, use ``feature=1`` above.
   In this case ‘``-``’ is used instead of ‘``_``’ in the feature name.
   For example, to disable feature ``content_subscription`` discussed below, pass ``--no-content-subscription`` to the configure script.
 
-.. _1.3.2:
-
 Disabling the Building of Built-In Topic Support
 ================================================
 
 Feature Name: ``built_in_topics``
 
 You can reduce the footprint of the core DDS library by up to 30% by disabling Built-in Topic Support.
-See Chapter :ref:`6` for a description of Built-In Topics.
-
-.. _1.3.3:
+See Chapter :ref:`Built-In Topics` for a description of Built-In Topics.
 
 Disabling the Building of Compliance Profile Features
 =====================================================
@@ -503,8 +441,6 @@ These profiles are given below, along with the name of the MPC feature to use to
 Many of the profile options involve QoS settings.
 If you attempt to use a QoS value that is incompatible with a disabled profile, a runtime error will occur.
 If a profile involves a class, a compile time error will occur if you try to use the class and the profile is disabled.
-
-.. _1.3.3.1:
 
 Content-Subscription Profile
 ----------------------------
@@ -527,16 +463,12 @@ In addition, individual classes can be excluded by using the features given in t
 | MultiTopic           | ``multi_topic``            |
 +----------------------+----------------------------+
 
-.. _1.3.3.2:
-
 Persistence Profile
 -------------------
 
 Feature Name: ``persistence_profile``
 
 This profile adds the QoS policy ``DURABILITY_SERVICE`` and the settings ‘``TRANSIENT``’ and ‘``PERSISTENT``’ of the ``DURABILITY`` QoS policy ``kind``.
-
-.. _1.3.3.3:
 
 Ownership Profile
 -----------------
@@ -554,8 +486,6 @@ This profile adds:
 .. note:: Some users may wish to exclude support for the Exclusive OWNERSHIP policy and its associated OWNERSHIP_STRENGTH without impacting use of HISTORY.
   In order to support this configuration, OpenDDS also has the MPC feature ownership_kind_exclusive (configure script option --no-ownership-kind-exclusive).
 
-.. _1.3.3.4:
-
 Object Model Profile
 --------------------
 
@@ -565,18 +495,14 @@ This profile includes support for the ``PRESENTATION`` access_scope setting of �
 
 .. note:: Currently, the ``PRESENTATION`` access_scope of ‘``TOPIC``’ is also excluded when ``object_model_profile`` is disabled.
 
-.. _1.4:
-
 **************************************
 Building Applications that use OpenDDS
 **************************************
 
 This section applies to any C++ code that directly or indirectly includes OpenDDS headers.
-For Java applications, see Chapter :ref:`10` below.
+For Java applications, see Chapter :ref:`Java Bindings` below.
 
 C++ source code that includes OpenDDS headers can be built using either build system: MPC or CMake.
-
-.. _1.4.1:
 
 MPC: The Makefile, Project, and Workspace Creator
 =================================================
@@ -587,11 +513,9 @@ This environment contains the ``PATH`` and ``MPC_ROOT`` settings necessary to us
 
 MPC’s source tree (in ``MPC_ROOT``) contains a “docs” directory with both HTML and plain text documentation (``USAGE`` and ``README`` files).
 
-The example walk-through in section :ref:`2.1` uses MPC as its build system.
+The example walk-through in section :ref:`Using DCPS` uses MPC as its build system.
 The OpenDDS source tree contains many tests and examples that are built with MPC.
 These can be used as starting points for application MPC files.
-
-.. _1.4.2:
 
 CMake
 =====
@@ -601,8 +525,6 @@ See the included documentation in the OpenDDS source tree: ``docs/cmake.md``
 
 The OpenDDS source tree also includes examples of using CMake.
 They are listed in the ``cmake.md`` file.
-
-.. _1.4.3:
 
 Custom Build systems
 ====================

@@ -1,10 +1,6 @@
-.. _9:
-
 ###############################
 The DCPS Information Repository
 ###############################
-
-.. _9.1:
 
 ***********************************
 DCPS Information Repository Options
@@ -47,7 +43,7 @@ Using the ``-z`` option causes the invocation of many transport-level debug mess
 This option is only effective when the DCPS library is built with the ``DCPS_TRANS_VERBOSE_DEBUG`` environment variable defined.
 
 The ``-FederationId`` and ``-FederateWith`` options are used to control the federation of multiple ``DCPSInfoRepo`` servers into a single logical repository.
-See :ref:`9.2` for descriptions of the federation capabilities and how to use these options.
+See :ref:`Repository Federation` for descriptions of the federation capabilities and how to use these options.
 
 File persistence is implemented as an ACE Service object and is controlled via service config directives.
 Currently available configuration options are:
@@ -78,7 +74,6 @@ This allows existing clients to reconnect to a restarted InfoRepo.
 
     -ORBListenEndpoints iiop://:<port>
 
-.. _9.2:
 
 *********************
 Repository Federation
@@ -107,7 +102,7 @@ The default domain used for federation is defined by the constant ``Federator::D
 
 Currently only static specification of federation topology is available.
 This means that each DCPS Information Repository, as well as each application using a federated DDS service, needs to include federation configuration as part of its configuration data.
-This is done by specifying each available repository within the federation to each participating process and assigning each repository to a different key value in the configuration files as described in Section :ref:`7.3.2.1`.
+This is done by specifying each available repository within the federation to each participating process and assigning each repository to a different key value in the configuration files as described in Section :ref:`Configuring for Multiple DCPSInfoRepo Instances`.
 
 Each application and repository must include the same set of repositories in its configuration information.
 Failover sequencing will attempt to reach the next repository in numeric sequence (wrapping from the last to the first) of the repository key values.
@@ -128,8 +123,6 @@ There is a command line tool (``federation``) supplied that can be used to estab
 See Section 9.2.1 for a description.
 It is possible, with the current static-only implementation, that the failure of a repository before a federation topology is entirely established could result in a partially unusable service.
 Due to this current limitation, it is highly recommended to always establish the federation topology of repositories prior to starting the applications.
-
-.. _9.2.1:
 
 Federation Management
 =====================
@@ -195,16 +188,12 @@ A full description of the command arguments are shown in Table 9-4.
 |                         | The default domain is sufficient for single federations.                                                                                                        |
 +-------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-.. _9.2.2:
-
 Federation Example
 ==================
 
 In order to illustrate the setup and use of a federation, this section walks through a simple example that establishes a federation and a working service that uses it.
 
-This example is based on a two repository federation, with the simple Message publisher and subscriber from :ref:`2.1` configured to use the federated repositories.
-
-.. _9.2.2.1:
+This example is based on a two repository federation, with the simple Message publisher and subscriber from :ref:`Using DCPS` configured to use the federated repositories.
 
 Configuring the Federation Example
 ----------------------------------
@@ -266,12 +255,10 @@ In each case, if a repository is detected as unavailable the application will at
 
 The repositories do not need any special configuration specifications in order to participate in federation, and so no files are required for them in this example.
 
-.. _9.2.2.2:
-
 Running the Federation Example
 ------------------------------
 
-The example is executed by first starting the repositories and federating them, then starting the application publisher and subscriber processes the same way as was done in the example of  Section :ref:`2.1.7`.
+The example is executed by first starting the repositories and federating them, then starting the application publisher and subscriber processes the same way as was done in the example of  Section :ref:`Running the Example`.
 
 Start the first repository as:
 
@@ -297,5 +284,5 @@ The ``-ORBListenEndpoints iiop://localhost:2112`` option ensures that the reposi
 The ``-FederationId 2048`` option assigns the value 2048 as the repositories unique id within the federation.
 The ``-FederateWith file://repo.ior`` option initiates federation with the repository located at the IOR contained within the named file - which was written by the previously started repository.
 
-Once the repositories have been started and federation has been established (this will be done automatically after the second repository has initialized), the application publisher and subscriber processes can be started and should execute as they did for the previous example in Section :ref:`2.1.7`.
+Once the repositories have been started and federation has been established (this will be done automatically after the second repository has initialized), the application publisher and subscriber processes can be started and should execute as they did for the previous example in Section :ref:`Running the Example`.
 

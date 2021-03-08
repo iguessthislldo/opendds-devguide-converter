@@ -1,10 +1,6 @@
-.. _15:
-
 #####################
 Internet-Enabled RTPS
 #####################
-
-.. _15.1:
 
 ********
 Overview
@@ -23,8 +19,6 @@ The RtpsRelay can be used to connect participants that are deployed in environme
 Second, we introduce Interactive Connection Establishment (ICE) for RTPS.
 Adding ICE to RTPS is an optimization that allows participants that are behind firewalls that perform NAT to exchange messages directly.
 ICE requires a back channel for distributing discovery information and is typically used with the RtpsRelay.
-
-.. _15.2:
 
 *************
 The RtpsRelay
@@ -59,8 +53,6 @@ To keep NAT bindings alive, clients send STUN binding requests and indications p
 Participants using ICE may use these ports as a STUN server for determining a server reflexive address.
 The timing parameters for the periodic messages are controlled via the ICE configuration variables for server reflexive addresses.
 
-.. _15.2.1:
-
 Using the RtpsRelay
 ===================
 
@@ -75,8 +67,6 @@ As an example:
 Each participant should use a single RtpsRelay instance due to the way NAT bindings work.
 Most firewalls will only forward packets received from the destination address that was originally used to create the NAT binding.
 That is, if participant A is interacting with relay A and participant B is interacting with relay B, then a message from A to B must go from A to relay A, to relay B, and finally to B.  Relay A cannot send directly to B since that packet will not be accepted by the firewall.
-
-.. _15.2.2:
 
 Usage
 =====
@@ -117,7 +107,6 @@ Each RtpsRelay process has a set of ports for exchanging RTPS messages with the 
   Configure the relay to log usage statistics.
   The default is 0.
 
-.. _15.2.3:
 
 Deployment Considerations
 =========================
@@ -133,8 +122,6 @@ Load balancing can be achieved by having the participants choose a relay accordi
 To illustrate, each relay could also run an HTTP server which does nothing but serve the public IP address of the relay.
 These simple web servers would be exposed via a centralized load balancer.
 A participant, then, could access the HTTP load balancer to select a relay.
-
-.. _15.3:
 
 *****************************************************
 Interactive Connectivity Establishment (ICE) for RTPS

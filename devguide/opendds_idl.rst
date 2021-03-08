@@ -1,12 +1,10 @@
-.. _8:
-
 ###########
 opendds_idl
 ###########
 
 ::
 
-    opendds_idl is one of the code generators used in the process of building OpenDDS and OpenDDS applications.  It can be used in a number of different ways to customize how source code is generated from IDL files.  See section :ref:`2.1.2` for an overview of the default usage pattern.
+    opendds_idl is one of the code generators used in the process of building OpenDDS and OpenDDS applications.  It can be used in a number of different ways to customize how source code is generated from IDL files.  See section :ref:`Processing the IDL` for an overview of the default usage pattern.
 
 The OpenDDS IDL compiler is invoked using the ``opendds_idl`` executable, located in ``$DDS_ROOT/bin/``(on the ``PATH``).
 It parses a single IDL file and generates the serialization and key support code that OpenDDS requires to marshal and demarshal the types described in the IDL file, as well as the type support code for the data readers and writers.
@@ -19,8 +17,6 @@ For example,
     opendds_idl [options...] Foo.idl
 
 The remaining sections of this chapter describe all of the command-line options and the ways that ``opendds_idl`` can be used to generate alternate mappings.
-
-.. _8.1:
 
 ********************************
 opendds_idl Command Line Options
@@ -92,13 +88,13 @@ The following table summarizes the options supported by ``opendds_idl``.
 | ``--no-dcps-data-type-warnings`` | Don't warn about ``#pragma DCPS_DATA_TYPE``                                                                                      | ``Warnings are issued, use annotations to silence them`` |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 | ``--[no-]default-nested``        | Un-annotated types/modules are treated as nested.                                                                                | ``Types are nested by default.``                         |
-|                                  | See section :ref:`2.1.1.4` for details.                                                                                          |                                                          |
+|                                  | See section :ref:`Topic Types vs. Nested Types` for details.                                                                     |                                                          |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
-| ``--default-extensibility VAL``  | Set the default XTypes Extensibility – see section :ref:`16.5.3`                                                                 | ``appendable``                                           |
+| ``--default-extensibility VAL``  | Set the default XTypes Extensibility – see section :ref:`Determining Extensibility`                                              | ``appendable``                                           |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
-| ``--default-autoid VAL``         | Set the default XTypes auto member-id assignment strategy: sequential or hash – see section :ref:`16.5.5.2`                      | ``sequential``                                           |
+| ``--default-autoid VAL``         | Set the default XTypes auto member-id assignment strategy: sequential or hash – see section :ref:`@autoid(value)`                | ``sequential``                                           |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
-| ``--default-try-construct VAL``  | Set the default XTypes try-construct strategy: discard, use-default, or trim – see section :ref:`16.5.4`                         | ``Discard``                                              |
+| ``--default-try-construct VAL``  | Set the default XTypes try-construct strategy: discard, use-default, or trim – see section :ref:`Customizing XTypes per-member`  | ``Discard``                                              |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 
 The code generation options allow the application developer to use the generated code in a wide variety of environments.
@@ -108,8 +104,6 @@ The ``-I`` and ``-D`` options allow customization of the preprocessing step.
 The ``-Wb,export_macro`` option lets you add an export macro to your class definitions.
 This is required if the generated code is going to reside in a shared library and the compiler (such as Visual C++ or GCC) uses the export macro (``dllexport`` on Visual C++ / overriding hidden visibility on GCC).
 The ``-Wb,pch_include`` option is required if the generated implementation code is to be used in a project that uses precompiled headers.
-
-.. _8.2:
 
 ******************************
 Using the IDL-to-C++11 Mapping
@@ -122,7 +116,7 @@ Since the IDL-to-C++11 Mapping assumes a C++11 (or higher) compiler and standard
 For example, IDL strings, arrays, and sequences map to their equivalents in the ``std`` namespace: ``string``, ``array``, and ``vector``.
 All of the details of the mapping are spelled out in the specification document (available at https://www.omg.org/spec/CPP11), however the easiest way to get started with the mapping is to generate code from IDL and examine the generated header file.
 
-In ``opendds_idl``’s default mode (as described in section :ref:`2.1.2`), responsibility for generating the language mapping is delegated to ``tao_idl`` (using the IDL-to-C++ classic mapping).
+In ``opendds_idl``’s default mode (as described in section :ref:`Processing the IDL`), responsibility for generating the language mapping is delegated to ``tao_idl`` (using the IDL-to-C++ classic mapping).
 In this case, ``opendds_idl`` is only responsible for generating the OpenDDS-specific additions such as ``TypeSupport.idl`` and the marshal/demarshal functions.
 
 Contrast this with using ``opendds_idl`` for IDL-to-C++11.
@@ -167,7 +161,7 @@ Unlike when using the classic mapping, ``Foo.idl`` is not processed by ``tao_idl
   * Bounded strings and sequences are supported, but bounds checks are not currently enforced.
     Due to this limitation, distinct types are not used for bounded instantiations.
 
-* annotations – see section :ref:`2.1.1`
+* annotations – see section :ref:`Defining Data Types with IDL`
 
 * #includes of IDL files that are also used with the IDL-to-C++11 mapping
 

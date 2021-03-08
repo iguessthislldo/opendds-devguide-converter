@@ -1,10 +1,6 @@
-.. _10:
-
 #############
 Java Bindings
 #############
-
-.. _10.1:
 
 ************
 Introduction
@@ -20,8 +16,6 @@ To use OpenDDS with one of these Java versions, set the MPC feature java_pre_jpm
 OpenDDS’s configure script will attempt to detect the Java version and set this automatically.
 
 See the ``$DDS_ROOT/java/FAQ`` file for information on common issues encountered while developing applications with the Java bindings.
-
-.. _10.2:
 
 ***********************
 IDL and Code Generation
@@ -86,7 +80,6 @@ To the right of each file name is the name of the tool that generates it, follow
       };
     };
 
-.. _10.3:
 
 **********************************
 Setting up an OpenDDS Java Project
@@ -219,7 +212,6 @@ See the publisher and subscriber directories in ``$DDS_ROOT/java/tests/messenger
 * If you make subsequent changes to ``Foo.idl``, start by re-running MPC (step #5 above).
   This is needed because certain changes to ``Foo.idl`` will affect which files are generated and need to be compiled.
 
-.. _10.4:
 
 **************************
 A Simple Message Publisher
@@ -229,8 +221,6 @@ This section presents a simple OpenDDS Java publishing process.
 The complete code for this can be found at ``$DDS_ROOT/java/tests/messenger/publisher/TestPublisher.java``.
 Uninteresting segments such as imports and error handling have been omitted here.
 The code has been broken down and explained in logical subsections.
-
-.. _10.4.1:
 
 Initializing the Participant
 ============================
@@ -262,8 +252,6 @@ Object creation failure is indicated by a null return.
 The third argument to ``create_participant()`` takes a Participant events listener.
 If one is not available, a null can be passed instead as done in our example.
 
-.. _10.4.2:
-
 Registering the Data Type and Creating a Topic
 ==============================================
 
@@ -290,8 +278,6 @@ Next we create a topic using the type support servant’s registered name.
 
 Now we have a topic named “*Movie Discussion List*” with the registered data type and default QoS policies.
 
-.. _10.4.3:
-
 Creating a Publisher
 ====================
 
@@ -304,7 +290,6 @@ Next, we create a publisher:
               null,
               DEFAULT_STATUS_MASK.value);
 
-.. _10.4.4:
 
 Creating a DataWriter and Registering an Instance
 =================================================
@@ -340,7 +325,6 @@ It then publishes a few messages which are distributed to any subscribers of thi
             msg.count = 0;
             int ret = mdw.write(msg, handle);
 
-.. _10.5:
 
 *************************
 Setting up the Subscriber
@@ -376,7 +360,6 @@ The subscriber needs to create a participant in the same domain, register an ide
                                         TOPIC_QOS_DEFAULT.get(), null,
                                         DEFAULT_STATUS_MASK.value);
 
-.. _10.5.1:
 
 Creating a Subscriber
 =====================
@@ -388,7 +371,6 @@ As with the publisher, we create a subscriber:
             Subscriber sub = dp.create_subscriber(
               SUBSCRIBER_QOS_DEFAULT.get(), null, DEFAULT_STATUS_MASK.value);
 
-.. _10.5.2:
 
 Creating a DataReader and Listener
 ==================================
@@ -405,8 +387,6 @@ We therefore create an instance of a ``DataReaderListenerImpl`` and pass it as a
 
 Any incoming messages will be received by the Listener in the middleware’s thread.
 The application thread is free to perform other tasks at this time.
-
-.. _10.6:
 
 **************************************
 The DataReader Listener Implementation
@@ -489,8 +469,6 @@ Once taken, that sample is removed from the ``DataReader``’s available sample 
 
 The ``SampleInfo`` contains meta-information regarding the message such as the message validity, instance state, etc.
 
-.. _10.7:
-
 ********************************
 Cleaning up OpenDDS Java Clients
 ********************************
@@ -516,8 +494,6 @@ The ``DomainParticipantFactory`` reclaims any resources associated with the ``Do
 Shuts down the ``ServiceParticipant``.
 This cleans up all OpenDDS associated resources.
 Cleaning up these resources is necessary to prevent the ``DCPSInfoRepo`` from forming associations between endpoints which no longer exist.
-
-.. _10.8:
 
 ***********************
 Configuring the Example
@@ -546,9 +522,7 @@ The ``[transport/1]`` section contains configuration information for the transpo
 It is defined to be of type ``tcp``.
 The global transport configuration setting above causes this transport instance to be used by all readers and writers in the process.
 
-See Chapter :ref:`7` for a complete description of all OpenDDS configuration parameters.
-
-.. _10.9:
+See Chapter :ref:`Run-time Configuration` for a complete description of all OpenDDS configuration parameters.
 
 *******************
 Running the Example
@@ -565,8 +539,6 @@ To run the Messenger Java OpenDDS application, use the following commands:
     $JAVA_HOME/bin/java -ea -cp classes:$DDS_ROOT/lib/i2jrt.jar:$DDS_ROOT/lib/OpenDDS_DCPS.jar:classes TestSubscriber -DCPSConfigFile sub_tcp.ini
 
 The ``-DCPSConfigFile`` command-line argument passes the location of the OpenDDS configuration file.
-
-.. _10.10:
 
 **********************************
 Java Message Service (JMS) Support

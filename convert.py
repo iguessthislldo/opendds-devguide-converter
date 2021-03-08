@@ -402,7 +402,7 @@ class Out:
     self.last_char = None
 
   @staticmethod
-  def filename(name):
+  def filename(name, ext='.rst'):
     rv = ''
     for c in name:
       if not str.isalnum(c):
@@ -411,7 +411,7 @@ class Out:
         else:
           continue
       rv += c.lower()
-    return rv + '.rst'
+    return rv + ext
 
   def open(self, name = None):
     self.close()
@@ -527,7 +527,7 @@ class Info:
       self.sections = {}
       self.push(section_level=0, section_number=0, section_id="")
     else:
-      self.sections = iter(sections.items())
+      self.sections = sections
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -698,8 +698,6 @@ def handle_header(info, node, out=None):
   if out: # in convert_node
     if level == 0:
       out.open(name)
-    section_id, section_info = next(info.sections)
-    out.writeln('.. _{}:\n'.format(section_id))
     out.write(get_header(name, level))
 
   else: # in reference_builder
@@ -721,7 +719,10 @@ def handle_header(info, node, out=None):
       section_number = info.get('section_number', ignore_last=False) + 1
       info.set(section_number=section_number)
     section_id = info.get('section_id', ignore_last=False) + str(section_number)
-    info.sections[section_id] = dict(name=name)
+    if level == 1:
+      info.set(section_filename=Out.filename(name, ext=''))
+    info.sections[section_id] = dict(
+      name=name, filename=info.get('section_filename', ignore_last=False))
 
 
 def reference_builder(info, node):
@@ -828,7 +829,8 @@ def convert_node(info, node, out):
       reference_format = node.attributes.get(reference_format_attr, None)
       value = get_text(info, node)
       if kind in ('bookmark-ref', 'reference-ref') and reference_format in ('chapter', 'number'):
-        out.write(':ref:`{}`'.format(value))
+        section_info = info.sections[value]
+        out.write(':ref:`{}`'.format(section_info['name']))
       else:
         # print(kind, reference_format, value)
         convert_child_nodes(info, node, out)
@@ -885,7 +887,7 @@ ref_info = Info(doc)
 reference_builder(ref_info, section)
 with (dump_path / 'sections').open('w') as f:
   for section_id, section_info in ref_info.sections.items():
-    print(section_id, section_info['name'], file=f)
+    print(section_id, repr(section_info['name']), repr(section_info['filename']), file=f)
 
 out = Out()
 info = Info(doc, ref_info.sections)
