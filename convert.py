@@ -11,7 +11,6 @@ doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 
 # TODO:
 # - Figure Links (bookmarks?)
-# - Section Links
 # - Footnotes
 # - List in "Building OpenDDS with Security on Windows"
 

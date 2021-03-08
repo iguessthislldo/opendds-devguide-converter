@@ -20,6 +20,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('.') + '/ext')
 
+github_link_repo = 'objectcomputing/OpenDDS'
+github_link_commitish = 'master'
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -30,6 +33,7 @@ sys.path.insert(0, os.path.abspath('.') + '/ext')
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+  'github_link',
   'sphinx.ext.autosectionlabel',
 ]
 from mpc_lexer import MpcLexer
@@ -85,6 +89,10 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+
+html_css_files = [
+    'css/custom.css',
+]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
