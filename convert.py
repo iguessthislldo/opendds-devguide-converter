@@ -159,6 +159,8 @@ def fix_monospace(raw_string, last_char_arg=None):
     string += c
   if keep_back:
     string += keep_back
+  if tick_count:
+    string += '`' * tick_count
   return string
 
 

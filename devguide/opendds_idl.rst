@@ -94,11 +94,11 @@ The following table summarizes the options supported by ``opendds_idl``.
 | ``--[no-]default-nested``        | Un-annotated types/modules are treated as nested.                                                                                | ``Types are nested by default.``                         |
 |                                  | See section :ref:`2.1.1.4` for details.                                                                                          |                                                          |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
-| ``--default-extensibility VAL``  | Set the default XTypes Extensibility – see section :ref:`16.5.3                                                                  | ``appendable``                                           |
+| ``--default-extensibility VAL``  | Set the default XTypes Extensibility – see section :ref:`16.5.3`                                                                 | ``appendable``                                           |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
-| ``--default-autoid VAL``         | Set the default XTypes auto member-id assignment strategy: sequential or hash – see section :ref:`16.5.5.2                       | ``sequential``                                           |
+| ``--default-autoid VAL``         | Set the default XTypes auto member-id assignment strategy: sequential or hash – see section :ref:`16.5.5.2`                      | ``sequential``                                           |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
-| ``--default-try-construct VAL``  | Set the default XTypes try-construct strategy: discard, use-default, or trim – see section :ref:`16.5.4                          | ``Discard``                                              |
+| ``--default-try-construct VAL``  | Set the default XTypes try-construct strategy: discard, use-default, or trim – see section :ref:`16.5.4`                         | ``Discard``                                              |
 +----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------+
 
 The code generation options allow the application developer to use the generated code in a wide variety of environments.
