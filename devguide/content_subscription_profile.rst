@@ -80,8 +80,30 @@ Each predicate is a logical expression taking one of two forms:
 
 Any number of predicates can be combined through the use of parenthesis and the Boolean operators ``AND``, ``OR``, and ``NOT`` to form a filter expression.
 
+Expression Parameters
+=====================
+
+Expression parameters allow more flexibility since the filter can effectively change at runtime.
+To use expression parameters, add parameter placeholders in the filter expression wherever a literal would be used.
+For example, an expression to select all samples that have a string field with a fixed value (``m = ‘A’``) could instead use a placeholder which would be written as ``m = %0``.
+Placeholders consist of a percent sign followed by a decimal integer between 0 and 99 inclusive.
+
+Using a filter that contains placeholders requires values for each placeholder which is used in the expression to be provided by the application in the corresponding index of the expression parameters sequence (placeholder %0 is sequence[0]).
+The application can set the parameter sequence when the content-filtered topic is created (``create_contentfilteredtopic``) or after it already exists by using ``set_expression_parameters``.
+A valid value for each used placeholder must be in the parameters sequence whenever the filter is evaluated, for example when a data reader using the content-filtered topic is enabled.
+
+The type used for the parameters sequence in the DDS-DCPS API is a sequence of strings.
+The application must format this string based on how the parameter is used:
+
+* For a number (integer or floating point), provide the decimal representation in the same way it would appear as a C++ or Java literal.
+
+* For a character or string, provide the character(s) directly without quoting
+
+* For an enumerated type, provide one of the enumerators as if it was a string
+
+
 Filtering and Dispose/Unregister Samples
-----------------------------------------
+========================================
 
 DataReaders without filtering can see samples with the ``valid_data`` field of SampleInfo set to false.
 This happens when the matching DataWriter disposes or unregisters the instance.
@@ -110,9 +132,7 @@ Next we have the code that creates the data reader:
       CORBA::String_var type_name = message_type_support->get_type_name();
       DDS::Topic_var topic = dp->create_topic("MyTopic",
                                               type_name,
-                                              TOPIC_QOS_DEFAULT,
-                                              NULL,
-                                              OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+                                              TOPIC_QOS_DEFAULT, 0, 0);
       DDS::ContentFilteredTopic_var cft =
         participant->create_contentfilteredtopic("MyTopic-Filtered",
                                                  topic,
@@ -120,9 +140,7 @@ Next we have the code that creates the data reader:
                                                  StringSeq());
       DDS::DataReader_var dr =
         subscriber->create_datareader(cft,
-                                      dr_qos,
-                                      NULL,
-                                      OpenDDS::DCPS::DEFAULT_STATUS_MASK);
+                                      DATAREADER_QOS_DEFAULT, 0, 0);
 
 The data reader ‘``dr``’ will only receive samples that have values of ‘``id``’ greater than 1.
 
@@ -153,7 +171,7 @@ When used with a data reader’s ``read*()`` or ``take*()`` operation, the resul
 Query Expressions
 =================
 
-Query expressions are a superset of filter expressions (see section :ref:`Filter Expressions`).
+Query expressions are a super set of filter expressions (see section :ref:`Filter Expressions`).
 Following the filter expression, the query expression can optionally have an ``ORDER BY`` keyword followed by a comma-separated list of field references.
 If the ``ORDER BY`` clause is present, the filter expression may be empty.
 The following strings are examples of query expressions:
@@ -164,6 +182,8 @@ The following strings are examples of query expressions:
 
 * NOT v LIKE 'z%'
 
+Query expressions can use parameter placeholders in the same way that filter expressions (for content-filtered topics) use them.
+See section :ref:`Expression Parameters` for details.
 
 Query Condition Example
 =======================
@@ -263,6 +283,8 @@ Topic expressions use a syntax that is very similar to a complete SQL query:
 
 * The condition has the exact same syntax and semantics as the filter expression (see section :ref:`Filter Expressions`).
   Field references in the condition must match field names in the resulting types, not field names in the constituent topic types.
+  The condition in the topic expression can use parameter placeholders in the same way that filter expressions (for content-filtered topics) use them.
+  See section :ref:`Expression Parameters` for details.
 
 
 Usage Notes

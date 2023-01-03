@@ -138,9 +138,9 @@ The following tables summarize the default QoS policies for each entity type in 
 |                        |                                   |                                                 |
 |                        | ``max_samples_per_instance``      | ``LENGTH_UNLIMITED``                            |
 +------------------------+-----------------------------------+-------------------------------------------------+
-| ``DEADLINE``           | ``period.sec``                    | ``DURATION_INFINITY_SEC``                       |
+| ``DEADLINE``           | ``period.sec``                    | ``DURATION_INFINITE_SEC``                       |
 |                        |                                   |                                                 |
-|                        | ``period.nanosec``                | ``DURATION_INFINITY_NSEC``                      |
+|                        | ``period.nanosec``                | ``DURATION_INFINITE_NSEC``                      |
 +------------------------+-----------------------------------+-------------------------------------------------+
 | ``LATENCY_BUDGET``     | ``duration.sec``                  | ``DURATION_ZERO_SEC``                           |
 |                        |                                   |                                                 |
@@ -148,15 +148,15 @@ The following tables summarize the default QoS policies for each entity type in 
 +------------------------+-----------------------------------+-------------------------------------------------+
 | ``LIVELINESS``         | ``kind``                          | ``AUTOMATIC_LIVELINESS_QOS``                    |
 |                        |                                   |                                                 |
-|                        | ``lease_duration.sec``            | ``DURATION_INFINITY_SEC``                       |
+|                        | ``lease_duration.sec``            | ``DURATION_INFINITE_SEC``                       |
 |                        |                                   |                                                 |
-|                        | ``lease_duration.nanosec``        | ``DURATION_INFINITY_NSEC``                      |
+|                        | ``lease_duration.nanosec``        | ``DURATION_INFINITE_NSEC``                      |
 +------------------------+-----------------------------------+-------------------------------------------------+
 | ``RELIABILITY``        | ``kind``                          | ``BEST_EFFORT_RELIABILITY_QOS``                 |
 |                        |                                   |                                                 |
-|                        | ``max_blocking_time.sec``         | ``DURATION_INFINITY_SEC``                       |
+|                        | ``max_blocking_time.sec``         | ``DURATION_INFINITE_SEC``                       |
 |                        |                                   |                                                 |
-|                        | ``max_blocking_time.nanosec``     | ``DURATION_INFINITY_NSEC``                      |
+|                        | ``max_blocking_time.nanosec``     | ``DURATION_INFINITE_NSEC``                      |
 +------------------------+-----------------------------------+-------------------------------------------------+
 | ``DESTINATION_ORDER``  | ``kind``                          | ``BY_RECEPTION_TIMESTAMP_DESTINATIONORDER_QOS`` |
 +------------------------+-----------------------------------+-------------------------------------------------+
@@ -172,9 +172,9 @@ The following tables summarize the default QoS policies for each entity type in 
 +------------------------+-----------------------------------+-------------------------------------------------+
 | ``TRANSPORT_PRIORITY`` | ``value``                         | ``0``                                           |
 +------------------------+-----------------------------------+-------------------------------------------------+
-| ``LIFESPAN``           | ``duration.sec``                  | ``DURATION_INFINITY_SEC``                       |
+| ``LIFESPAN``           | ``duration.sec``                  | ``DURATION_INFINITE_SEC``                       |
 |                        |                                   |                                                 |
-|                        | ``duration.nanosec``              | ``DURATION_INFINITY_NSEC``                      |
+|                        | ``duration.nanosec``              | ``DURATION_INFINITE_NSEC``                      |
 +------------------------+-----------------------------------+-------------------------------------------------+
 | ``OWNERSHIP``          | ``kind``                          | ``SHARED_OWNERSHIP_QOS``                        |
 +------------------------+-----------------------------------+-------------------------------------------------+
@@ -240,9 +240,9 @@ The following tables summarize the default QoS policies for each entity type in 
 |                           |                                        |                                                                                                                             |
 |                           | ``max_samples_per_instance``           | ``LENGTH_UNLIMITED``                                                                                                        |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
-| ``DEADLINE``              | ``period.sec``                         | ``DURATION_INFINITY_SEC``                                                                                                   |
+| ``DEADLINE``              | ``period.sec``                         | ``DURATION_INFINITE_SEC``                                                                                                   |
 |                           |                                        |                                                                                                                             |
-|                           | ``period.nanosec``                     | ``DURATION_INFINITY_NSEC``                                                                                                  |
+|                           | ``period.nanosec``                     | ``DURATION_INFINITE_NSEC``                                                                                                  |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 | ``LATENCY_BUDGET``        | ``duration.sec``                       | ``DURATION_ZERO_SEC``                                                                                                       |
 |                           |                                        |                                                                                                                             |
@@ -250,9 +250,9 @@ The following tables summarize the default QoS policies for each entity type in 
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 | ``LIVELINESS``            | ``kind``                               | ``AUTOMATIC_LIVELINESS_QOS``                                                                                                |
 |                           |                                        |                                                                                                                             |
-|                           | ``lease_duration.sec``                 | ``DURATION_INFINITY_SEC``                                                                                                   |
+|                           | ``lease_duration.sec``                 | ``DURATION_INFINITE_SEC``                                                                                                   |
 |                           |                                        |                                                                                                                             |
-|                           | ``lease_duration.nanosec``             | ``DURATION_INFINITY_NSEC``                                                                                                  |
+|                           | ``lease_duration.nanosec``             | ``DURATION_INFINITE_NSEC``                                                                                                  |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 | ``RELIABILITY``           | ``kind``                               | ``RELIABLE_RELIABILITY_QOS2For OpenDDS versions, up to 2.0, the default reliability kind for data writers is best effort.`` |
 |                           |                                        | ``For versions 2.0.1 and later, this is changed to reliable (to conform to the DDS specification).``                        |
@@ -275,9 +275,9 @@ The following tables summarize the default QoS policies for each entity type in 
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 | ``TRANSPORT_PRIORITY``    | ``value``                              | ``0``                                                                                                                       |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
-| ``LIFESPAN``              | ``duration.sec``                       | ``DURATION_INFINITY_SEC``                                                                                                   |
+| ``LIFESPAN``              | ``duration.sec``                       | ``DURATION_INFINITE_SEC``                                                                                                   |
 |                           |                                        |                                                                                                                             |
-|                           | ``duration.nanosec``                   | ``DURATION_INFINITY_NSEC``                                                                                                  |
+|                           | ``duration.nanosec``                   | ``DURATION_INFINITE_NSEC``                                                                                                  |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 | ``USER_DATA``             | ``value``                              | ``(empty sequence)``                                                                                                        |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
@@ -299,9 +299,9 @@ The following tables summarize the default QoS policies for each entity type in 
 |                           |                                              |                                                 |
 |                           | ``service_cleanup_delay.nanosec``            | ``DURATION_ZERO_NSEC``                          |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
-| ``DEADLINE``              | ``period.sec``                               | ``DURATION_INFINITY_SEC``                       |
+| ``DEADLINE``              | ``period.sec``                               | ``DURATION_INFINITE_SEC``                       |
 |                           |                                              |                                                 |
-|                           | ``period.nanosec``                           | ``DURATION_INFINITY_NSEC``                      |
+|                           | ``period.nanosec``                           | ``DURATION_INFINITE_NSEC``                      |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 | ``LATENCY_BUDGET``        | ``duration.sec``                             | ``DURATION_ZERO_SEC``                           |
 |                           |                                              |                                                 |
@@ -309,15 +309,15 @@ The following tables summarize the default QoS policies for each entity type in 
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 | ``LIVELINESS``            | ``kind``                                     | ``AUTOMATIC_LIVELINESS_QOS``                    |
 |                           |                                              |                                                 |
-|                           | ``lease_duration.sec``                       | ``DURATION_INFINITY_SEC``                       |
+|                           | ``lease_duration.sec``                       | ``DURATION_INFINITE_SEC``                       |
 |                           |                                              |                                                 |
-|                           | ``lease_duration.nanosec``                   | ``DURATION_INFINITY_NSEC``                      |
+|                           | ``lease_duration.nanosec``                   | ``DURATION_INFINITE_NSEC``                      |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 | ``RELIABILITY``           | ``kind``                                     | ``BEST_EFFORT_RELIABILITY_QOS``                 |
 |                           |                                              |                                                 |
-|                           | ``max_blocking_time.sec``                    | ``DURATION_INFINITY_SEC``                       |
+|                           | ``max_blocking_time.sec``                    | ``DURATION_INFINITE_SEC``                       |
 |                           |                                              |                                                 |
-|                           | ``max_blocking_time.nanosec``                | ``DURATION_INFINITY_NSEC``                      |
+|                           | ``max_blocking_time.nanosec``                | ``DURATION_INFINITE_NSEC``                      |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 | ``DESTINATION_ORDER``     | ``kind``                                     | ``BY_RECEPTION_TIMESTAMP_DESTINATIONORDER_QOS`` |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
@@ -339,13 +339,13 @@ The following tables summarize the default QoS policies for each entity type in 
 |                           |                                              |                                                 |
 |                           | ``minimum_separation.nanosec``               | ``DURATION_ZERO_NSEC``                          |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
-| ``READER_DATA_LIFECYCLE`` | ``autopurge_nowriter_samples_delay.sec``     | ``DURATION_INFINITY_SEC``                       |
+| ``READER_DATA_LIFECYCLE`` | ``autopurge_nowriter_samples_delay.sec``     | ``DURATION_INFINITE_SEC``                       |
 |                           |                                              |                                                 |
-|                           | ``autopurge_nowriter_samples_delay.nanosec`` | ``DURATION_INFINITY_NSEC``                      |
+|                           | ``autopurge_nowriter_samples_delay.nanosec`` | ``DURATION_INFINITE_NSEC``                      |
 |                           |                                              |                                                 |
-|                           | ``autopurge_disposed_samples_delay.sec``     | ``DURATION_INFINITY_SEC``                       |
+|                           | ``autopurge_disposed_samples_delay.sec``     | ``DURATION_INFINITE_SEC``                       |
 |                           |                                              |                                                 |
-|                           | ``autopurge_disposed_samples_delay.nanosec`` | ``DURATION_INFINITY_NSEC``                      |
+|                           | ``autopurge_disposed_samples_delay.nanosec`` | ``DURATION_INFINITE_NSEC``                      |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 
 LIVELINESS

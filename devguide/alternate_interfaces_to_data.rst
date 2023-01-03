@@ -11,11 +11,14 @@ The two approaches are:
 
   * These interfaces allow the application to create untyped stand-ins for DataReaders and/or DataWriters
 
+  * Recorder can be used with the Dynamic Language Binding XTypes features (see section :ref:`Dynamic Language Binding` and below) to access typed data samples through a reflection-based API
+
 * Observer
 
   * Observers play a role similar to the spec-defined Listeners (attached to DataReaders and/or DataWriters).
     Unlike the Listeners, Observers don’t need to interact with the DataReader/Writer caches to access the data samples.
 
+The XTypes Dynamic Language Binding (see section  16.2.4 ) provides a set of related features that can be used to create DataWriters and DataReaders that work with a generic data container (DynamicData) instead of a specific IDL-generated data type.
 
 *********************
 Recorder and Replayer
@@ -146,6 +149,18 @@ Instead, transient local durability can be supported with a “pull” model whe
 The application can then call a method on the ``Replayer`` with any data samples that should be sent to that newly-joined ``DataReader``.
 Determining which samples these are is left to the application.
 
+Recorder With XTypes Dynamic Language Binding
+=============================================
+
+The Recorder class includes support for the Dynamic Language Binding from XTypes (see section :ref:`Dynamic Language Binding`).
+Type information for each matched DataWriter (that supports XTypes complete TypeObjects) is stored in the Recorder.
+Users can call Recorder::get_dynamic_data, passing a RawDataSample to get back a DynamicData object which includes type information – see DynamicData::type().
+
+A tool called “inspect,” uses the Recorder and Dynamic Language Binding allow for the printing of any type, so long as the topic name, type name, and domain ID are known.
+The DataWriter must include code generation for complete TypeObjects.
+See tools/inspect/Inspect.cpp for this tool’s source code.
+It can be used as a standalone tool or an example for developing your own applications using these APIs.
+
 ********
 Observer
 ********
@@ -244,5 +259,5 @@ The Observer::Sample structure contains the following fields:
   * Since Observer is an un-typed interface, the contents of the data sample itself are represented only as a void pointer
 
   * Implementations that need to process this data can use the data_dispatcher object to interpret it.
-    See the class definition of ValueWriterDispatcher in ``dds/DCPS/ValueWriter.h`` for more details.
+    See the class definition of ValueDispatcher in ``dds/DCPS/ValueDispatcher.h`` for more details.
 

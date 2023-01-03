@@ -36,8 +36,6 @@ When a client sends an RTPS datagram to its RtpsRelay instance, the RtpsRelay in
 Clients send RTPS datagrams via unicast which is generally supported and compatible with NAT.
 The RtpsRelay can be used in lieu of or in addition to conventional RTPS discovery.
 
-.. image:: images/10000000000001E000000168A8AB6B399FD8F9AC.png
-
 The preceding diagram illustrates how the RtpsRelay can be used to connect participants that are behind firewalls that may be performing NAT.
 First, a Participant sends an RTPS datagram to its associated RtpsRelay (1).
 This datagram is intercepted by the firewall, the source address and port are replaced by the external IP address and port of the firewall, and then the datagram is sent to the RtpsRelay (2).
@@ -73,13 +71,29 @@ Usage
 
 The RtpsRelay itself is an OpenDDS application.
 The source code is located in ``tools/rtpsrelay``.
+Security must be enabled to build the RtpsRelay.
+See section :ref:`Building OpenDDS with Security Enabled`.
 Each RtpsRelay process has a set of ports for exchanging RTPS messages with the participants called the "vertical" ports and a set of ports for exchanging RTPS messages with other relays called the “horizontal” ports.
 
-* ``-VerticalAddress ADDRESSDetermines the base network address used for receiving RTPS messages from the participants.``
-  ``By default, the relay listens on 0.0.0.0:4444 for SPDP messages, 0.0.0.0:4445 for SEDP messages, and 0.0.0.0.4446 for data messages.``
+The RtpsRelay contains an embedded webserver called the meta discovery server.
+The webserver has the following endpoints:
+
+* ``/configResponds with configured content and content type.``
+  ``See -MetaDiscovery options below.``
+  ``Potential client participants can download the necessary configuration from this endpoint.``
+
+* /``healthcheck`` Responds with HTTP 200 (OK) or 503 (Service Unavailable) if thread monitoring is enabled and the RtpsRelay is not admitting new client participants.
+  Load balancers can use this endpoint to route new client participants to an available RtpsRelay instance.
+
+The command-line options for the RtpsRelay:
+
+* ``-Id STRINGThe Id option is mandatory and is a unique id associated with all topics published by the relay.``
 
 * ``-HorizontalAddress ADDRESS`` Determines the base network address used for receiving RTPS message from other relays.
   By default, the relay listens on the first IP network and uses port 11444 for SPDP messages, 11445 for SEDP messages, and 11446 for data messages.
+
+* ``-VerticalAddress ADDRESS`` Determines the base network address used for receiving RTPS messages from the participants.
+  By default, the relay listens on 0.0.0.0:4444 for SPDP messages, 0.0.0.0:4445 for SEDP messages, and 0.0.0.0.4446 for data messages.
 
 * ``-RelayDomain DOMAIN`` Sets the DDS domain used by the Relay Participant.
   The default is 0.
@@ -87,25 +101,47 @@ Each RtpsRelay process has a set of ports for exchanging RTPS messages with the 
 * ``-ApplicationDomain DOMAIN`` Sets the DDS domain used by the Application Participant.
   The default is 1.
 
+* ``-UserData STRINGSet the contents of the Application Participant’s UserData QoS policy to the provided string.``
+
+* ``-BufferSize INTEGERSend of send and receive buffers in bytes``
+
 * ``-Lifespan SECONDS`` RtpsRelay will only forward a datagram to a client if it has received a datagram from the client in this amount of time.
+  Otherwise, participant is marked as not alive.
   The default is 60 seconds.
 
-* ``-UserData STRING``
+* ``-InactivePeriodSECONDS`` RtpsRelay will mark participant as not active if does not receive a datagram from the client in this amount of time.
+  The default is 60 seconds.
 
-  Set the contents of the Application Participant’s UserData QoS policy to the provided string.
+* ``-AllowEmptyPartitions 0|1Allow client participants with no partitions.``
+  ``Defaults to 1 (true).``
 
 * ``-IdentityCA PATH-PermissionsCA PATH-IdentityCertificate PATH-IdentityKey PATH-Governance PATH-Permissions PATH`` Provide paths to the DDS Security documents.
+  Requires a security-enabled build.
 
-* ``-StatisticsIntervalSECONDS`` Set the minimum sampling interval for collecting statistics.
-  The default is 60 seconds.
+* ``-RestartDetection 0|1Setting RestartDetction to 1 causes the relay to track clients by the first 6 bytes of their RTPS GUID and source IP address and clean up older sessions with the same key.``
+  ``The default is 0 (false).``
 
-* ``-PublishRelayStatistics 0|1`` Configure the relay to publish usage statistics on DDS topics.
-  The default is 1.
+* ``-LogWarnings0|1-LogDiscovery0|1-LogActivity0|1`` Enable/disable logging of the various event types.
 
-* ``-ReportRelayStatistics 0|1``
+* ``-LogRelayStatisticsSECONDS-LogHandlerStatistics SECONDS-LogParticipantStatistics SECONDS`` Write statistics for the various event types to the log at the given interval, defaults to 0 (disabled).
 
-  Configure the relay to log usage statistics.
-  The default is 0.
+* ``-PublishRelayStatisticsSECONDS-PublishHandlerStatistics SECONDS-PublishParticipantStatistics SECONDS`` Configure the relay to publish usage statistics on DDS topics at the given interval, defaults to 0 (disabled).
+
+* ``-LogThreadStatus 0|1`` Log the status of the threads in the RtpsRelay, defaults to 0 (disabled).
+
+* ``-ThreadStatusSafetyFactor INTEGER`` Restart if thread monitoring is enabled and a thread has not checked in for this many reporting intervals, default 3.
+
+* ``-UtilizationLimit DECIMAL`` If thread monitoring is enabled, the RtpsRelay will not accept to new client participants if the CPU utilization of any thread is above this limit, default .95.
+
+* ``-PublishRelayStatusSECONDS-PublishRelayStatusLivelinessSECONDS`` Setting PublishRelayStatus to a positive integer causes the relay to publish its status at that interval.
+  Setting PublishRelayStatusLiveliness to a positive integer causes the relay to set the liveliness QoS on the relay status topic.
+
+* ``-MetaDiscoveryAddress`` Listening address for the meta discovery server, default 0.0.0.0:8080.
+
+* ``-MetaDiscoveryContentType`` The HTTP content type to report for the meta discovery config endpoint, default application/json.
+
+* ``-MetaDiscoveryContentPathPATH-MetaDiscoveryContentCONTENT`` The content returned by the meta discovery config endpoint, default {}.
+  If a path is specified, the content of the file will be used.
 
 
 Deployment Considerations
@@ -156,4 +192,66 @@ See Table 7-5 RTPS Discovery Configuration Options and Table 7-17 RTPS_UDP Confi
 
     [common]DCPSGlobalTransportConfig=$fileDCPSDefaultDiscovery=DEFAULT_RTPS[transport/the_rtps_transport]transport_type=rtps_udpDataRtpsRelayAddress=5.6.7.8:4446UseIce=1DataStunServerAddress=1.2.3.4:3478[domain/42]DiscoveryConfig=DiscoveryConfig1
     [rtps_discovery/DiscoveryConfig1]SpdpRtpsRelayAddress=5.6.7.8:4444SedpRtpsRelayAddress=5.6.7.8:4445UseIce=1SedpStunServerAddress=1.2.3.4:3478
+
+***********************
+Security Considerations
+***********************
+
+The purpose of this section is to inform users about potential security issues when using OpenDDS.
+Users of OpenDDS are encouraged to perform threat modeling, security reviews, assessments, testing, etc.
+to ensure that their applications meet their security objectives.
+
+Use DDS Security
+================
+
+Most applications have common objectives with respect to data security:
+
+* Authentication - The identity of every process that participates in the DDS domain can be established.
+
+* Authorization - Only authorized writers of a topic may generate samples for a topic and only authorized readers may consume samples for a topic.
+
+* Integrity - The content of a sample cannot be altered without detection.
+
+* Privacy - The content of a sample cannot be read by an unauthorized third party.
+
+If an application is subject to any of these security objectives, then it should use the DDS Security features described in Chapter :ref:`DDS Security`.
+Using a non-secure discovery mechanism or a non-secure transport leaves the application exposed to data security breaches.
+
+Understand the Weaknesses of (Secure) RTPS Discovery
+====================================================
+
+Secure RTPS Discovery has a behavior that can be exploited to launch a denial of service attack (see https://us-cert.cisa.gov/ics/advisories/icsa-21-315-02).
+Basically, an attacker can send a fake SPDP message to a secure participant which will cause it to begin authentication with a non-existent participant.
+The authentication messages are repeated resulting in amplification.
+An attacker could manipulate a group of secure participants to launch a denial of service attack against a specific host or group of hosts.
+RTPS (without security) has the same vulnerability except that messages come from the other builtin endpoints.
+For this reason, consider the mitigation features below before making an OpenDDS participant publicly accessible.
+
+The weakness in RTPS Discovery can be mitigated but currently does not have a solution.
+OpenDDS includes the following features for mitigation:
+
+* Compare the source IP of the SPDP message to the locators.
+  For most applications, the locators advertised by SPDP should match the source IP of the SPDP message.
+
+  * See CheckSourceIp in Table 7-5 RTPS Discovery Configuration Options
+
+* Use the participant lease time from secure discovery and bound it otherwise.
+  By default, OpenDDS will attempt authentication for the participant lease duration specified in the SPDP message.
+  However, this data can’t be trusted so a smaller maximum lease time can be specified to force authentication or discovery to terminate before the lease time.
+
+  * See MaxAuthTime in Table 7-5 RTPS Discovery Configuration Options
+
+* Limit the number of outstanding secure discoveries.
+  The number of discovered but not-yet-authenticated participants is capped when using secure discovery.
+
+  * See MaxParticipantsInAuthentication in Table 7-5 RTPS Discovery Configuration Options
+
+
+Run Participants in a Secure Network
+====================================
+
+One approach to a secure application without DDS Security is to secure it at the network layer instead of the application layer.
+A physically secure network satisfies this by construction.
+Another approach is to use a virtual private network (VPN) or a secure overlay.
+These approaches have a simple security model when compared to DDS Security and are not interoperable.
 

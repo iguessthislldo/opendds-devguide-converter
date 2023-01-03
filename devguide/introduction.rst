@@ -4,8 +4,8 @@ Introduction
 
 OpenDDS is an open source implementation of the OMG Data Distribution Service (DDS) for Real-Time Systems Specification v1.4 (OMG Document ``formal/2015-04-10``) and the Real-time Publish-Subscribe Wire Protocol DDS Interoperability Wire Protocol Specification (DDSI-RTPS) v2.3 (OMG Document ``formal/2019-04-03``).
 OpenDDS also implements the DDS Security Specification v1.1 (OMG Document ``formal/2018-04-01``) and DDS XTypes v1.3 (OMG Document ``formal/2020-02-04``).
-OpenDDS is sponsored by Object Computing, Inc. (OCI) and is available at http://www.opendds.org/.
-This developer’s guide is based on the version 3.16 release of OpenDDS.
+OpenDDS is sponsored by Object Computing, Inc. (OCI) and is available at https://www.opendds.org/.
+This Developer’s Guide is based on the version 3.23 release of OpenDDS.
 
 DDS defines a service for efficiently distributing application data between participants in a distributed application.
 This service is not tied to CORBA.
@@ -14,10 +14,10 @@ The specification provides a Platform Independent Model (PIM) as well as a Platf
 For additional details about DDS, developers should refer to the DDS specification (OMG Document ``formal/2015-04-10``) as it contains in-depth coverage of all the service’s features.
 
 OpenDDS is the open-source C++ implementation of OMG’s DDS specification developed and commercially supported by Object Computing, Inc. (OCI).
-It is available for download from http://www.opendds.org/downloads.html and is compatible with the latest patch level of OCI TAO version 2.2a (includes ACE), and the latest DOC Group release of ACE+TAO in the ACE 6.x / TAO 2.x series.
+It is available for download from https://www.opendds.org/downloads.html and is compatible with the latest patch level of OCI TAO version 2.2a (includes ACE), and the latest DOC Group release of ACE+TAO in the ACE 6.x / TAO 2.x series.
 
 .. note:: OpenDDS currently implements the OMG DDS version 1.4 specification.
-  See the compliance information in or at http://www.opendds.org/ for more information.
+  See the compliance information in or at https://www.opendds.org/ for more information.
 
 *************
 DCPS Overview
@@ -32,8 +32,6 @@ Figure 1-1 shows an overview of the DDS DCPS layer.
 The following subsections define the concepts shown in this diagram.
 
 **Figure 1-1 DCPS Conceptual Overview**
-
-.. image:: images/10000200000001C1000002026BB287CE5A7FFF6F.png
 
 Domain
 ------
@@ -68,6 +66,9 @@ Each data writer is bound to a particular topic.
 The application uses the data writer’s type-specific interface to publish samples on that topic.
 The data writer is responsible for marshaling the data and passing it to the publisher for transmission.
 
+Dynamic data writers (see section  16.7.4.2 ) can be used when code generated from IDL is not available or desired.
+Dynamic data writers are also type-safe, but type checking happens at runtime.
+
 Publisher
 ---------
 
@@ -85,6 +86,9 @@ DataReader
 The *data reader* takes data from the subscriber, demarshals it into the appropriate type for that topic, and delivers the sample to the application.
 Each data reader is bound to a particular topic.
 The application uses the data reader’s type-specific interfaces to receive the samples.
+
+Dynamic data readers (see section  16.7.4.3 ) can be used when code generated from IDL is not available or desired.
+Dynamic data readers are also type-safe, but type checking happens at runtime.
 
 Built-In Topics
 ===============
@@ -158,7 +162,7 @@ OpenDDS complies with the OMG DDS and the OMG DDSI-RTPS specifications.
 Details of that compliance follows here.
 OpenDDS also implements the OMG DDS Security specification.
 Details of compliance to that specification are in section :ref:`DDS Security Implementation Status`.
-Details of XTypes compliance are in sections :ref:`Unsupported Features` and :ref:`Differences from the specification`.
+Details of XTypes compliance are in sections :ref:`Unimplemented Features` and :ref:`Differences from the specification`.
 
 DDS Compliance
 --------------
@@ -250,6 +254,12 @@ OpenDDS supports the following building blocks, with notes/caveats listed below 
 
   * User-defined annotation types are also supported.
 
+* Extended Data Types
+
+  * The integer types int8, int16, int32, and int64 along with unsigned versions of them like uint32, are supported.
+
+  * The rest of the building block is not supported.
+
 
 Extensions to the DDS Specification
 ===================================
@@ -296,8 +306,6 @@ OpenDDS currently supports TCP/IP, UDP/IP, IP multicast, shared-memory, and RTPS
 Transports are typically specified via configuration files and are attached to various entities in the publisher and subscriber processes.
 Refer to Section 7.4.4 for details on configuring ETF components.
 
-.. image:: images/10000200000002E40000018C06CE052F10E50233.png
-
 **Figure 1-2 OpenDDS Extensible Transport Framework**
 
 The ETF enables application developers to implement their own customized transports.
@@ -331,8 +339,6 @@ The DCPSInfoRepo process needs to be running whenever OpenDDS is being used in a
 An RTPS configuration does not use the DCPSInfoRepo.
 The DCPSInfoRepo is not involved in data propagation, its role is limited in scope to OpenDDS applications discovering one another.
 
-.. image:: images/10000200000003950000022139AC77EE7287E934.png
-
 **Figure 1-3: Centralized Discovery with OpenDDS InfoRepo**
 
 Application developers are free to run multiple information repositories with each managing their own non-overlapping sets of DCPS domains.
@@ -351,8 +357,6 @@ This simple form of discovery is accomplished through simple configuration of DD
 As each participating process activates the DDSI-RTPS discovery mechanisms in OpenDDS for their data readers and writers, network endpoints are created with either default or configured network ports such that DDS participants can begin advertising the availability of their data readers and data writers.
 After a period of time, those seeking one another based on criteria will find each other and establish a connection based on the configured pluggable transport as discussed in Extensible Transport Framework (ETF).
 A more detailed description of this flexible configuration approach is discussed in Section :ref:`Transport Concepts` and Section :ref:`RTPS_UDP Transport Configuration Options`.
-
-.. image:: images/10000201000003FC0000025ECF72BC11D66015DF.png
 
 **Figure 1-4: Peer-to-peer Discovery with RTPS**
 
@@ -483,8 +487,8 @@ This profile adds:
 
 * setting a ``depth > 1`` for the ``HISTORY`` QoS policy.
 
-.. note:: Some users may wish to exclude support for the Exclusive OWNERSHIP policy and its associated OWNERSHIP_STRENGTH without impacting use of HISTORY.
-  In order to support this configuration, OpenDDS also has the MPC feature ownership_kind_exclusive (configure script option --no-ownership-kind-exclusive).
+*Some users may wish to exclude support for the Exclusive OWNERSHIP policy and its associated OWNERSHIP_STRENGTH without impacting use of HISTORY.*
+*In order to support this configuration, OpenDDS also has the MPC feature ownership_kind_exclusive (configure script option --no-ownership-kind-exclusive).*
 
 Object Model Profile
 --------------------

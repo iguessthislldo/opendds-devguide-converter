@@ -17,7 +17,7 @@ Building OpenDDS with security enabled requires the following dependencies:
 
 * Xerces-C++ v3.x
 
-* OpenSSL v1.0.2+ or v1.1 (1.1 is preferred)
+* OpenSSL v1.0.2+, v1.1, or v3.0.1+ (1.1 is preferred)
 
 * Google Test (only required if building OpenDDS tests)
 
@@ -201,7 +201,7 @@ These are shared by all participants within the secured DDS Domain:
 
 * Identity CA Certificate
 
-* Permissions CA Certificate (may be same as Identity CA)
+* Permissions CA Certificate (may be same as Identity CA Certificate)
 
 * Governance Document
 
@@ -342,7 +342,7 @@ OpenDDS GitHub - https://github.com/objectcomputing/OpenDDS
 The following table describes the various examples and where to find them in the source tree.
 
 +-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| Example                                                                           | Source Location                                            |
+| **Example**                                                                       | **Source Location**                                        |
 +===================================================================================+============================================================+
 | C++ application that configures security QoS policies via command-line parameters | tests/DCPS/Messenger/publisher.cpp                         |
 +-----------------------------------------------------------------------------------+------------------------------------------------------------+
@@ -370,7 +370,8 @@ In particular, configuration file format and ca command’s documentation and co
 
   https://github.com/objectcomputing/OpenDDS/blob/master/tests/security/certs/identity/identity_ca_openssl.cnf
 
-**Creating Self-Signed Certificate Authorities**
+Creating Self-Signed Certificate Authorities
+--------------------------------------------
 
 Generate a self-signed 2048-bit RSA CA:
 
@@ -388,7 +389,8 @@ Generate self-signed 256-bit Elliptic Curve CA:
     openssl req -config openssl.cnf -new -key ca_key.pem -out ca.csr
     openssl x509 -req -days 3650 -in ca.csr -signkey ca_key.pem -out ca_cert.pem
 
-**Creating Signed Certificates with an Existing CA**
+Creating Signed Certificates with an Existing CA
+------------------------------------------------
 
 Generate a signed 2048-bit RSA certificate:
 
@@ -406,7 +408,9 @@ Generate a signed 256-bit Elliptic Curve certificate:
     openssl req -new -key cert_2_key.pem -out cert_2.csr
     openssl ca -config openssl.cnf -days 3650 -in cert_2.csr -out cert_2.pem
 
-**Signing Documents with SMIME**
+
+Signing Documents with SMIME
+----------------------------
 
 Sign a document using existing CA & CA private key:
 
@@ -430,9 +434,34 @@ Even if this is not the case, the local participant will verify incoming authent
 Key Governance Elements
 =======================
 
-Domain List
+Domain Id Set
 
 A list of domain ids and/or domain id ranges of domains impacted by the current domain rule.
+The syntax is the same as the domain id set found in the governance document.
+
+The set is made up of <id> tags or <id_range> tags.
+An <id> tag simply contains the domain id that are part of the set.
+An <id_range> tag can be used to add multiple ids at once.
+It must contain a <min> tag to say where the range starts and may also have a <max> tag to say where the range ends.
+If the <max> tag is omitted then the set includes all valid domain ids starting at <min>.
+
+If the domain rule or permissions grant should to apply to all domains, use the following:
+
+::
+
+    <domains>
+      <id_range><min>0</min></id_range>
+    </domains>
+
+If there’s a need to be selective about what domains are chosen, here’s an annotated example:
+
+::
+
+    <domains>
+      <id>2</id>
+      <id_range><min>4</min><max>6</max></id_range> <!-- 4, 5, 6 -->
+      <id_range><min>10</min></id_range> <!-- 10 and onward -->
+    </domains>
 
 Governance Configuration Types
 
@@ -442,7 +471,7 @@ We summarize them here to simplify discussion of the configuration options where
 **Boolean**
 
 A boolean value indicating whether a configuration option is enabled or not.
-Recognized values are: ``{true or false}``
+Recognized values are: ``TRUE/true/1`` or ``FALSE/false/0.``
 
 **ProtectionKind**
 
@@ -456,9 +485,7 @@ Recognized values are: ``{NONE, SIGN, ENCRYPT,SIGN_WITH_ORIGIN_AUTHENTICATION``,
 The method used to protect domain data (message signatures or message encryption).
 Recognized values are: ``{NONE, SIGN, or ENCRYPT}``
 
-::
-
-    FnmatchExpression
+**FnmatchExpression**
 
 A wildcard-capable string used to match topic names.
 Recognized values will conform to POSIX ``fnmatch()`` function as specified in POSIX 1003.2-1992, Section B.6.
@@ -599,7 +626,32 @@ In order for permissions checks to successfully validate for both local and remo
 
 **Validity**
 
-Each grant’s validity section contains a start date and an end date to indicate the period of time during which the grant is valid.
+Each grant’s validity section contains a start date and time (``<not_before>``) and an end date and time (``<not_after>``) to indicate the period of time during which the grant is valid.
+
+The format of the date and time, which is like ISO-8601, must take one of the following forms:
+
+* * * * * ``YYYY-MM-DDThh:mm:ss``
+
+* * * * * Example: ``2020-10-26T22:45:30``
+
+* * * * * ``YYYY-MM-DDThh:mm:ssZ``
+
+* * * * * Example:``2020-10-26T22:45:30Z``
+
+* * * * * ``YYYY-MM-DDThh:mm:ss+hh:mm``
+
+* * * * * Example:``2020-10-26T23:45:30+01:00``
+
+* * * * * ``YYYY-MM-DDThh:mm:ss-hh:mm``
+
+* * * * * Example:``2020-10-26T16:45:30-06:00``
+
+All fields shown must include leading zeros to fill out their full width, as shown in the examples.
+YYYY-MM-DD is the date and hh:mm:ss is the time in 24-hour format.
+The date and time must be able to be represented by the time_t (C standard library) type of the system.
+The seconds field can also include a variable length fractional part, like 00.0 or 01.234, but it will be ignored because time_t represents a whole number of seconds.
+Examples #1 and #2 are both interpreted to be using UTC.
+To put the date and time in a local time, a time zone offset can to be added that says how far the local timezone is ahead of (using ‘+’ as in example #3) or behind (using ‘-’ as in example #4) UTC at that date and time.
 
 **Allow / Deny Rules**
 
@@ -613,10 +665,11 @@ Special Note: If a grant contains any allow rule that matches a given domain (ev
 
 The default rule is the rule applied if none of the grant’s allow rules or deny rules match the incoming operation to be verified.
 
-**Domain List**
+**Domain Id Set**
 
-Every allow or deny rule must contain a list of domain ids to which it applies.
-The syntax is the same as the domain list found in the governance document.
+Every allow or deny rule must contain a set of domain ids to which it applies.
+The syntax is the same as the domain id set found in the governance document.
+See section :ref:`Key Governance Elements` for details.
 
 **Publish / Subscribe / Relay Rules (PSR rules)**
 
@@ -638,7 +691,7 @@ The topic section must always be present for a PSR rule, so there there is no de
 **Partition List**
 
 The partitions list contains the set of partition names for which the parent PSR rule applies.
-Similarly to topics, partition names and expressions are matched using POSIX fnmatch() rules and syntax.
+Similarly to topics, partition names and expressions are matched using POSIX ``fnmatch()`` rules and syntax.
 For “allow” PSR rules, the DDS entity of the associated triggering operation must be using a strict subset of the partitions listed for the rule to apply.
 When no partition list is given for an “allow” PSR rule, the “empty string” partition is used as the default value.
 For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the partitions listed.
@@ -664,9 +717,6 @@ Permissions XML Example
         <grant name="ShapesPermission">
           <subject_name>emailAddress=cto@acme.com, CN=DDS Shapes Demo, OU=CTO Office, O=ACME Inc., L=Sunnyvale, ST=CA, C=US</subject_name>
           <validity>
-            <!-- Format is CCYY-MM-DDThh:mm:ss[Z|(+|-)hh:mm] The time zone may
-            be specified as Z (UTC) or (+|-)hh:mm. Time zones that aren't
-            specified are considered UTC. -->
             <not_before>2015-10-26T00:00:00</not_before>
             <not_after>2020-10-26T22:45:30</not_after>
           </validity>

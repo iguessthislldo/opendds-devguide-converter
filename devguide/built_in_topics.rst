@@ -179,21 +179,60 @@ OpenDDSParticipantLocation Topic
 ================================
 
 The Built-In Topic “OpenDDSParticipantLocation” is published by the DDSI-RTPS discovery implementation to give applications visibility into the details of how each remote participant is connected over the network.
-
-The IDL for OpenDDSParticipantLocation is in ``dds/DdsDcpsCore.idl`` in the ``OpenDDS::DCPS`` module.
 If the RtpsRelay (:ref:`The RtpsRelay`) and/or IETF ICE (:ref:`Interactive Connectivity Establishment (ICE) for RTPS`) are enabled, their usage is reflected in the OpenDDSParticipantLocation topic data.
+The topic type ParticipantLocationBuiltinTopicData is defined in ``dds/OpenddsDcpsExt.idl`` in the ``OpenDDS::DCPS`` module:
+
+* ``guid`` (key) – The GUID of the remote participant.
+  Also, a key into the DCPSParticipant topic.
+
+* ``location`` – A bit-mask indicating which fields are populated.
+
+* ``change_mask`` – A bit-mask indicating which fields changed.
+
+* ``local_addr`` – SPDP address of the remote participant for a local connection.
+
+* ``local_timestamp`` – Time that ``local_addr`` was set.
+
+* ``ice_addr`` – SPDP address of the remote participant for an ICE connection.
+
+* ``ice_timestamp`` – Time that ``ice_addr`` was set.
+
+* ``relay_addr`` – SPDP address of the remote participant using the RtpsRelay.
+
+* ``relay_timestamp`` – Time that ``relay_addr`` was set.
+
+* ``local6_addr, local6_timestamp, ice6_addr, ice6_timestamp, relay6_addr,`` and ``relay6_timestamp``– Are the IPV6 equivalents.
+
 
 OpenDDSConnectionRecord Topic
 =============================
 
-The Built-In Topic “OpenDDSConnectionRecord” is published by the DDSI-RTPS discovery implementation and RTPS_UDP transport implementation when support for IETF ICE is enabled.
-See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS` for details on OpenDDS’s support for IETF ICE.
-The IDL for OpenDDSConnectionRecord is in ``dds/DdsDcpsCore.idl`` in the ``OpenDDS::DCPS`` module.
+The Built-In Topic “OpenDDSConnectionRecord” is published by the DDSI-RTPS discovery implementation and RTPS_UDP transport implementation to give applications visibility into the details of a participant’s connection to an RtpsRelay instance.
+Security must be enabled in the build of OpenDDS (see section :ref:`Building OpenDDS with Security Enabled`) to use this topic.
+
+The topic type ConnectionRecord is defined in ``dds/OpenddsDcpsExt.idl`` in the ``OpenDDS::DCPS`` module:
+
+* ``guid`` (key) – The GUID of the remote participant.
+  Also, a key into the DCPSParticipant topic.
+
+* ``address`` (key) – The address of the remote participant.
+
+* ``protocol`` (key) – The method used to determine connectivity.
+  Currently, “RtpsRelay:STUN” is the only supported protocol.
+
+* ``latency`` – A measured round-trip latency for protocols that support it.
+
 
 OpenDDSInternalThread Topic
 ===========================
 
 The Built-In Topic “OpenDDSInternalThread” is published when OpenDDS is configured with DCPSThreadStatusInterval (see section :ref:`Common Configuration Options`).
-When enabled, the DataReader for this Built-In Topic will report the health (responsiveness) of threads created and managed by OpenDDS within the current process.
-The IDL for OpenDDSInternalThread is in ``dds/DdsDcpsCore.idl`` in the ``OpenDDS::DCPS`` module.
+When enabled, the DataReader for this Built-In Topic will report the status of threads created and managed by OpenDDS within the current process.
+The timestamp associated with samples can be used to determine the health (responsiveness) of the thread.
+
+The topic type InternalThreadBuiltinTopicData is defined in ``dds/OpenddsDcpsExt.idl`` in the ``OpenDDS::DCPS`` module:
+
+* ``thread_id`` (key) – A string identifier for the thread.
+
+* ``utilization`` – Estimated utilization of this thread (0.0-1.0).
 

@@ -15,6 +15,9 @@ Additional DDS and DCPS features are discussed in later chapters.
 Defining Data Types with IDL
 ============================
 
+In this example, data types for topics will be defined using the OMG Interface Definition Language (IDL).
+For details on how to build OpenDDS applications that don't use IDL for topic data types, see section  16.7.4 .
+
 Identifying Topic Types
 -----------------------
 
@@ -220,7 +223,7 @@ These options are described in Chapter 8.
 Typically, you do not directly invoke the TAO or OpenDDS IDL compilers as above, but let your build system do it for you.
 Two different build systems are supported for projects that use OpenDDS:
 
-* MPC, the “Make Project Creator” which is used to build OpenDDS itself and the majority of its included tests and example
+* MPC, the “Make Project Creator” which is used to build OpenDDS itself and the majority of its included tests and examples
 
 * CMake, a build system that’s commonly used across the industry (cmake.org)
 
@@ -422,7 +425,7 @@ The basic steps involved in waiting for the subscriber are:
 
 * Wait on the wait set (can be bounded by a specified period of time)
 
-* Loop back around to step :ref:`Content-Subscription Profile`
+* Loop back around to step :ref:`5) <_bookmark__RefNumPara__2987_508699783>`
 
 Here is the corresponding code:
 
@@ -713,10 +716,10 @@ The domain participant’s ``delete_contained_entities()`` operation deletes all
 Once this is done, we can use the domain participant factory to delete our domain participant.
 
 Since the publication and subscription of data within DDS is decoupled, data is not guaranteed to be delivered if a publication is disassociated (shutdown) prior to all data that has been sent having been received by the subscriptions.
-If the application requires that all published data be received, the ``wait_for_acknowledgements()`` operation is available to allow the publication to wait until all written data has been received.
-Data readers must have a ``RELIABLE`` setting for the ``RELIABILITY`` QoS (which is the default) in order for ``wait_for_acknowledgements()`` to work.
+If the application requires that all published data be received, the ``wait_for_acknowledgments()`` operation is available to allow the publication to wait until all written data has been received.
+Data readers must have a ``RELIABLE`` setting for the ``RELIABILITY`` QoS (which is the default) in order for ``wait_for_acknowledgments()`` to work.
 This operation is called on individual ``DataWriters`` and includes a timeout value to bound the time to wait.
-The following code illustrates the use of ``wait_for_acknowledgements()`` to block for up to 15 seconds to wait for subscriptions to acknowledge receipt of all written data:
+The following code illustrates the use of ``wait_for_acknowledgments()`` to block for up to 15 seconds to wait for subscriptions to acknowledge receipt of all written data:
 
 .. code-block:: cpp
 
@@ -900,11 +903,11 @@ The DDS specification provides a number of operations for reading and writing da
 In the examples above we used the ``take_next_sample()`` operation, to read the next sample and “take” ownership of it from the reader.
 The Message Data Reader also has the following take operations.
 
-* ``take()—`` Take a sequence of up to max_samples values from the reader
+* ``take()``—Take a sequence of up to max_samples values from the reader
 
-* ``take_instance()—`` Take a sequence of values for a specified instance
+* ``take_instance()``—Take a sequence of values for a specified instance
 
-* ``take_next_instance()—`` Take a sequence of samples belonging to the same instance, without specifying the instance.
+* ``take_next_instance()``—Take a sequence of samples belonging to the same instance, without specifying the instance.
 
 There are also “read” operations corresponding to each of these “take” operations that obtain the same values, but leave the samples in the reader and simply mark them as read in the ``SampleInfo``.
 

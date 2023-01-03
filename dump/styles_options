@@ -2,6 +2,9 @@
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'auto-text-indent')
     - false
     - true
+  - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'contextual-spacing')
+    - false
+    - true
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'justify-single-word')
     - false
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'line-height-at-least')
@@ -28,6 +31,7 @@
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border')
     - none
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-bottom')
+    - 0.06pt solid #000000
     - 0.51pt solid #000000
     - 0.99pt solid #000000
     - 2.49pt solid #000000
@@ -37,6 +41,7 @@
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-right')
     - none
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'border-top')
+    - 0.06pt solid #000000
     - 0.51pt solid #000000
     - 2.01pt solid #c0c0c0
     - 2.49pt solid #000000
@@ -51,7 +56,6 @@
     - auto
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'line-height')
     - 100%
-    - 115%
     - 138%
     - 150%
     - 200%
@@ -65,7 +69,6 @@
     - 0.2in
     - 0in
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'margin-left')
-    - -0.0063in
     - 0.0201in
     - 0.0346in
     - 0.052in
@@ -82,7 +85,6 @@
     - 0in
     - 1.0008in
     - 1.0071in
-    - 1.0161in
     - 1.0417in
     - 1.0618in
     - 1.2327in
@@ -134,18 +136,13 @@
     - 0in
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'widows')
     - 2
-  - ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'contextual-spacing')
-    - false
-    - true
 ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'section-properties')
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'editable')
     - false
 ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'text-properties')
   - ('http://openoffice.org/2009/office', 'paragraph-rsid')
     - 001d0c3f
-    - 001f91d1
     - 00217754
-    - 0022be72
     - 0022c985
     - 0023d227
     - 0026398c
@@ -166,12 +163,9 @@
     - 00438748
     - 0044e175
     - 0045aff4
+    - 004b7b44
     - 005299fe
     - 0053174a
-    - 0054d15f
-    - 0056b1a3
-    - 005af9f5
-    - 005b0030
     - 005e53fa
     - 005e6941
     - 005fe021
@@ -180,8 +174,6 @@
     - 0064ea13
     - 006b0edc
     - 00736012
-    - 00745348
-    - 00790e6b
     - 0079fc37
     - 007b98d9
     - 007babb4
@@ -193,6 +185,77 @@
     - 0080f153
     - 008393cd
     - 00894587
+    - 00965223
+    - 0096ac7f
+    - 009756fa
+    - 00975792
+    - 009a54a2
+    - 009c0a07
+    - 009d5a02
+    - 009fe121
+    - 00aa454f
+    - 00ad9892
+    - 00adfb04
+    - 00afdfc3
+    - 00b155a0
+    - 00b9d3be
+    - 00bb722b
+    - 00bdcb92
+    - 00be81cc
+    - 00c4dae9
+    - 00c66643
+    - 00c7e26b
+    - 00cc0ac1
+    - 00d2d7e2
+    - 00d3174d
+    - 00d4a98f
+    - 00d609ca
+    - 00dd278f
+    - 00ded8d1
+    - 00e5a430
+    - 00ec2cc4
+    - 00f0eae3
+    - 00f27f48
+    - 00f2e677
+    - 00f4810b
+    - 00f65cc7
+    - 00f69af2
+    - 00f74519
+    - 00fdb120
+    - 00fee889
+    - 010031fe
+    - 01018656
+    - 0102f06b
+    - 0103b66f
+    - 0104b4ee
+    - 010eb983
+    - 011088bd
+    - 0110fe2a
+    - 0111cb9c
+    - 01145319
+    - 01146b45
+    - 0114c50a
+    - 011e9538
+    - 0123cfa4
+    - 0123f052
+    - 01263431
+    - 012db186
+    - 0130d0de
+    - 01360d60
+    - 01388bac
+    - 0139151c
+    - 013a8745
+    - 013e8ad3
+    - 014187cb
+    - 0141ebe1
+    - 014820ae
+    - 014a7a6e
+    - 014c3698
+    - 014f312d
+    - 015025bc
+    - 0150be5d
+    - 0153c78e
+    - 0154eb4a
   - ('http://openoffice.org/2009/office', 'rsid')
     - 0019c347
     - 001b623f
@@ -221,14 +284,13 @@
     - 0037e29d
     - 003930be
     - 004055b0
-    - 0041eb36
     - 00438748
     - 0044e175
     - 0045aff4
+    - 004b7b44
     - 004d17b5
     - 005299fe
     - 0053174a
-    - 0054d15f
     - 0056b1a3
     - 0059eb32
     - 005af9f5
@@ -243,11 +305,8 @@
     - 0064ea13
     - 006b0edc
     - 006b7e83
-    - 006cf6e8
-    - 00736012
     - 00745348
     - 00777a50
-    - 00790e6b
     - 0079fc37
     - 007b98d9
     - 007babb4
@@ -260,14 +319,132 @@
     - 008393cd
     - 00857f37
     - 008762f3
-    - 00887c94
     - 00894587
-    - 008b1a65
+    - 00907228
+    - 00939f61
+    - 00956109
+    - 00965223
+    - 0096ac7f
+    - 009756fa
+    - 00975792
+    - 00992869
+    - 009a54a2
+    - 009c0a07
+    - 009d5a02
+    - 009e3431
+    - 009fe121
+    - 00a09562
+    - 00adfb04
+    - 00afdfc3
+    - 00b155a0
+    - 00b1f365
+    - 00b9d3be
+    - 00bb722b
+    - 00bc4ab2
+    - 00bdcb92
+    - 00c05c70
+    - 00c4bddb
+    - 00c4c684
+    - 00c4dae9
+    - 00c5909c
+    - 00c6036a
+    - 00c637e7
+    - 00c66643
+    - 00c76bf7
+    - 00c7e26b
+    - 00c88127
+    - 00c8abb5
+    - 00ca5ed5
+    - 00cb05ec
+    - 00cb14fe
+    - 00cfc05c
+    - 00d0ec70
+    - 00d2d7e2
+    - 00d3174d
+    - 00d4a98f
+    - 00d609ca
+    - 00dd278f
+    - 00ded8d1
+    - 00df95fc
+    - 00df9eaf
+    - 00e5a430
+    - 00e6e821
+    - 00ec2cc4
+    - 00ec5668
+    - 00f0eae3
+    - 00f27f48
+    - 00f2e677
+    - 00f4810b
+    - 00f65cc7
+    - 00f69af2
+    - 00f74519
+    - 00f890ed
+    - 00f8e74d
+    - 00fdb120
+    - 00fee889
+    - 010031fe
+    - 01018656
+    - 0102f06b
+    - 0103b66f
+    - 0104b4ee
+    - 0106ce31
+    - 010d360d
+    - 010eb983
+    - 010f7628
+    - 010faa9c
+    - 011088bd
+    - 0110fe2a
+    - 0111cb9c
+    - 01127e1e
+    - 0113a285
+    - 01145319
+    - 01146b45
+    - 0114c50a
+    - 011572ca
+    - 01181d78
+    - 011ad474
+    - 011e9538
+    - 01203588
+    - 0121beec
+    - 0123cfa4
+    - 0123f052
+    - 01258ed4
+    - 01263431
+    - 012db186
+    - 0130d0de
+    - 0132384b
+    - 01380981
+    - 01388bac
+    - 0139151c
+    - 013e8ad3
+    - 014020cf
+    - 014187cb
+    - 0141ebe1
+    - 01433782
+    - 0144edd2
+    - 014820ae
+    - 014a7a6e
+    - 014c3698
+    - 014f312d
+    - 015025bc
+    - 0150be5d
+    - 01521002
+    - 0153c78e
+    - 0154eb4a
+    - 015bf8cc
+    - 015d0252
+    - 015dcbb1
+    - 015dfb0b
+    - 015fef51
+    - 0164af0b
+    - 016b145b
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'country-complex')
     - SA
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-asian')
+    - 'DejaVu Sans Mono'
     - 'Times New Roman'
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-complex')
+    - 'DejaVu Sans Mono'
     - 'Times New Roman'
     - Arial
     - Tahoma
@@ -276,8 +453,10 @@
     - roman
     - swiss
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-generic-asian')
+    - modern
     - roman
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-generic-complex')
+    - modern
     - roman
     - swiss
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name')
@@ -298,18 +477,22 @@
     - DejaVu Serif2
     - Roboto Mono
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name-asian')
+    - DejaVu Sans Mono
     - Times New Roman
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name-complex')
-    - Arial2
+    - Arial1
     - Courier New4
-    - Tahoma1
+    - DejaVu Sans Mono
+    - Tahoma
     - Times New Roman
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch')
     - fixed
     - variable
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch-asian')
+    - fixed
     - variable
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch-complex')
+    - fixed
     - variable
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-size-asian')
     - 10.5pt
@@ -321,6 +504,7 @@
     - 7pt
     - 85%
     - 8pt
+    - 9.5pt
     - 9pt
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-size-complex')
     - 10pt
@@ -393,6 +577,7 @@
     - 24pt
     - 7pt
     - 8pt
+    - 9.5pt
     - 9pt
   - ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-style')
     - italic
@@ -411,6 +596,9 @@
     - none
   - ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'char-shading-value')
     - 0
+  - ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'opacity')
+    - 0%
+    - 100%
 ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'graphic-properties')
   - ('urn:oasis:names:tc:opendocument:xmlns:drawing:1.0', 'fill')
     - none

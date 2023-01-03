@@ -362,6 +362,10 @@ Here is an example showing how to change the listener using ``set_listener()``:
 When a plain communication status changes, OpenDDS invokes the most specific relevant listener operation.
 This means, for example, that a data reader’s listener would take precedence over the subscriber’s listener for statuses related to the data reader.
 
+A common “gotcha” when using ``set_listener`` is that the listener is not invoked immediately.
+Instead, the listener will be invoked for the next status change.
+Consequently, usages of ``set_listener`` should 1) invoke the listener manually after calling ``set_listener`` and 2) ensure that the listener methods are thread safe.
+
 The following sections define the different listener interfaces.
 For more details on the individual statuses, see :ref:`Communication Status Types`.
 
