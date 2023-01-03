@@ -1,4 +1,5 @@
 import sys
+import os
 from pathlib import Path
 import io
 import re
@@ -7,7 +8,7 @@ import odf
 from odf import text, element
 from odf.opendocument import load
 
-doc = load("../trunk/OpenDDSDevelopersGuide.odt")
+doc = load(os.environ['OPENDDS_DEVGUIDE_ODT'])
 
 # TODO:
 # - Figure Links (bookmarks?)
@@ -28,6 +29,10 @@ doc = load("../trunk/OpenDDSDevelopersGuide.odt")
 # - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
 
 # One Sentence per Line =======================================================
+
+import nltk
+
+nltk.download('punkt')
 
 import nltk.data
 
@@ -527,6 +532,7 @@ class Info:
       self.push(section_level=0, section_number=0, section_id="")
     else:
       self.sections = sections
+    self.bookmarks = {}
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -822,17 +828,32 @@ def convert_node(info, node, out):
     elif kind == 'list-item':
       convert_child_nodes(info, node, out)
 
+    elif kind in ('bookmark-start'):
+      name = node.attributes[('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'name')]
+      if not name.startswith('__RefHeading'): # Ignore Heading
+        if name in info.bookmarks:
+          dump_node_exit(info, node, 'bookmark already in bookmarks: ' + kind)
+        info.bookmarks[name] = '_bookmark' + name
+
     elif kind in ('bookmark-ref', 'sequence-ref', 'reference-ref'):
       reference_format_attr = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'reference-format')
       reference_formats = ("category-and-value", "chapter", "number", "number-all-superior", "page", "text")
       reference_format = node.attributes.get(reference_format_attr, None)
       value = get_text(info, node)
-      if kind in ('bookmark-ref', 'reference-ref') and reference_format in ('chapter', 'number'):
-        section_info = info.sections[value]
-        out.write(':ref:`{}`'.format(section_info['name']))
-      else:
-        # print(kind, reference_format, value)
-        convert_child_nodes(info, node, out)
+      if not value.isspace():
+        value = value.strip()
+      if value:
+        if kind in ('bookmark-ref', 'reference-ref') and reference_format in ('chapter', 'number'):
+          odf_ref_name = node.attributes[('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'ref-name')]
+          # print(kind, reference_format, value, odf_ref_name)
+          if reference_format == 'chapter' or odf_ref_name.startswith('__RefHeading'):
+            section_info = info.sections[value.strip()]
+            out.write(':ref:`{}`'.format(section_info['name']))
+          else:
+            out.write(':ref:`{} <{}>`'.format(value, info.bookmarks[odf_ref_name]))
+        else:
+          # print(kind, reference_format, value)
+          convert_child_nodes(info, node, out)
 
     else:
       passthrough = {
@@ -841,7 +862,6 @@ def convert_node(info, node, out):
         'line-break', # TODO, see above
 
         # TODO: Handle?
-        'bookmark-start',
         'bookmark-end',
         'frame',
         'sequence',

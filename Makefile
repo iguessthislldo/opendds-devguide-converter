@@ -1,4 +1,4 @@
 all: convert.py
 	rm -fr dump devguide build
-	python convert.py
+	python3 convert.py
 	sphinx-build -b html . ./build
