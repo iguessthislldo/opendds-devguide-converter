@@ -10,13 +10,16 @@ from odf.opendocument import load
 
 doc = load(os.environ['OPENDDS_DEVGUIDE_ODT'])
 
-# TODO:
+# Things to fix in this script:
 # - Figure Links (bookmarks?)
 # - Footnotes
 # - List in "Building OpenDDS with Security on Windows"
-
-# Tasks
 # - Replace Section Numbers with Names
+# - Include the preface in the conversion
+# - Images are missing?
+# - More automatic code detection
+
+# Tasks to do manually
 # - Merge Installation Section with INSTALL.md
 # - Proper use of inline monospace text like:
 #   - Fix places where how the the OpenOffice docment cause the conversion
@@ -27,6 +30,9 @@ doc = load(os.environ['OPENDDS_DEVGUIDE_ODT'])
 #     Proper ex: "Conditions"
 #   - Quotes around monospace text. See "Persistence Profile" section
 # - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
+# - Reword references to the words "chapter" and "section" because that doens't
+# make as much sense in Sphinx, specially with the current section name link
+# insertion.
 
 # One Sentence per Line =======================================================
 

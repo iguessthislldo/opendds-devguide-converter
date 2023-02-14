@@ -4,4 +4,4 @@ Steps to setup and run:
 * Make a virtual environment and activate it
 * If not done already:
   * Run ``pip install -r requirements.txt``
-* Run ``make``
+* Run ``bash convert.sh``
