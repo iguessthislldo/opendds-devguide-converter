@@ -40,6 +40,8 @@ opendds_root = Path(os.environ.get('DDS_ROOT', None))
 # - RTPS Relay Options need to be cleaned up because the OpenOffice XML DOM
 #   was mangled.
 # - XTypes chapter IDL is a little messed up in places.
+# - PDF Output fails
+# - A few non-OMG URLs are broken or redirected (./docs/build.py -o strict)
 
 
 # One Sentence per Line =======================================================
