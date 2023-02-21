@@ -1,44 +1,63 @@
+.. _dds_security--dds-security:
+
 ############
 DDS Security
 ############
+
+..
+    Sect<14>
+
+.. _dds_security--building-opendds-with-security-enabled:
 
 **************************************
 Building OpenDDS with Security Enabled
 **************************************
 
+..
+    Sect<14.1>
+
 Prior to utilizing DDS Security, OpenDDS must be built to include security elements into the resulting libraries.
 The following instructions show how this is to be completed on various platforms.
+
+.. _dds_security--prerequisites:
 
 Prerequisites
 =============
 
+..
+    Sect<14.1.1>
+
 OpenDDS includes an implementation of the OMG DDS Security 1.1 specification.
 Building OpenDDS with security enabled requires the following dependencies:
 
-* Xerces-C++ v3.x
+#. Xerces-C++ v3.x
 
-* OpenSSL v1.0.2+, v1.1, or v3.0.1+ (1.1 is preferred)
+#. OpenSSL v1.0.2+, v1.1, or v3.0.1+ (1.1 is preferred)
 
-* Google Test (only required if building OpenDDS tests)
+#. Google Test (only required if building OpenDDS tests)
 
-  * If you are using OpenDDS from a git repository, Google Test is provided as a git submodule.
-    Make sure to enable submodules with the ``--recursive`` option to git clone.
+   * If you are using OpenDDS from a git repository, Google Test is provided as a git submodule.
+     Make sure to enable submodules with the ``--recursive`` option to git clone.
 
-* CMake (required if building OpenDDS tests and building Google Test and other dependencies from source).
+#. CMake (required if building OpenDDS tests and building Google Test and other dependencies from source).
 
 **General Notes on Using OpenDDS Configure Script with DDS Security**
 
-* DDS Security is disabled by default, enable it with ``--security``
+#. DDS Security is disabled by default, enable it with ``--security``
 
-* OpenDDS tests are disabled by default, enable them with ``--tests``
+#. OpenDDS tests are disabled by default, enable them with ``--tests``
 
-  * Disabling tests skips the Google Test and CMake dependencies
+   * Disabling tests skips the Google Test and CMake dependencies
 
-  * If tests are enabled, the configure script can run CMake and build Google Test
+   * If tests are enabled, the configure script can run CMake and build Google Test
 
+.. _dds_security--building-opendds-with-security-on-windows:
 
 Building OpenDDS with Security on Windows
 =========================================
+
+..
+    Sect<14.1.2>
 
 **Using Microsoft vcpkg**
 
@@ -47,16 +66,16 @@ Although it is cross-platform, this guide only discusses vcpkg on Windows.
 
 As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and later versions; if using an earlier version of Visual Studio, skip down to the manual setup instructions later in this section.
 
-* * * * If OpenDDS tests will be built, install CMake or put the one that comes with Visual Studio on the PATH (see Common7\IDE\CommonExtensions\Microsoft\CMake).
+#. * * * If OpenDDS tests will be built, install CMake or put the one that comes with Visual Studio on the PATH (see Common7\IDE\CommonExtensions\Microsoft\CMake).
 
-      * If you need to obtain and install vcpkg, navigate to `https://github.com/Microsoft/vcpkg <#https://github.com/Microsoft/vcpkg>`_ and follow the instructions to obtain vcpkg by cloning the repository and bootstrapping it.
+       * If you need to obtain and install vcpkg, navigate to `https://github.com/Microsoft/vcpkg <#https://github.com/Microsoft/vcpkg>`__ and follow the instructions to obtain vcpkg by cloning the repository and bootstrapping it.
 
-      * Fetch and build the dependencies; by default, vcpkg targets x86 so be sure to specify the x64 target if required by specifying it when invoking vcpkg install, as shown here:``vcpkg install openssl:x64-windows xerces-c:x64-windows``
+       * Fetch and build the dependencies; by default, vcpkg targets x86 so be sure to specify the x64 target if required by specifying it when invoking vcpkg install, as shown here:``vcpkg install openssl:x64-windows xerces-c:x64-windows``
 
-      * Configure OpenDDS by passing the openssl and xerces3 switches.
-        As a convenience, it can be helpful to set an environment variable to store the path since it is the same location for both dependencies.``set VCPKG_INSTALL=c:\path\to\vcpkg\installed\x64-windowsconfigure --security --openssl=%VCPKG_INSTALL% --xerces3=%VCPKG_INSTALL%``
+       * Configure OpenDDS by passing the openssl and xerces3 switches.
+         As a convenience, it can be helpful to set an environment variable to store the path since it is the same location for both dependencies.``set VCPKG_INSTALL=c:\path\to\vcpkg\installed\x64-windowsconfigure --security --openssl=%VCPKG_INSTALL% --xerces3=%VCPKG_INSTALL%``
 
-      * Compile with msbuild or by launching Visual Studio from this command prompt so it inherits the correct environment variables and building from there.
+       * Compile with msbuild or by launching Visual Studio from this command prompt so it inherits the correct environment variables and building from there.
 
 ``msbuild /m DDS_TAOv2_all.sln``
 
@@ -67,49 +86,51 @@ As of this writing, vcpkg is only supported on Visual Studio 2015 Update 3 and l
 
 Note: for all of the build steps listed here, check that each package targets the same architecture (either 32-bit or 64-bit) by compiling all dependencies within the same type of Developer Command Prompt.
 
-**Compiling OpenSSL**(see: https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows)
+**Compiling OpenSSL**
 
-* Install Perl and add it to the Path environment variable.
-  For this guide, ActiveState is used.
+Official OpenSSL instructions can be found `here <https://wiki.openssl.org/index.php/Compilation_and_Installation#Windows>`__.
 
-* Install Netwide Assembler (NASM).
-  Click through the latest stable release and there is a win32 and win64 directory containing executable installers.
-  The installer does not update the Path environment variable, so a manual entry ``(%LOCALAPPDATA%\bin\NASM)`` is necessary.
+#. Install Perl and add it to the Path environment variable.
+   For this guide, ActiveState is used.
 
-* Download the required version of OpenSSL by cloning the repository.
+#. Install Netwide Assembler (NASM).
+   Click through the latest stable release and there is a win32 and win64 directory containing executable installers.
+   The installer does not update the Path environment variable, so a manual entry ``(%LOCALAPPDATA%\bin\NASM)`` is necessary.
 
-* Open a Developer Command Prompt (32-bit or 64-bit depending on the desired target architecture) and change into the freshly cloned openssl directory.
+#. Download the required version of OpenSSL by cloning the repository.
 
-* Run the configure script and specify a required architecture (``perl Configure VC-WIN32 or perl Configure VC-WIN64A``).
+#. Open a Developer Command Prompt (32-bit or 64-bit depending on the desired target architecture) and change into the freshly cloned openssl directory.
 
-* Run ``nmake``.
+#. Run the configure script and specify a required architecture (``perl Configure VC-WIN32 or perl Configure VC-WIN64A``).
 
-* Run ``nmake install``.
+#. Run ``nmake``.
+
+#. Run ``nmake install``.
 
 Note: if the default OpenSSL location is desired, which will be searched by OpenDDS, open the Developer Command Prompt as an administrator before running the install.
 It will write to “C:\Program Files” or “C:\Program Files (x86)” depending on the architecture.
 
 **Compiling Xerces-C++ 3**
 
-(see: https://xerces.apache.org/xerces-c/build-3.html)
+Official Xerces instructions can be found `here <https://xerces.apache.org/xerces-c/build-3.html>`__.
 
-* Download/extract the Xerces source files.
+#. Download/extract the Xerces source files.
 
-* Create a cmake build directory and change into it (from within the Xerces source tree).
+#. Create a cmake build directory and change into it (from within the Xerces source tree).
 
 ::
 
     mkdir build
     cd build
 
-* Run cmake with the appropriate generator.
-  In this case Visual Studio 2017 with 64-bit is being used so:
+#. Run cmake with the appropriate generator.
+   In this case Visual Studio 2017 with 64-bit is being used so:
 
 ::
 
     cmake -G "Visual Studio 15 2017 Win64" ..
 
-* Run cmake again with the build switch and install target (this should be done in an administrator command-prompt to install in the default location as mentioned above).
+#. Run cmake again with the build switch and install target (this should be done in an administrator command-prompt to install in the default location as mentioned above).
 
 ::
 
@@ -117,43 +138,63 @@ It will write to “C:\Program Files” or “C:\Program Files (x86)” dependin
 
 **Configuring and Building OpenDDS**:
 
-* Change into the OpenDDS root folder and run configure with security enabled.
+#. Change into the OpenDDS root folder and run configure with security enabled.
 
-  * If the default location was used for OpenSSL and Xerces, configure should automatically find the dependencies:
+   * If the default location was used for OpenSSL and Xerces, configure should automatically find the dependencies:
 
 ::
 
     configure --security
 
-* * If a different location was used (assuming environment variables ``NEW_SSL_ROOT`` and ``NEW_XERCES_ROOT`` point to their respective library directories):
+#. * If a different location was used (assuming environment variables ``NEW_SSL_ROOT`` and ``NEW_XERCES_ROOT`` point to their respective library directories):
 
 ``configure --security --openssl=%NEW_SSL_ROOT%   --xerces3=%NEW_XERCES_ROOT%``
 
-* Compile with msbuild (or by opening the solution file in Visual Studio and building from there).
+#. Compile with msbuild (or by opening the solution file in Visual Studio and building from there).
 
 ``msbuild /m DDS_TAOv2_all.sln``
 
+.. _dds_security--building-opendds-with-security-on-linux:
+
 Building OpenDDS with Security on Linux
 =======================================
+
+..
+    Sect<14.1.3>
 
 Xerces-C++ and OpenSSL may be installed using the system package manager, or built from source.
 If using the system package manager (that is, headers can be found under /usr/include), invoke the configure script with the --security option.
 If Xerces-C++ and/or OpenSSL are built from source or installed in a custom location, also provide the ``--xerces3=/foo`` and ``--openssl=/bar`` command line options.
 
+.. _dds_security--building-opendds-with-security-on-macos:
+
 Building OpenDDS with Security on macOS
 =======================================
+
+..
+    Sect<14.1.4>
 
 Xerces-C++ and OpenSSL may be installed using homebrew or another developer-focused package manager, or built from source.
 The instructions above for Linux also apply to macOS but the package manager will not install directly in ``/usr`` so make sure to specify the library locations to the configure script.
 
+.. _dds_security--building-opendds-with-security-for-android:
+
 Building OpenDDS with Security for Android
 ==========================================
 
+..
+    Sect<14.1.5>
+
 See the ``docs/android.md`` file included in the OpenDDS source code.
+
+.. _dds_security--architecture-of-the-dds-security-specification:
 
 **********************************************
 Architecture of the DDS Security Specification
 **********************************************
+
+..
+    Sect<14.2>
 
 The DDS Security specification defines plugin APIs for Authentication, Access Control, and Cryptographic operations.
 These APIs provide a level of abstraction for DDS implementations as well as allowing for future extensibility and version control.
@@ -161,9 +202,14 @@ Additionally, the specification defines Built-In implementations of each of thes
 OpenDDS implements these Built-In plugins, and this document assumes that the Built-In plugins are being used.
 Developers using OpenDDS may also implement their own custom plugins, but those efforts are well beyond the scope of this document.
 
+.. _dds_security--terms-and-background-info:
+
 *************************
 Terms and Background Info
 *************************
+
+..
+    Sect<14.3>
 
 DDS Security uses current industry standards and best-practices in security.
 As such, this document makes use of several security concepts which may warrant additional research by OpenDDS users.
@@ -188,14 +234,26 @@ As such, this document makes use of several security concepts which may warrant 
 | Signed Documents                                 | * https://en.wikipedia.org/wiki/Digital_signature                                         |
 +--------------------------------------------------+-------------------------------------------------------------------------------------------+
 
-**Table 14-1**
+.. _dds_security--reftable36:
+
+**Table**
+
+.. _dds_security--required-dds-security-artifacts:
 
 *******************************
 Required DDS Security Artifacts
 *******************************
 
+..
+    Sect<14.4>
+
+.. _dds_security--per-domain-artifacts:
+
 Per-Domain Artifacts
 ====================
+
+..
+    Sect<14.4.1>
 
 These are shared by all participants within the secured DDS Domain:
 
@@ -207,8 +265,13 @@ These are shared by all participants within the secured DDS Domain:
 
 - Signed by Permissions CA using its private key
 
+.. _dds_security--per-participant-artifacts:
+
 Per-Participant Artifacts
 =========================
+
+..
+    Sect<14.4.2>
 
 These are specific to the individual Domain Participants within the DDS Domain:
 
@@ -222,23 +285,32 @@ These are specific to the individual Domain Participants within the DDS Domain:
 
 - Signed by Permissions CA using its private key
 
+.. _dds_security--required-opendds-configuration:
+
 ******************************
 Required OpenDDS Configuration
 ******************************
 
+..
+    Sect<14.5>
+
 The following configuration steps are required to enable OpenDDS Security features:
 
-* Select RTPS Discovery and the RTPS-UDP Transport; because DDS Security only works with these configurations, both must be specified for any security-enabled participant.
+#. Select RTPS Discovery and the RTPS-UDP Transport; because DDS Security only works with these configurations, both must be specified for any security-enabled participant.
 
-* Enable OpenDDS security-features, which can be done two ways:
+#. Enable OpenDDS security-features, which can be done two ways:
 
-  * Via API: ``“TheServiceParticipant->set_security(true);”`` or
+   * Via API: ``“TheServiceParticipant->set_security(true);”`` or
 
-  * Via config file: ``“DCPSSecurity=1”`` in the ``[common]`` section.
+   * Via config file: ``“DCPSSecurity=1”`` in the ``[common]`` section.
 
+.. _dds_security--dds-security-configuration-via-propertyqospolicy:
 
 DDS Security Configuration via PropertyQosPolicy
 ================================================
+
+..
+    Sect<14.5.1>
 
 When the application creates a DomainParticipant object, the DomainParticipantQos passed to the ``create_participant()`` method now contains a PropertyQosPolicy object which has a sequence of name-value pairs.
 The following properties must be included to enable security.
@@ -262,10 +334,17 @@ Except where noted, these values take the form of a URI starting with either the
 | ``dds.sec.access.permissions``        | Signed XML (.p7s)                | Signed by ``permissions_ca``             |
 +---------------------------------------+----------------------------------+------------------------------------------+
 
-**Table 14-2**
+.. _dds_security--reftable37:
+
+**Table**
+
+.. _dds_security--propertyqospolicy-example-code:
 
 PropertyQosPolicy Example Code
 ==============================
+
+..
+    Sect<14.5.2>
 
 Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPolicy in order to configure DDS Security.
 
@@ -318,60 +397,81 @@ Below is an example of code that sets the DDS Participant QoS’s PropertyQoSPol
                                             part_qos,
                                             0, // No listener
                                             OpenDDS::DCPS::DEFAULT_STATUS_MASK);
-    …
 
+.. _dds_security--identity-certificates-and-certificate-authorities:
 
 Identity Certificates and Certificate Authorities
 =================================================
 
+..
+    Sect<14.5.3>
+
 All certificate inputs to OpenDDS, including self-signed CA certificates, are expected to be an X.509 v3 certificate in PEM format for either a 2048-bit RSA key or a 256-bit Elliptic Curve key (using the prime256v1 curve).
+
+.. _dds_security--identity-permissions-and-subject-names:
 
 Identity, Permissions, and Subject Names
 ========================================
 
+..
+    Sect<14.5.4>
+
 The “subject_name” element for a signed permissions XML document must match the “Subject:” field provided by the accompanying Identity Certificate which is transmitted during participant discovery, authentication, and authorization.
 This ensures that the permissions granted by the Permissions CA do, in fact, correspond to the identity provided.
+
+.. _dds_security--examples-in-the-opendds-source-code-repository:
 
 Examples in the OpenDDS Source Code Repository
 ==============================================
 
-Examples to demonstrate how the DDS Security features are used with OpenDDS can be found in the OpenDDS GitHub repository found here:
+..
+    Sect<14.5.5>
 
-OpenDDS GitHub - https://github.com/objectcomputing/OpenDDS
+Examples to demonstrate how the DDS Security features are used with OpenDDS can be found in the OpenDDS GitHub repository.
 
 The following table describes the various examples and where to find them in the source tree.
 
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| **Example**                                                                       | **Source Location**                                        |
-+===================================================================================+============================================================+
-| C++ application that configures security QoS policies via command-line parameters | tests/DCPS/Messenger/publisher.cpp                         |
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| Identity CA Certificate (along with private key)                                  | tests/security/certs/identity/identity_ca_cert.pem         |
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| Permissions CA Certificate (along with private key)                               | tests/security/certs/permissions/permissions_ca_cert.pem   |
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| Participant Identity Certificate (along with private key)                         | tests/security/certs/identity/test_participant_01_cert.pem |
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| Governance XML Document (alongside signed document)                               | tests/DCPS/Messenger/governance.xml                        |
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
-| Permissions XML Document (alongside signed document)                              | tests/DCPS/Messenger/permissions_1.xml                     |
-+-----------------------------------------------------------------------------------+------------------------------------------------------------+
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| **Example**                                                                       | **Source Location**                                                  |
++===================================================================================+======================================================================+
+| C++ application that configures security QoS policies via command-line parameters | :ghfile:`tests/DCPS/Messenger/publisher.cpp`                         |
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| Identity CA Certificate (along with private key)                                  | :ghfile:`tests/security/certs/identity/identity_ca_cert.pem`         |
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| Permissions CA Certificate (along with private key)                               | :ghfile:`tests/security/certs/permissions/permissions_ca_cert.pem`   |
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| Participant Identity Certificate (along with private key)                         | :ghfile:`tests/security/certs/identity/test_participant_01_cert.pem` |
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| Governance XML Document (alongside signed document)                               | :ghfile:`tests/DCPS/Messenger/governance.xml`                        |
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
+| Permissions XML Document (alongside signed document)                              | :ghfile:`tests/DCPS/Messenger/permissions_1.xml`                     |
++-----------------------------------------------------------------------------------+----------------------------------------------------------------------+
 
-**Table 14-3**
+.. _dds_security--reftable38:
+
+**Table**
+
+.. _dds_security--using-openssl-utilities-for-opendds:
 
 Using OpenSSL Utilities for OpenDDS
 ===================================
+
+..
+    Sect<14.5.6>
 
 To generate certificates using the openssl command, a configuration file "openssl.cnf" is required (see below for example commands).
 Before proceeding, it may be helpful to review OpenSSL’s manpages to get help with the file format.
 In particular, configuration file format and ca command’s documentation and configuration file options.
 
-.. note:: An example OpenSSL CA-Config file used in OpenDDS testing can be found here:
+An example OpenSSL CA-Config file used in OpenDDS testing can be found here: :ghfile:`tests/security/certs/identity/identity_ca_openssl.cnf`
 
-  https://github.com/objectcomputing/OpenDDS/blob/master/tests/security/certs/identity/identity_ca_openssl.cnf
+.. _dds_security--creating-self-signed-certificate-authorities:
 
 Creating Self-Signed Certificate Authorities
 --------------------------------------------
+
+..
+    Sect<14.5.6.1>
 
 Generate a self-signed 2048-bit RSA CA:
 
@@ -389,8 +489,13 @@ Generate self-signed 256-bit Elliptic Curve CA:
     openssl req -config openssl.cnf -new -key ca_key.pem -out ca.csr
     openssl x509 -req -days 3650 -in ca.csr -signkey ca_key.pem -out ca_cert.pem
 
+.. _dds_security--creating-signed-certificates-with-an-existing-ca:
+
 Creating Signed Certificates with an Existing CA
 ------------------------------------------------
+
+..
+    Sect<14.5.6.2>
 
 Generate a signed 2048-bit RSA certificate:
 
@@ -408,9 +513,13 @@ Generate a signed 256-bit Elliptic Curve certificate:
     openssl req -new -key cert_2_key.pem -out cert_2.csr
     openssl ca -config openssl.cnf -days 3650 -in cert_2.csr -out cert_2.pem
 
+.. _dds_security--signing-documents-with-smime:
 
 Signing Documents with SMIME
 ----------------------------
+
+..
+    Sect<14.5.6.3>
 
 Sign a document using existing CA & CA private key:
 
@@ -418,21 +527,36 @@ Sign a document using existing CA & CA private key:
 
     openssl smime -sign -in doc.xml -text -out doc_signed.p7s -signer ca_cert.pem -inkey ca_private_key.pem
 
+.. _dds_security--domain-governance-document:
+
 **************************
 Domain Governance Document
 **************************
 
+..
+    Sect<14.6>
+
 The signed governance document is used by the DDS Security built-in access control plugin in order to determine both per-domain and per-topic security configuration options for specific domains.
 For full details regarding the content of the governance document, see the OMG DDS Security specification section 9.4.1.2.
+
+.. _dds_security--global-governance-model:
 
 Global Governance Model
 =======================
 
+..
+    Sect<14.6.1>
+
 It’s worth noting that the DDS Security Model expects the governance document to be globally shared by all participants making use of the relevant domains described within the governance document.
 Even if this is not the case, the local participant will verify incoming authentication and access control requests as if the remote participant shared the same governance document and accept or reject the requests accordingly.
 
+.. _dds_security--key-governance-elements:
+
 Key Governance Elements
 =======================
+
+..
+    Sect<14.6.2>
 
 Domain Id Set
 
@@ -490,8 +614,13 @@ Recognized values are: ``{NONE, SIGN, or ENCRYPT}``
 A wildcard-capable string used to match topic names.
 Recognized values will conform to POSIX ``fnmatch()`` function as specified in POSIX 1003.2-1992, Section B.6.
 
+.. _dds_security--domain-rule-configuration-options:
+
 Domain Rule Configuration Options
 =================================
+
+..
+    Sect<14.6.3>
 
 The following XML elements are used to configure domain participant behaviors.
 
@@ -512,10 +641,17 @@ The following XML elements are used to configure domain participant behaviors.
 |                                          |                | The timestamp can be secured by using <rtps_protection_kind>                                                                                                                                                                                                                                                       |
 +------------------------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-**Table 14-4**
+.. _dds_security--reftable39:
+
+**Table**
+
+.. _dds_security--topic-rule-configuration-options:
 
 Topic Rule Configuration Options
 ================================
+
+..
+    Sect<14.6.4>
 
 The following XML elements are used to configure topic endpoint behaviors:
 
@@ -545,8 +681,13 @@ Specifies the protection kind used for the RTPS SubMessages sent by any DataWrit
 
 Specifies the basic protection kind used for the RTPS SerializedPayload SubMessage element sent by any DataWriter whose associated Topic name matches the rule’s topic expression.
 
+.. _dds_security--governance-xml-example:
+
 Governance XML Example
 ======================
+
+..
+    Sect<14.6.5>
 
 .. code-block:: xml
 
@@ -604,15 +745,25 @@ Governance XML Example
       </domain_access_rules>
     </dds>
 
+.. _dds_security--participant-permissions-document:
+
 ********************************
 Participant Permissions Document
 ********************************
 
+..
+    Sect<14.7>
+
 The signed permissions document is used by the DDS Security built-in access control plugin in order to determine participant permissions to join domains and to create endpoints for reading, writing, and relaying domain data.
 For full details regarding the content of the permissions document, see the OMG DDS Security specification section 9.4.1.3.
 
+.. _dds_security--key-permissions-elements:
+
 Key Permissions Elements
 ========================
+
+..
+    Sect<14.7.1>
 
 **Grants**
 
@@ -630,19 +781,19 @@ Each grant’s validity section contains a start date and time (``<not_before>``
 
 The format of the date and time, which is like ISO-8601, must take one of the following forms:
 
-* * * * * ``YYYY-MM-DDThh:mm:ss``
+#. * * * * ``YYYY-MM-DDThh:mm:ss``
 
 * * * * * Example: ``2020-10-26T22:45:30``
 
-* * * * * ``YYYY-MM-DDThh:mm:ssZ``
+#. * * * * ``YYYY-MM-DDThh:mm:ssZ``
 
 * * * * * Example:``2020-10-26T22:45:30Z``
 
-* * * * * ``YYYY-MM-DDThh:mm:ss+hh:mm``
+#. * * * * ``YYYY-MM-DDThh:mm:ss+hh:mm``
 
 * * * * * Example:``2020-10-26T23:45:30+01:00``
 
-* * * * * ``YYYY-MM-DDThh:mm:ss-hh:mm``
+#. * * * * ``YYYY-MM-DDThh:mm:ss-hh:mm``
 
 * * * * * Example:``2020-10-26T16:45:30-06:00``
 
@@ -669,7 +820,7 @@ The default rule is the rule applied if none of the grant’s allow rules or den
 
 Every allow or deny rule must contain a set of domain ids to which it applies.
 The syntax is the same as the domain id set found in the governance document.
-See section :ref:`Key Governance Elements` for details.
+See section :ref:`dds_security--key-governance-elements` for details.
 
 **Publish / Subscribe / Relay Rules (PSR rules)**
 
@@ -706,8 +857,13 @@ When no data tag list is given for an “allow” PSR rule, the empty set of dat
 For “deny” PSR rules, the rule will apply if the associated DDS entity is using any of the data tags listed.
 When no data tag list is given for a “deny” PSR rule, the set of “all possible tags” is used as the default value.
 
+.. _dds_security--permissions-xml-example:
+
 Permissions XML Example
 =======================
+
+..
+    Sect<14.7.2>
 
 .. code-block:: xml
 
@@ -761,45 +917,50 @@ Permissions XML Example
       </permissions>
     </dds>
 
+.. _dds_security--dds-security-implementation-status:
+
 **********************************
 DDS Security Implementation Status
 **********************************
 
+..
+    Sect<14.8>
+
 The following DDS Security features are not implemented in OpenDDS.
 
-* Optional parts of the DDS Security v1.1 specification
+#. Optional parts of the DDS Security v1.1 specification
 
-  * Ability to write a custom plugin in C or in Java (C++ is supported)
+   * Ability to write a custom plugin in C or in Java (C++ is supported)
 
-  * Logging Plugin support
+   * Logging Plugin support
 
-  * Built-in Logging Plugin
+   * Built-in Logging Plugin
 
-  * Data Tagging
+   * Data Tagging
 
-* Use of RTPS KeyHash for encrypted messages
+#. Use of RTPS KeyHash for encrypted messages
 
-  * OpenDDS doesn't use KeyHash, so it meets the spec requirements of not leaking secured data through KeyHash
+   * OpenDDS doesn't use KeyHash, so it meets the spec requirements of not leaking secured data through KeyHash
 
-* Immutability of Publisher’s Partition QoS (see OMG Issue DDSSEC12-49)
+#. Immutability of Publisher’s Partition QoS (see OMG Issue DDSSEC12-49)
 
-* Use of multiple plugin configurations (with different Domain Participants)
+#. Use of multiple plugin configurations (with different Domain Participants)
 
-* CRL (RFC 5280) and OCSP (RFC 2560) support
+#. CRL (RFC 5280) and OCSP (RFC 2560) support
 
-* Certain plugin operations not used by built-in plugins may not be invoked by middleware
+#. Certain plugin operations not used by built-in plugins may not be invoked by middleware
 
-* Origin Authentication
+#. Origin Authentication
 
-* PKCS#11 for certificates, keys, passwords
+#. PKCS#11 for certificates, keys, passwords
 
-* Relay as a permissions “action” (Publish and Subscribe are supported)
+#. Relay as a permissions “action” (Publish and Subscribe are supported)
 
-* Legacy matching behavior of permissions based on Partition QoS (9.4.1.3.2.3.1.4 in spec)
+#. Legacy matching behavior of permissions based on Partition QoS (9.4.1.3.2.3.1.4 in spec)
 
-* 128-bit AES keys (256-bit is supported)
+#. 128-bit AES keys (256-bit is supported)
 
-* Configuration of Built-In Crypto’s key reuse (within the DataWriter) and blocks-per-session
+#. Configuration of Built-In Crypto’s key reuse (within the DataWriter) and blocks-per-session
 
-* Signing (without encrypting) at the payload level, see OMG Issue DDSSEC12-59
+#. Signing (without encrypting) at the payload level, see OMG Issue DDSSEC12-59
 

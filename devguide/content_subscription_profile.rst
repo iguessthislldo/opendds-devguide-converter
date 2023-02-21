@@ -1,10 +1,20 @@
+.. _content_subscription_profile--content-subscription-profile:
+
 ############################
 Content-Subscription Profile
 ############################
 
+..
+    Sect<5>
+
+.. _content_subscription_profile--introduction:
+
 ************
 Introduction
 ************
+
+..
+    Sect<5.1>
 
 The Content-Subscription Profile of DDS consists of three features which enable a data reader’s behavior to be influenced by the content of the data samples it receives.
 These three features are:
@@ -22,11 +32,16 @@ Additionally, query condition allows sorting the result set returned from a data
 Multi topic also has this selection capability as well as the ability to aggregate data from different data writers into a single data type and data reader.
 
 If you are not planning on using the Content-Subscription Profile features in your application, you can configure OpenDDS to remove support for it at build time.
-See page 15 for information on disabling this support.
+See section :ref:`introduction--content-subscription-profile` for more on how to do this.
+
+.. _content_subscription_profile--content-filtered-topic:
 
 **********************
 Content-Filtered Topic
 **********************
+
+..
+    Sect<5.2>
 
 The domain participant interface contains operations for creating and deleting a content-filtered topic.
 Creating a content-filtered topic requires the following parameters:
@@ -36,7 +51,7 @@ Creating a content-filtered topic requires the following parameters:
 * Related topicSpecifies the topic that this content-filtered topic is based on.
   This is the same topic that matched data writers will use to publish data samples.
 
-* Filter expressionAn SQL-like expression (see section :ref:`Filter Expressions`) which defines the subset of samples published on the related topic that should be received by the content-filtered topic’s data readers.
+* Filter expressionAn SQL-like expression (see section :ref:`content_subscription_profile--filter-expressions`) which defines the subset of samples published on the related topic that should be received by the content-filtered topic’s data readers.
 
 * Expression parametersThe filter expression can contain parameter placeholders.
   This argument provides initial values for those parameters.
@@ -53,12 +68,17 @@ Special consideration must be given to how the “missing” samples impact the 
 .. note:: RTPS_UDP transport does not always do Writer-side filtering.
   It does not currently implement transport level filtering, but may be able to filter above the transport layer.
 
+.. _content_subscription_profile--filter-expressions:
+
 Filter Expressions
 ==================
 
+..
+    Sect<5.2.1>
+
 The formal grammar for filter expressions is defined in Annex A of the DDS specification.
 This section provides an informal summary of that grammar.
-Query expressions (:ref:`Query Expressions`) and topic expressions (:ref:`Topic Expressions`) are also defined in Annex A.
+Query expressions (:ref:`content_subscription_profile--query-expressions`) and topic expressions (:ref:`content_subscription_profile--topic-expressions`) are also defined in Annex A.
 
 Filter expressions are combinations of one or more predicates.
 Each predicate is a logical expression taking one of two forms:
@@ -80,8 +100,13 @@ Each predicate is a logical expression taking one of two forms:
 
 Any number of predicates can be combined through the use of parenthesis and the Boolean operators ``AND``, ``OR``, and ``NOT`` to form a filter expression.
 
+.. _content_subscription_profile--expression-parameters:
+
 Expression Parameters
 =====================
+
+..
+    Sect<5.2.2>
 
 Expression parameters allow more flexibility since the filter can effectively change at runtime.
 To use expression parameters, add parameter placeholders in the filter expression wherever a literal would be used.
@@ -101,29 +126,38 @@ The application must format this string based on how the parameter is used:
 
 * For an enumerated type, provide one of the enumerators as if it was a string
 
+.. _content_subscription_profile--filtering-and-dispose-unregister-samples:
 
 Filtering and Dispose/Unregister Samples
 ========================================
+
+..
+    Sect<5.2.3>
 
 DataReaders without filtering can see samples with the ``valid_data`` field of SampleInfo set to false.
 This happens when the matching DataWriter disposes or unregisters the instance.
 Content filtering (whether achieved through Content-Filtered Topics, Query Conditions, or Multi Topics) will filter such samples when the filter expression explicitly uses key fields.
 Filter expressions that don’t meet that criteria will result in no such samples passing the filter.
 
+.. _content_subscription_profile--content-filtered-topic-example:
+
 Content-Filtered Topic Example
 ==============================
+
+..
+    Sect<5.2.4>
 
 The code snippet below creates a content-filtered topic for the Message type.
 First, here is the IDL for Message:
 
 .. code-block:: omg-idl
 
-      module Messenger {
-      @topic
-        struct Message {
-          long id;
-        };
-      };
+      module Messenger {
+        @topic
+        struct Message {
+          long id;
+        };
+      };
 
 Next we have the code that creates the data reader:
 
@@ -144,19 +178,24 @@ Next we have the code that creates the data reader:
 
 The data reader ‘``dr``’ will only receive samples that have values of ‘``id``’ greater than 1.
 
+.. _content_subscription_profile--query-condition:
+
 ***************
 Query Condition
 ***************
 
+..
+    Sect<5.3>
+
 The query condition interface inherits from the read condition interface, therefore query conditions have all of the capabilities of read conditions along with the additional capabilities described in this section.
-One of those inherited capabilities is that the query condition can be used like any other condition with a wait set (see Section :ref:`Conditions`).
+One of those inherited capabilities is that the query condition can be used like any other condition with a wait set (see Section :ref:`conditions_and_listeners--conditions`).
 
 The ``DataReader`` interface contains operations for creating (``create_querycondition``) and deleting (``delete_readcondition``) a query condition.
 Creating a query condition requires the following parameters:
 
 * Sample, view, and instance state masksThese are the same state masks that would be passed to ``create_readcondition()``, ``read()``, or ``take()``.
 
-* Query expressionAn SQL-like expression (see :ref:`Query Expressions`) describing a subset of samples which cause the condition to be triggered.
+* Query expressionAn SQL-like expression (see :ref:`content_subscription_profile--query-expressions`) describing a subset of samples which cause the condition to be triggered.
   This same expression is used to filter the data set returned from a ``read_w_condition()`` or ``take_w_condition()`` operation.
   It may also impose a sort order (``ORDER BY``) on that data set.
 
@@ -168,10 +207,15 @@ A particular query condition can be used with a wait set (``attach_condition``),
 When used with a wait set, the ``ORDER BY`` clause has no effect on triggering the wait set.
 When used with a data reader’s ``read*()`` or ``take*()`` operation, the resulting data set will only contain samples which match the query expression and they will be ordered by the ``ORDER BY`` fields, if an ``ORDER BY`` clause is present.
 
+.. _content_subscription_profile--query-expressions:
+
 Query Expressions
 =================
 
-Query expressions are a super set of filter expressions (see section :ref:`Filter Expressions`).
+..
+    Sect<5.3.1>
+
+Query expressions are a super set of filter expressions (see section :ref:`content_subscription_profile--filter-expressions`).
 Following the filter expression, the query expression can optionally have an ``ORDER BY`` keyword followed by a comma-separated list of field references.
 If the ``ORDER BY`` clause is present, the filter expression may be empty.
 The following strings are examples of query expressions:
@@ -183,10 +227,15 @@ The following strings are examples of query expressions:
 * NOT v LIKE 'z%'
 
 Query expressions can use parameter placeholders in the same way that filter expressions (for content-filtered topics) use them.
-See section :ref:`Expression Parameters` for details.
+See section :ref:`content_subscription_profile--expression-parameters` for details.
+
+.. _content_subscription_profile--query-condition-example:
 
 Query Condition Example
 =======================
+
+..
+    Sect<5.3.2>
 
 The following code snippet creates and uses a query condition for a type that uses struct ‘Message’ with field ‘key’ (an integral type).
 
@@ -214,9 +263,14 @@ The following code snippet creates and uses a query condition for a type that us
 
 Any sample received with ``key <= 1`` would neither trigger the condition (to satisfy the wait) nor be returned in the ‘data’ sequence from ``take_w_condition()``.
 
+.. _content_subscription_profile--multi-topic:
+
 ***********
 Multi Topic
 ***********
+
+..
+    Sect<5.4>
 
 Multi topic is a more complex feature than the other two Content-Subscription features, therefore describing it requires some new terminology.
 
@@ -225,7 +279,7 @@ A data reader created for the multi topic is known as a “multi topic data read
 These topics are known as its “constituent topics.” The multi topic has a DCPS data type known as the “resulting type.” The multi topic data reader implements the type-specific data reader interface for the resulting type.
 For example, if the resulting type is Message, then the multi topic data reader can be narrowed to the ``MessageDataReader`` interface.
 
-The multi topic’s topic expression (see section :ref:`Topic Expressions`) describes how the distinct fields of the incoming data (on the constituent topics) are mapped to the fields of the resulting type.
+The multi topic’s topic expression (see section :ref:`content_subscription_profile--topic-expressions`) describes how the distinct fields of the incoming data (on the constituent topics) are mapped to the fields of the resulting type.
 
 The domain participant interface contains operations for creating and deleting a multi topic.
 Creating a multi topic requires the following parameters:
@@ -235,7 +289,7 @@ Creating a multi topic requires the following parameters:
 * Type nameSpecifies the resulting type of the multi topic.
   This type must have its type support registered before creating the multi topic.
 
-* Topic expression (also known as subscription expression)An SQL-like expression (see section :ref:`Topic Expressions`) which defines the mapping of constituent topic fields to resulting type fields.
+* Topic expression (also known as subscription expression)An SQL-like expression (see section :ref:`content_subscription_profile--topic-expressions`) which defines the mapping of constituent topic fields to resulting type fields.
   It can also specify a filter (``WHERE`` clause).
 
 * Expression parametersThe topic expression can contain parameter placeholders.
@@ -244,10 +298,15 @@ Creating a multi topic requires the following parameters:
 
 Once the multi topic has been created, it is used by the subscriber’s ``create_datareader()`` operation to obtain a multi topic data reader.
 This data reader is used by the application to receive the constructed samples of the resulting type.
-The manner in which these samples are constructed is described below in section :ref:`How Resulting Samples are Constructed`.
+The manner in which these samples are constructed is described below in section :ref:`content_subscription_profile--how-resulting-samples-are-constructed`.
+
+.. _content_subscription_profile--topic-expressions:
 
 Topic Expressions
 =================
+
+..
+    Sect<5.4.1>
 
 Topic expressions use a syntax that is very similar to a complete SQL query:
 
@@ -260,7 +319,7 @@ Topic expressions use a syntax that is very similar to a complete SQL query:
 
 * * <constituent_field> [[AS] <resulting_field>]]
 
-  * ``constituent_field`` is a field reference (see section :ref:`Filter Expressions`) to a field in one of the constituent topics (which topic is not specified).
+  * ``constituent_field`` is a field reference (see section :ref:`content_subscription_profile--filter-expressions`) to a field in one of the constituent topics (which topic is not specified).
 
   * The optional resulting_field is a field reference to a field in the resulting type.
     If present, the ``resulting_field`` is the destination for the constituent_field in the constructed sample.
@@ -281,23 +340,32 @@ Topic expressions use a syntax that is very similar to a complete SQL query:
   * The semantics of the natural join are that any fields with the same name are treated as “join keys” for the purpose of combining data from the topics in which those keys appear.
     The join operation is described in more detail in the subsequent sections of this chapter.
 
-* The condition has the exact same syntax and semantics as the filter expression (see section :ref:`Filter Expressions`).
+* The condition has the exact same syntax and semantics as the filter expression (see section :ref:`content_subscription_profile--filter-expressions`).
   Field references in the condition must match field names in the resulting types, not field names in the constituent topic types.
   The condition in the topic expression can use parameter placeholders in the same way that filter expressions (for content-filtered topics) use them.
-  See section :ref:`Expression Parameters` for details.
+  See section :ref:`content_subscription_profile--expression-parameters` for details.
 
+.. _content_subscription_profile--usage-notes:
 
 Usage Notes
 ===========
 
+..
+    Sect<5.4.2>
+
+.. _content_subscription_profile--join-keys-and-dcps-data-keys:
+
 Join Keys and DCPS Data Keys
 ----------------------------
 
-The concept of DCPS data keys (``@key``) has already been discussed in Section :ref:`Defining Data Types with IDL`.
+..
+    Sect<5.4.2.1>
+
+The concept of DCPS data keys (``@key``) has already been discussed in Section :ref:`getting_started--defining-data-types-with-idl`.
 Join keys for the multi topic are a distinct but related concept.
 
 A join key is any field name that occurs in the struct for more than one constituent topic.
-The existence of the join key enforces a constraint on how data samples of those topics are combined into a constructed sample (see section :ref:`How Resulting Samples are Constructed`).
+The existence of the join key enforces a constraint on how data samples of those topics are combined into a constructed sample (see section :ref:`content_subscription_profile--how-resulting-samples-are-constructed`).
 Specifically, the value of that key must be equal for those data samples from the constituent topics to be combined into a sample of the resulting type.
 If multiple join keys are common to the same two or more topics, the values of all keys must be equal in order for the data to be combined.
 
@@ -308,11 +376,16 @@ Additionally, OpenDDS imposes two requirements on how the IDL must define DCPS d
 
 #. The resulting type must contain each of the join keys, and those fields must be DCPS data keys for the resulting type.
 
-The example in section :ref:`IDL and Topic Expression` meets both of these requirements.
+The example in section :ref:`content_subscription_profile--idl-and-topic-expression` meets both of these requirements.
 Note that it is not necessary to list the join keys in the aggregation (``SELECT`` clause).
+
+.. _content_subscription_profile--how-resulting-samples-are-constructed:
 
 How Resulting Samples are Constructed
 -------------------------------------
+
+..
+    Sect<5.4.2.2>
 
 Although many concepts in multi topic are borrowed from the domain of relational databases, a real-time middleware such as DDS is not a database.
 Instead of processing a batch of data at a time, each sample arriving at the data reader from one of the constituent topics triggers multi-topic-specific processing that results in the construction of zero, one, or many samples of the resulting type and insertion of those constructed samples into the multi topic data reader.
@@ -334,21 +407,35 @@ Specifically, the arrival of a sample on constituent topic “``A``” with type
 #. If any constructed samples result, they are inserted into the multi topic data reader’s internal data structures as if they had arrived via the normal mechanisms.
    Application listeners and conditions are notified.
 
+.. _content_subscription_profile--use-with-subscriber-listeners:
 
 Use with Subscriber Listeners
 -----------------------------
 
+..
+    Sect<5.4.2.3>
+
 If the application has registered a subscriber listener for read condition status changes (``DATA_ON_READERS_STATUS``) with the same subscriber that also contains a multi topic, then the application must invoke ``notify_datareaders()`` in its implementation of the subscriber listener’s ``on_data_on_readers()`` callback method.
 This requirement is necessary because the multi topic internally uses data reader listeners, which are preempted when a subscriber listener is registered.
+
+.. _content_subscription_profile--multi-topic-example:
 
 Multi Topic Example
 ===================
 
+..
+    Sect<5.4.3>
+
 This example is based on the example topic expression used in Annex A section A.3 of the DDS specification.
 It illustrates how the properties of the multi topic join operation can be used to correlate data from separate topics (and possibly distinct publishers).
 
+.. _content_subscription_profile--idl-and-topic-expression:
+
 IDL and Topic Expression
 ------------------------
+
+..
+    Sect<5.4.3.1>
 
 Often times we will use the same string as both the topic name and topic type.
 In this example we will use distinct strings for the type names and topic names, in order to illustrate when each is used.
@@ -400,8 +487,13 @@ The instance of the resulting type will only come into existence once the corres
 Some other domain participant or participants within the domain will publish data on those topics, and they don’t even need to be aware of one another.
 Since they each use the same ``flight_id`` to refer to flights, the multi topic can correlate the incoming data from disparate sources.
 
+.. _content_subscription_profile--creating-the-multi-topic-data-reader:
+
 Creating the Multi Topic Data Reader
 ------------------------------------
+
+..
+    Sect<5.4.3.2>
 
 Creating a data reader for the multi topic consists of a few steps.
 First the type support for the resulting type is registered, then the multi topic itself is created, followed by the data reader:
@@ -424,8 +516,13 @@ First the type support for the resulting type is registered, then the multi topi
                                NULL,
                                OpenDDS::DCPS::DEFAULT_STATUS_MASK);
 
+.. _content_subscription_profile--reading-data-with-the-multi-topic-data-reader:
+
 Reading Data with the Multi Topic Data Reader
 ---------------------------------------------
+
+..
+    Sect<5.4.3.3>
 
 From an API perspective, the multi topic data reader is identical to any other typed data reader for the resulting type.
 This example uses a wait set and a read condition in order to block until data is available.

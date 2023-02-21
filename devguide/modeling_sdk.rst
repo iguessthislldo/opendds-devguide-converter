@@ -1,16 +1,31 @@
+.. _modeling_sdk--modeling-sdk:
+
 ############
 Modeling SDK
 ############
 
+..
+    Sect<11>
+
 The OpenDDS Modeling SDK is a modeling tool that can be used by the application developer to define the required middleware components and data structures as a UML model and then generate the code to implement the model using OpenDDS.
 The generated code can then be compiled and linked with the application to provide seamless middleware support to the application.
+
+.. _modeling_sdk--overview:
 
 ********
 Overview
 ********
 
+..
+    Sect<11.1>
+
+.. _modeling_sdk--model-capture:
+
 Model Capture
 =============
+
+..
+    Sect<11.1.1>
 
 UML models defining DCPS elements and policies along with data definitions are captured using the graphical model capture editors included in the Eclipse plug-ins.
 The elements of the UML models follow the structure of the DDS UML Platform Independent Model (PIM) defined in the DDS specification (OMG: ``formal/2015-04-10``).
@@ -20,16 +35,29 @@ This diagram includes any package structures to be included in the model along w
 Zero or more of the policy or data definition elements can be included.
 Zero or one DCPS elements definition can be included in any given model.
 
-**Figure 11-1 Graphical modeling of the data definitions**
+.. _modeling_sdk--reffigure5:
+
+.. image:: images/10000001000003BA000005345220EFBC3B2965C5.png
+
+**Figure  Graphical modeling of the data definitions**
 
 Creating separate models for QoS policies only, data definitions only, or DCPS elements only is supported.
 References to other models allows externally defined models to be included in a model.
 This allows sharing of data definitions and QoS policies among different DCPS models as well as including externally defined data in a new set of data definitions.
 
-**Figure 11-2 Graphical modeling of the DCPS entities**
+.. _modeling_sdk--reffigure6:
+
+.. image:: images/10000001000003CA00000534AF32FC1EC2AA656B.png
+
+**Figure  Graphical modeling of the DCPS entities**
+
+.. _modeling_sdk--code-generation:
 
 Code Generation
 ===============
+
+..
+    Sect<11.1.2>
 
 Once models have been captured, source code can be generated from them.
 This source code can then be compiled into link libraries providing the middleware elements defined in the model to applications that link the library.
@@ -41,37 +69,60 @@ Code generation is performed on a single model at a time and includes the abilit
 It is possible to generate model variations (distinct customizations of the same model) that can then be created within the same application or different applications.
 It is also possible to specify locations to search for header files and link libraries at build time.
 
-See section :ref:`Generated Code`, “Generated Code” for details.
+See section :ref:`modeling_sdk--generated-code`, “Generated Code” for details.
+
+.. _modeling_sdk--programming:
 
 Programming
 ===========
+
+..
+    Sect<11.1.3>
 
 In order to use the middleware defined by models, applications need to link in the generated code.
 This is done through header files and link libraries.
 Support for building applications using the MPC portable build tool is included in the generated files for a model.
 
-See section :ref:`Developing Applications`, “Developing Applications” for details.
+See section :ref:`modeling_sdk--developing-applications`, “Developing Applications” for details.
+
+.. _modeling_sdk--installation-and-getting-started:
 
 ********************************
 Installation and Getting Started
 ********************************
 
+..
+    Sect<11.2>
+
 Unlike the OpenDDS Middleware which is compiled from source code by the developer, the compiled Modeling SDK is available for download via an Eclipse Update Site.
+
+.. _modeling_sdk--prerequisites:
 
 Prerequisites
 =============
+
+..
+    Sect<11.2.1>
 
 * Java Runtime Environment (JRE)
 
 * Eclipse IDE
 
+.. _modeling_sdk--installation:
 
 Installation
 ============
 
+..
+    Sect<11.2.2>
+
 #. From Eclipse, open the Help menu and select Install New Software.
 
-**Figure 11-3 Eclipse Software Installation Dialog**
+.. _modeling_sdk--reffigure7:
+
+.. image:: images/100000000000018A000001582B13D316CA761B88.png
+
+**Figure  Eclipse Software Installation Dialog**
 
 * Click the hyperlink for Available Software Sites.
 
@@ -95,9 +146,13 @@ Installation
 
 * Eclipse will prompt the user to restart in order to use the newly installed software.
 
+.. _modeling_sdk--getting-started:
 
 Getting Started
 ===============
+
+..
+    Sect<11.2.3>
 
 The OpenDDS Modeling SDK contains an Eclipse Perspective.
 Open it by going to the Window menu and selecting Open Perspective -> Other -> OpenDDS Modeling.
@@ -106,9 +161,14 @@ To get started using the OpenDDS Modeling SDK, see the help content installed in
 Start by going to the Help menu and selecting Help Contents.
 There is a top-level item for “``OpenDDS Modeling SDK Guide``” that contains all of the OpenDDS-specific content describing the modeling and code generation activities.
 
+.. _modeling_sdk--developing-applications:
+
 ***********************
 Developing Applications
 ***********************
+
+..
+    Sect<11.3>
 
 In order to build an application using the OpenDDS Modeling SDK, one must understand a few key concepts.
 The concepts concern:
@@ -119,18 +179,27 @@ The concepts concern:
 
 #. Application code
 
+.. _modeling_sdk--modeling-support-library:
 
 Modeling Support Library
 ========================
 
-The OpenDDS Modeling SDK includes a support library, found at ``$DDS_ROOT/tools/modeling/codegen/model``.
+..
+    Sect<11.3.1>
+
+The OpenDDS Modeling SDK includes a support library, found at :ghfile:`tools/modeling/codegen/model`.
 This support library, when combined with the code generated by the Modeling SDK, greatly reduces the amount of code needed to build an OpenDDS application.
 
 The support library is a C++ library which is used by an OpenDDS Modeling SDK application.
 Two classes in the support library that most developers will need are the Application and Service classes.
 
+.. _modeling_sdk--the-application-class:
+
 The Application Class
 ---------------------
+
+..
+    Sect<11.3.1.1>
 
 The ``OpenDDS::Model::Application`` class takes care of initialization and finalization of the OpenDDS library.
 It is required for any application using OpenDDS to instantiate a single instance of the ``Application`` class, and further that the ``Application`` object not be destroyed while communicating using OpenDDS.
@@ -139,8 +208,13 @@ The ``Application`` class initializes the factory used to create OpenDDS partici
 This factory requires the user-provided command line arguments.
 In order to provide them, the ``Application`` object must be provided the same command line arguments.
 
+.. _modeling_sdk--the-service-class:
+
 The Service Class
 -----------------
+
+..
+    Sect<11.3.1.2>
 
 The ``OpenDDS::Model::Service`` class is responsible for the creation of OpenDDS entities described in an OpenDDS Modeling SDK model.
 Since the model can be generic, describing a much broader domain than an individual application uses, the Service class uses lazy instantiation to create OpenDDS entities.
@@ -151,38 +225,49 @@ In order to properly instantiate these entities, it must know:
 
 * The transport configuration used by entities
 
+.. _modeling_sdk--generated-code:
 
 Generated Code
 ==============
 
+..
+    Sect<11.3.2>
+
 The OpenDDS Modeling SDK generates model-specific code for use by an OpenDDS Modeling SDK application.
-Starting with a .codegen file (which refers to an ``.opendds`` model file), the files described in Table 11-1.
+Starting with a .codegen file (which refers to an ``.opendds`` model file), the files described in :ref:`Table 11-1 <modeling_sdk--reftable35>`.
 The process of generating code is documented in the Eclipse help.
 
-**Table 11-1 Generated Files**
+.. _modeling_sdk--reftable35:
 
-+---------------------------+-----------------------------------------------------------------------------+
-| File Name                 | Description                                                                 |
-+===========================+=============================================================================+
-| ``<ModelName>.idl``       | Data types from the model’s ``DataLib``                                     |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>_T.h``       | C++ class from the model’s ``DcpsLib``                                      |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>_T.cpp``     | C++ implementation of the model’s ``DcpsLib``                               |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>.mpc``       | MPC project file for the generated C++ library                              |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>.mpb``       | MPC base project for use by the application                                 |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>_paths.mpb`` | MPC base project with paths, see section :ref:`Dependencies Between Models` |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>Traits.h``   | Transport configuration from the .codegen file                              |
-+---------------------------+-----------------------------------------------------------------------------+
-| ``<ModelName>Traits.cpp`` | Transport configuration from the .codegen file                              |
-+---------------------------+-----------------------------------------------------------------------------+
+**Table  Generated Files**
+
++---------------------------+-------------------------------------------------------------------------------------------+
+| File Name                 | Description                                                                               |
++===========================+===========================================================================================+
+| ``<ModelName>.idl``       | Data types from the model’s ``DataLib``                                                   |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>_T.h``       | C++ class from the model’s ``DcpsLib``                                                    |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>_T.cpp``     | C++ implementation of the model’s ``DcpsLib``                                             |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>.mpc``       | MPC project file for the generated C++ library                                            |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>.mpb``       | MPC base project for use by the application                                               |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>_paths.mpb`` | MPC base project with paths, see section :ref:`modeling_sdk--dependencies-between-models` |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>Traits.h``   | Transport configuration from the .codegen file                                            |
++---------------------------+-------------------------------------------------------------------------------------------+
+| ``<ModelName>Traits.cpp`` | Transport configuration from the .codegen file                                            |
++---------------------------+-------------------------------------------------------------------------------------------+
+
+.. _modeling_sdk--the-dcps-model-class:
 
 The DCPS Model Class
 --------------------
+
+..
+    Sect<11.3.2.1>
 
 The DCPS library models relationships between DDS entities, including ``Topics``, ``DomainParticipants``, ``Publishers``, ``Subscribers``, ``DataWriters`` and ``DataReaders``, and their corresponding Domains.
 
@@ -213,8 +298,13 @@ This Elements class contains enumeration definitions for each of:
 In addition, the DCPS model class captures the relationships between these entities.
 These relationships are used by the Service class when instantiating DCPS entities.
 
+.. _modeling_sdk--the-traits-class:
+
 The Traits Class
 ----------------
+
+..
+    Sect<11.3.2.2>
 
 Entities in a DCPS model reference their transport configuration by name.
 The Model Customization tab of the Codegen file editor is used to define the transport configuration for each name.
@@ -226,31 +316,56 @@ Multiple instances may be defined, representing different deployment scenarios f
 For each of these instances, a ``Traits`` class is generated.
 The traits class provides the transport configuration modeled in the Codegen editor for a specific transport configuration name.
 
+.. _modeling_sdk--the-service-typedef:
+
 The Service Typedef
 -------------------
+
+..
+    Sect<11.3.2.3>
 
 The Service is a template which needs two parameters: (1) the entity model, in the DCPS model ``Elements`` class, (2) transport configuration, in a ``Traits`` class.
 The OpenDDS Modeling SDK generates one typedef for each combination of DCPS library and transport configuration model instance.
 The typedef is named ``<InstanceName><DCPSLibraryName>Type``.
 
+.. _modeling_sdk--data-library-generated-code:
+
 Data Library Generated Code
 ---------------------------
+
+..
+    Sect<11.3.2.4>
 
 From the data library, IDL is generated, which is processed by the IDL compilers.
 The IDL compilers generate type support code, which is used to serialize and deserialize data types.
 
+.. _modeling_sdk--qos-policy-library-generated-code:
+
 QoS Policy Library Generated Code
 ---------------------------------
+
+..
+    Sect<11.3.2.5>
 
 There are no specific compilation units generated from the QoS policy library.
 Instead, the DCPS library stores the QoS policies of the entities it models.
 This QoS policy is later queried by the Service class, which sets the QoS policy upon entity creation.
 
+.. _modeling_sdk--application-code-requirements:
+
 Application Code Requirements
 =============================
 
+..
+    Sect<11.3.3>
+
+.. _modeling_sdk--required-headers:
+
 Required headers
 ----------------
+
+..
+    Sect<11.3.3.1>
 
 The application will need to include the ``Traits`` header, in addition to the ``Tcp.h`` header (for static linking).
 These will include everything required to build a publishing application.
@@ -264,9 +379,13 @@ Here is the ``#include`` section of an example publishing application, ``Minimal
 
     #include "model/MinimalTraits.h"
 
+.. _modeling_sdk--exception-handling:
 
 Exception Handling
 ------------------
+
+..
+    Sect<11.3.3.2>
 
 It is recommended that Modeling SDK applications catch both ``CORBA::Exception`` objects and ``std::exception`` objects.
 
@@ -286,9 +405,13 @@ It is recommended that Modeling SDK applications catch both ``CORBA::Exception``
       return 0;
     }
 
+.. _modeling_sdk--instantiation:
 
 Instantiation
 -------------
+
+..
+    Sect<11.3.3.3>
 
 As stated above, an OpenDDS Modeling SDK application must create an ``OpenDDS::Model::Application`` object for the duration of its lifetime.
 This ``Application`` object, in turn, is passed to the constructor of the Service object specified by one of the typedef declarations in the traits headers.
@@ -309,8 +432,13 @@ The Service provides this interface for entity creation:
 
 It is important to note that the service also creates any required intermediate entities, such as ``DomainParticipants``, ``Publishers``, ``Subscribers``, and ``Topics``, when necessary.
 
+.. _modeling_sdk--publisher-code:
+
 Publisher Code
 --------------
+
+..
+    Sect<11.3.3.4>
 
 Using the ``writer()`` method shown above, ``MinimalPublisher.cpp`` continues:
 
@@ -377,8 +505,13 @@ In total our publishing application, ``MinimalPublisher.cpp``, looks like this:
 
 Note this minimal example ignores logging and synchronization, which are issues that are not specific to the OpenDDS Modeling SDK.
 
+.. _modeling_sdk--subscriber-code:
+
 Subscriber Code
 ---------------
+
+..
+    Sect<11.3.3.5>
 
 The subscriber code is much like the publisher.
 For simplicity, OpenDDS Modeling SDK subscribers may want to take advantage of a base class for Reader Listeners, called ``OpenDDS::Modeling::NullReaderListener``.
@@ -514,9 +647,13 @@ An example subscribing application, ``MinimalSubscriber.cpp``, follows.
       return 0;
     }
 
+.. _modeling_sdk--mpc-projects:
 
 MPC Projects
 ------------
+
+..
+    Sect<11.3.3.6>
 
 In order to make use of the OpenDDS Modeling SDK support library, OpenDDS Modeling SDK MPC projects should inherit from the dds_model project base.
 This is in addition to the dcpsexe base from which non-Modeling SDK projects inherit.
@@ -594,9 +731,13 @@ And similar for the subscriber:
       }
     }
 
+.. _modeling_sdk--dependencies-between-models:
 
 Dependencies Between Models
 ---------------------------
+
+..
+    Sect<11.3.3.7>
 
 One final consideration — the generated model library could itself depend on other generated model libraries.
 For example, there could be an external data type library which is generated to a different directory.

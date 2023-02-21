@@ -1,10 +1,20 @@
+.. _run_time_configuration--run-time-configuration:
+
 ######################
 Run-time Configuration
 ######################
 
+..
+    Sect<7>
+
+.. _run_time_configuration--configuration-approach:
+
 **********************
 Configuration Approach
 **********************
+
+..
+    Sect<7.1>
 
 OpenDDS includes a file-based configuration framework for configuring global options and options related to specific publishers and subscribers such as discovery and transport configuration.
 OpenDDS also allows configuration via the command line for a limited number of options and via a configuration API.
@@ -12,20 +22,22 @@ This chapter summarizes the configuration options supported by OpenDDS.
 
 OpenDDS configuration is concerned with three main areas:
 
-* **Common Configuration Options** – configure the behavior of DCPS entities at a global level.
-  This allows separately deployed processes in a computing environment to share common settings for the specified behavior (e.g.
-  all readers and writers should use RTPS discovery).
+#. **Common Configuration Options** – configure the behavior of DCPS entities at a global level.
+   This allows separately deployed processes in a computing environment to share common settings for the specified behavior (e.g.
+   all readers and writers should use RTPS discovery).
 
-* **Discovery Configuration Options** – configure the behavior of the discovery mechanism(s).
-  OpenDDS supports multiple approaches for discovering and associating writers and readers as detailed in Section :ref:`Discovery Configuration`.
+#. **Discovery Configuration Options** – configure the behavior of the discovery mechanism(s).
+   OpenDDS supports multiple approaches for discovering and associating writers and readers as detailed in Section :ref:`run_time_configuration--discovery-configuration`.
 
-* **Transport Configuration Options** – configure the Extensible Transport Framework (ETF) which abstracts the transport layer from the DCPS layer of OpenDDS.
-  Each pluggable transport can be configured separately.
+#. **Transport Configuration Options** – configure the Extensible Transport Framework (ETF) which abstracts the transport layer from the DCPS layer of OpenDDS.
+   Each pluggable transport can be configured separately.
 
 The configuration file for OpenDDS is a human-readable ini-style text file.
-Table 7-1 shows a list of the available configuration section types as they relate to the area of OpenDDS that they configure.
+:ref:`Table 7-1 <run_time_configuration--reftable8>` shows a list of the available configuration section types as they relate to the area of OpenDDS that they configure.
 
-**Table 7-1 Configuration File Sections**
+.. _run_time_configuration--reftable8:
+
+**Table  Configuration File Sections**
 
 +------------------+------------------------+
 | **Focus Area**   | **File Section Title** |
@@ -59,7 +71,7 @@ For each of the section types with the exception of ``[common]``, the syntax of 
 For example, a ``[repository]`` section type would always be used in a configuration file like so:
 
 ``[repository/repo_1]`` where ``repository`` is the section type and ``repo_1`` is an instance name of a repository configuration.
-How to use instances to configure discovery and transports is explained further in Sections :ref:`Discovery Configuration` and :ref:`Transport Configuration`.
+How to use instances to configure discovery and transports is explained further in Sections :ref:`run_time_configuration--discovery-configuration` and :ref:`run_time_configuration--transport-configuration`.
 
 The ``-DCPSConfigFile`` command-line argument can be used to pass the location of a configuration file to OpenDDS.
 For example:
@@ -83,11 +95,12 @@ This is accomplished by using the ``TheParticipantFactoryWithArgs`` macro:
 
     #include <dds/DCPS/Service_Participant.h>
 
-    int main (int argc, char* argv[])
+    int main(int argc, char* argv[])
     {
-
       DDS::DomainParticipantFactory_var dpf =
         TheParticipantFactoryWithArgs(argc, argv);
+      // ...
+    }
 
 To set a default configuration file to load, use ``TheServiceParticipant-﻿>default_configuration_file(ACE_TCHAR* path)``, like in the following example:
 
@@ -95,24 +108,30 @@ To set a default configuration file to load, use ``TheServiceParticipant-﻿>def
 
     #include <dds/DCPS/Service_Participant.h>
 
-    int main (int argc, char* argv[])
+    int main(int argc, char* argv[])
     {
-
-      TheServiceParticipant->default_configuration_file(ACE_TEXT(“pub.ini”));
+      TheServiceParticipant->default_configuration_file(ACE_TEXT("pub.ini"));
 
       DDS::DomainParticipantFactory_var dpf =
         TheParticipantFactoryWithArgs(argc, argv);
+      // ...
+    }
 
 ``pub.ini would`` be used unless ``-DCPSConfigFile`` is passed to override the default configuration file.
 
 The ``Service_Participant`` class also provides methods that allow an application to configure the DDS service.
-See the header file ``$DDS_ROOT/dds/DCPS/Service_Participant.h`` for details.
+See the header file :ghfile:`dds/DCPS/Service_Participant.h` for details.
 
 The following subsections detail each of the configuration file sections and the available options related to those sections.
+
+.. _run_time_configuration--common-configuration-options:
 
 ****************************
 Common Configuration Options
 ****************************
+
+..
+    Sect<7.2>
 
 The ``[common]`` section of an OpenDDS configuration file contains options such as the debugging output level, the location of the ``DCPSInfoRepo`` process, and memory preallocation settings.
 A sample ``[common]`` section follows:
@@ -141,138 +160,140 @@ For example:
 
 The following table summarizes the ``[common]`` configuration options:
 
-**Table 7-2 Common Configuration Options**
+.. _run_time_configuration--reftable9:
 
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| Option                                                                    | Description                                                                                                                                                                                                                            | Default                                                           |
-+===========================================================================+========================================================================================================================================================================================================================================+===================================================================+
-| ``DCPSBit=[1|0]``                                                         | Toggle Built-In-Topic support.                                                                                                                                                                                                         | ``1``                                                             |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSBitLookupDurationMsec=msec``                                        | The maximum duration in milliseconds that the framework will wait for latent Built-In Topic information when retrieving BIT data given an instance handle.                                                                             | ``2000``                                                          |
-|                                                                           | The participant code may get an instance handle for a remote entity before the framework receives and processes the related BIT information.                                                                                           |                                                                   |
-|                                                                           | The framework waits for up to the given amount of time before it fails the operation.                                                                                                                                                  |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSBitTransportIPAddress=addr``                                        | IP address identifying the local interface to be used by tcp transport for the Built-In Topics.                                                                                                                                        | ``INADDR_ANY``                                                    |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | **NOTE**: This property is only applicable to a ``DCPSInfoRepo`` configuration.                                                                                                                                                        |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSBitTransportPort=port``                                             | Port used by the tcp transport for Built-In Topics.If the default of ‘0’ is used, the operating system will choose a port to use.                                                                                                      | ``0``                                                             |
-|                                                                           | **NOTE**: This property is only applicable to a ``DCPSInfoRepo`` configuration.                                                                                                                                                        |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSChunks=n``                                                          | Configurable number of chunks that a data writer's and reader's cached allocators will preallocate when the ``RESOURCE_LIMITS`` QoS value is infinite.                                                                                 | ``20``                                                            |
-|                                                                           | When all of the preallocated chunks are in use, OpenDDS allocates from the heap.                                                                                                                                                       |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSChunkAssociationMultiplier=n``                                      | Multiplier for the DCPSChunks or ``resource_limits.max_samples`` value to determine the total number of shallow copy chunks that are preallocated.                                                                                     | ``10``                                                            |
-|                                                                           | Set this to a value greater than the number of connections so the preallocated chunk handles do not run out.                                                                                                                           |                                                                   |
-|                                                                           | A sample written to multiple data readers will not be copied multiple times but there is a shallow copy handle to that sample used to manage the delivery to each data reader.                                                         |                                                                   |
-|                                                                           | The size of the handle is small so there is not great need to set this value close to the number of connections.                                                                                                                       |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSDebugLevel=n``                                                      | Integer value that controls the amount of debug information the DCPS layer prints.                                                                                                                                                     | 0                                                                 |
-|                                                                           | Valid values are 0 through 10.                                                                                                                                                                                                         |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``ORBLogFile=filename``                                                   | Change log message destination to the file specified, which is opened in appending mode.                                                                                                                                               | None: use standard error                                          |
-|                                                                           | See the note below this table regarding the ORB prefix.                                                                                                                                                                                |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``ORBVerboseLogging=[0|1|2]``                                             | Add a prefix to each log message, using a format defined by the ACE library:                                                                                                                                                           | 0                                                                 |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | 0 – no prefix1 – verbose “lite”: adds timestamp and priority2 – verbose: in addition to “lite” has host name, PID, program name                                                                                                        |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | See the note below this table regarding the ORB prefix.                                                                                                                                                                                |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSDefaultAddress=addr``                                               | Default value for the host portion of ``local_address`` for transport instances containing a ``local_address``.                                                                                                                        |                                                                   |
-|                                                                           | Only applied when ``DCPSDefaultAddress`` is set to a non-empty value and no ``local_address`` is specified in the transport.                                                                                                           |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | Other subsystems (such as DDSI-RTPS Discovery) use ``DCPSDefaultAddress`` as a default value as well.                                                                                                                                  |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSDefaultDiscovery=[``                                                | Specifies a discovery configuration to use for any domain not explicitly configured.                                                                                                                                                   | ``DEFAULT_REPO``                                                  |
-|                                                                           | ``DEFAULT_REPO`` translates to using the ``DCPSInfoRepo``.                                                                                                                                                                             |                                                                   |
-| ``DEFAULT_REPO|``                                                         | ``DEFAULT_RTPS`` specifies the use of RTPS for discovery.                                                                                                                                                                              |                                                                   |
-|                                                                           | ``DEFAULT_STATIC`` specifies the use of static discovery.                                                                                                                                                                              |                                                                   |
-| ``DEFAULT_RTPS|``                                                         | See Section :ref:`Discovery Configuration` for details about configuring discovery.                                                                                                                                                    |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-| ``DEFAULT_STATIC|``                                                       |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-| ``user-defined configuration instance name]``                             |                                                                                                                                                                                                                                        |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSGlobalTransportConfig=name``                                        | Specifies the name of the transport configuration that should be used as the global configuration.                                                                                                                                     | The default configuration is used as described in :ref:`Overview` |
-|                                                                           | This configuration is used by all entities that do not otherwise specify a transport configuration.                                                                                                                                    |                                                                   |
-|                                                                           | A special value of $file uses a transport configuration that includes all transport instances defined in the configuration file.                                                                                                       |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSInfoRepo=objref``                                                   | Object reference for locating the DCPS Information Repository.                                                                                                                                                                         | ``file://repo.ior``                                               |
-|                                                                           | This can either be a full CORBA IOR or a simple host:port string.                                                                                                                                                                      |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSLivelinessFactor=n``                                                | Percent of the liveliness lease duration after which a liveliness message is sent.                                                                                                                                                     | ``80``                                                            |
-|                                                                           | A value of 80 implies a 20% cushion of latency from the last detected heartbeat message.                                                                                                                                               |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSLogLevel=``                                                         | General logging control.                                                                                                                                                                                                               | ``warning``                                                       |
-|                                                                           | See section :ref:`Logging` for details.                                                                                                                                                                                                |                                                                   |
-| ``none|  error|  warning|  notice|  info|  debug``                        |                                                                                                                                                                                                                                        |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSMonitor=[0|1]``                                                     | Use the OpenDDS_monitor library to publish data on monitoring topics (see dds/monitor/README).                                                                                                                                         | ``0``                                                             |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSPendingTimeout=sec``                                                | The maximum duration in seconds a data writer will block to allow unsent samples to drain on deletion.                                                                                                                                 | ``0``                                                             |
-|                                                                           | By default, this option blocks indefinitely.                                                                                                                                                                                           |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSPersistentDataDir=path``                                            | The path on the file system where durable data will be stored.                                                                                                                                                                         | ``OpenDDS-durable-data-dir``                                      |
-|                                                                           | If the directory does not exist it will be created automatically.                                                                                                                                                                      |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSPublisherContentFilter=[1|0]``                                      | Controls the filter expression evaluation policy for content filtered topics.                                                                                                                                                          | ``1``                                                             |
-|                                                                           | When enabled (1), the publisher may drop any samples, before handing them off to the transport when these samples would have been ignored by all subscribers.                                                                          |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSSecurity=[0|1]``                                                    | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``0``                                                             |
-|                                                                           | If set to 1, enable DDS Security framework and built-in plugins.                                                                                                                                                                       |                                                                   |
-|                                                                           | Each Domain Participant using security must be created with certain QoS policy values.                                                                                                                                                 |                                                                   |
-|                                                                           | See chapter :ref:`DDS Security`: DDS Security for more information.                                                                                                                                                                    |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSSecurityDebug=CAT[,CAT...]``                                        | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``0``                                                             |
-|                                                                           | This controls the security debug logging granularity by category.                                                                                                                                                                      |                                                                   |
-|                                                                           | See Section  7.6.3  “Security Debug Logging” for details.                                                                                                                                                                              |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSSecurityDebugLevel=n``                                              | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``N/A``                                                           |
-|                                                                           | This controls the security debug logging granularity by debug level.                                                                                                                                                                   |                                                                   |
-|                                                                           | See Section  7.6.3  “Security Debug Logging” for details.                                                                                                                                                                              |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSSecurityFakeEncryption=[0|1]``                                      | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``0``                                                             |
-|                                                                           | This option, when set to 1, disables all encryption by making encryption and decryption no-ops.                                                                                                                                        |                                                                   |
-|                                                                           | OpenDDS still generates keys and performs other security bookkeeping, so this option is useful for debugging the security infrastructure by making it possible to manually inspect all messages.                                       |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSTransportDebugLevel=n``                                             | Integer value that controls the amount of debug information the transport layer prints.                                                                                                                                                | ``0``                                                             |
-|                                                                           | See section :ref:`Transport Layer Debug Logging` for details.                                                                                                                                                                          |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``pool_size=n_bytes``                                                     | Size of safety profile memory pool, in bytes.                                                                                                                                                                                          | ``41943040 (40 MiB)``                                             |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``pool_granularity=n_bytes``                                              | Granularity of safety profile memory pool in bytes.                                                                                                                                                                                    | ``8``                                                             |
-|                                                                           | Must be multiple of 8.                                                                                                                                                                                                                 |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``Scheduler=[``                                                           | Selects the thread scheduler to use.                                                                                                                                                                                                   | SCHED_OTHER                                                       |
-|                                                                           | Setting the scheduler to a value other than the default requires privileges on most systems.                                                                                                                                           |                                                                   |
-| ``SCHED_RR|``                                                             | A value of ``SCHED_RR``, ``SCHED_FIFO``, or ``SCHED_OTHER`` can be set.                                                                                                                                                                |                                                                   |
-|                                                                           | ``SCHED_OTHER`` is the default scheduler on most systems; ``SCHED_RR`` is a round robin scheduling algorithm; and ``SCHED_FIFO`` allows each thread to run until it either blocks or completes before switching to a different thread. |                                                                   |
-| ``SCHED_FIFO|``                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-| ``SCHED_OTHER]``                                                          |                                                                                                                                                                                                                                        |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``scheduler_slice=usec``                                                  | Some operating systems, such as SunOS, require a time slice value to be set when selecting schedulers other than the default.                                                                                                          | ``none``                                                          |
-|                                                                           | For those systems, this option can be used to set a value in microseconds.                                                                                                                                                             |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSBidirGIOP=[0|1]``                                                   | Use TAO’s BiDirectional GIOP feature for interaction with the DCPSInfoRepo.                                                                                                                                                            | ``1``                                                             |
-|                                                                           | With BiDir enabled, fewer sockets are needed since the same socket can be used for both client and server roles.                                                                                                                       |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSThreadStatusInterval=sec``                                          | Enable internal thread status reporting (see section :ref:`OpenDDSInternalThread Topic`) using the specified reporting interval, in seconds.                                                                                           | ``0 (disabled)``                                                  |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
-| ``DCPSTypeObjectEncoding=[  Normal |  WriteOldFormat |  ReadOldFormat ]`` | Before version 3.18, OpenDDS had a bug in the encoding used for TypeObject (from XTypes) and related data types.                                                                                                                       | ``Normal``                                                        |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | If this application needs to be compatible with an application built with an older OpenDDS (that has XTypes), select one of WriteOldFormat or ReadOldFormat.                                                                           |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | Using WriteOldFormat means that the TypeInformation written by this application will be understood by legacy applications.                                                                                                             |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | Using WriteOldFormat or ReadOldFormat means that TypeInformation written in the legacy format will be understood by this application.                                                                                                  |                                                                   |
-|                                                                           |                                                                                                                                                                                                                                        |                                                                   |
-|                                                                           | These options are designed to enable a phased migration from the incorrect implementation (pre-3.18) to a compliant one.                                                                                                               |                                                                   |
-|                                                                           | In the first phase, legacy applications can coexist with WriteOldFormat.                                                                                                                                                               |                                                                   |
-|                                                                           | In the second phase (once all legacy applications have been upgraded), WriteOldFormat can communicate with ReadOldFormat.                                                                                                              |                                                                   |
-|                                                                           | In the final phase (once all WriteOldFormat applications have been upgraded), ReadOldFormat applications can be transitioned to Normal.                                                                                                |                                                                   |
-+---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------+
+**Table  Common Configuration Options**
+
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| Option                                                                    | Description                                                                                                                                                                                                                            | Default                                                                                   |
++===========================================================================+========================================================================================================================================================================================================================================+===========================================================================================+
+| ``DCPSBit=[1|0]``                                                         | Toggle Built-In-Topic support.                                                                                                                                                                                                         | ``1``                                                                                     |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSBitLookupDurationMsec=msec``                                        | The maximum duration in milliseconds that the framework will wait for latent Built-In Topic information when retrieving BIT data given an instance handle.                                                                             | ``2000``                                                                                  |
+|                                                                           | The participant code may get an instance handle for a remote entity before the framework receives and processes the related BIT information.                                                                                           |                                                                                           |
+|                                                                           | The framework waits for up to the given amount of time before it fails the operation.                                                                                                                                                  |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSBitTransportIPAddress=addr``                                        | IP address identifying the local interface to be used by tcp transport for the Built-In Topics.                                                                                                                                        | ``INADDR_ANY``                                                                            |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | **NOTE**: This property is only applicable to a ``DCPSInfoRepo`` configuration.                                                                                                                                                        |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSBitTransportPort=port``                                             | Port used by the tcp transport for Built-In Topics.If the default of ‘0’ is used, the operating system will choose a port to use.                                                                                                      | ``0``                                                                                     |
+|                                                                           | **NOTE**: This property is only applicable to a ``DCPSInfoRepo`` configuration.                                                                                                                                                        |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSChunks=n``                                                          | Configurable number of chunks that a data writer's and reader's cached allocators will preallocate when the ``RESOURCE_LIMITS`` QoS value is infinite.                                                                                 | ``20``                                                                                    |
+|                                                                           | When all of the preallocated chunks are in use, OpenDDS allocates from the heap.                                                                                                                                                       |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSChunkAssociationMultiplier=n``                                      | Multiplier for the DCPSChunks or ``resource_limits.max_samples`` value to determine the total number of shallow copy chunks that are preallocated.                                                                                     | ``10``                                                                                    |
+|                                                                           | Set this to a value greater than the number of connections so the preallocated chunk handles do not run out.                                                                                                                           |                                                                                           |
+|                                                                           | A sample written to multiple data readers will not be copied multiple times but there is a shallow copy handle to that sample used to manage the delivery to each data reader.                                                         |                                                                                           |
+|                                                                           | The size of the handle is small so there is not great need to set this value close to the number of connections.                                                                                                                       |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSDebugLevel=n``                                                      | Integer value that controls the amount of debug information the DCPS layer prints.                                                                                                                                                     | 0                                                                                         |
+|                                                                           | Valid values are 0 through 10.                                                                                                                                                                                                         |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``ORBLogFile=filename``                                                   | Change log message destination to the file specified, which is opened in appending mode.                                                                                                                                               | None: use standard error                                                                  |
+|                                                                           | See the note below this table regarding the ORB prefix.                                                                                                                                                                                |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``ORBVerboseLogging=[0|1|2]``                                             | Add a prefix to each log message, using a format defined by the ACE library:                                                                                                                                                           | 0                                                                                         |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | 0 – no prefix1 – verbose “lite”: adds timestamp and priority2 – verbose: in addition to “lite” has host name, PID, program name                                                                                                        |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | See the note below this table regarding the ORB prefix.                                                                                                                                                                                |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSDefaultAddress=addr``                                               | Default value for the host portion of ``local_address`` for transport instances containing a ``local_address``.                                                                                                                        |                                                                                           |
+|                                                                           | Only applied when ``DCPSDefaultAddress`` is set to a non-empty value and no ``local_address`` is specified in the transport.                                                                                                           |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | Other subsystems (such as DDSI-RTPS Discovery) use ``DCPSDefaultAddress`` as a default value as well.                                                                                                                                  |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSDefaultDiscovery=[``                                                | Specifies a discovery configuration to use for any domain not explicitly configured.                                                                                                                                                   | ``DEFAULT_REPO``                                                                          |
+|                                                                           | ``DEFAULT_REPO`` translates to using the ``DCPSInfoRepo``.                                                                                                                                                                             |                                                                                           |
+| ``DEFAULT_REPO|``                                                         | ``DEFAULT_RTPS`` specifies the use of RTPS for discovery.                                                                                                                                                                              |                                                                                           |
+|                                                                           | ``DEFAULT_STATIC`` specifies the use of static discovery.                                                                                                                                                                              |                                                                                           |
+| ``DEFAULT_RTPS|``                                                         | See Section :ref:`run_time_configuration--discovery-configuration` for details about configuring discovery.                                                                                                                            |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+| ``DEFAULT_STATIC|``                                                       |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+| ``user-defined configuration instance name]``                             |                                                                                                                                                                                                                                        |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSGlobalTransportConfig=name``                                        | Specifies the name of the transport configuration that should be used as the global configuration.                                                                                                                                     | The default configuration is used as described in :ref:`run_time_configuration--overview` |
+|                                                                           | This configuration is used by all entities that do not otherwise specify a transport configuration.                                                                                                                                    |                                                                                           |
+|                                                                           | A special value of $file uses a transport configuration that includes all transport instances defined in the configuration file.                                                                                                       |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSInfoRepo=objref``                                                   | Object reference for locating the DCPS Information Repository.                                                                                                                                                                         | ``file://repo.ior``                                                                       |
+|                                                                           | This can either be a full CORBA IOR or a simple host:port string.                                                                                                                                                                      |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSLivelinessFactor=n``                                                | Percent of the liveliness lease duration after which a liveliness message is sent.                                                                                                                                                     | ``80``                                                                                    |
+|                                                                           | A value of 80 implies a 20% cushion of latency from the last detected heartbeat message.                                                                                                                                               |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSLogLevel=``                                                         | General logging control.                                                                                                                                                                                                               | ``warning``                                                                               |
+|                                                                           | See section :ref:`run_time_configuration--logging` for details.                                                                                                                                                                        |                                                                                           |
+| ``none|  error|  warning|  notice|  info|  debug``                        |                                                                                                                                                                                                                                        |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSMonitor=[0|1]``                                                     | Use the OpenDDS_monitor library to publish data on monitoring topics (see dds/monitor/README).                                                                                                                                         | ``0``                                                                                     |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSPendingTimeout=sec``                                                | The maximum duration in seconds a data writer will block to allow unsent samples to drain on deletion.                                                                                                                                 | ``0``                                                                                     |
+|                                                                           | By default, this option blocks indefinitely.                                                                                                                                                                                           |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSPersistentDataDir=path``                                            | The path on the file system where durable data will be stored.                                                                                                                                                                         | ``OpenDDS-durable-data-dir``                                                              |
+|                                                                           | If the directory does not exist it will be created automatically.                                                                                                                                                                      |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSPublisherContentFilter=[1|0]``                                      | Controls the filter expression evaluation policy for content filtered topics.                                                                                                                                                          | ``1``                                                                                     |
+|                                                                           | When enabled (1), the publisher may drop any samples, before handing them off to the transport when these samples would have been ignored by all subscribers.                                                                          |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSSecurity=[0|1]``                                                    | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``0``                                                                                     |
+|                                                                           | If set to 1, enable DDS Security framework and built-in plugins.                                                                                                                                                                       |                                                                                           |
+|                                                                           | Each Domain Participant using security must be created with certain QoS policy values.                                                                                                                                                 |                                                                                           |
+|                                                                           | See chapter :ref:`dds_security--dds-security`: DDS Security for more information.                                                                                                                                                      |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSSecurityDebug=CAT[,CAT...]``                                        | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``0``                                                                                     |
+|                                                                           | This controls the security debug logging granularity by category.                                                                                                                                                                      |                                                                                           |
+|                                                                           | See Section :ref:`run_time_configuration--security-debug-logging` for details.                                                                                                                                                         |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSSecurityDebugLevel=n``                                              | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``N/A``                                                                                   |
+|                                                                           | This controls the security debug logging granularity by debug level.                                                                                                                                                                   |                                                                                           |
+|                                                                           | See section :ref:`run_time_configuration--security-debug-logging` for details.                                                                                                                                                         |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSSecurityFakeEncryption=[0|1]``                                      | This setting is only available when OpenDDS is compiled with DDS Security enabled.                                                                                                                                                     | ``0``                                                                                     |
+|                                                                           | This option, when set to 1, disables all encryption by making encryption and decryption no-ops.                                                                                                                                        |                                                                                           |
+|                                                                           | OpenDDS still generates keys and performs other security bookkeeping, so this option is useful for debugging the security infrastructure by making it possible to manually inspect all messages.                                       |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSTransportDebugLevel=n``                                             | Integer value that controls the amount of debug information the transport layer prints.                                                                                                                                                | ``0``                                                                                     |
+|                                                                           | See section :ref:`run_time_configuration--transport-layer-debug-logging` for details.                                                                                                                                                  |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``pool_size=n_bytes``                                                     | Size of safety profile memory pool, in bytes.                                                                                                                                                                                          | ``41943040 (40 MiB)``                                                                     |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``pool_granularity=n_bytes``                                              | Granularity of safety profile memory pool in bytes.                                                                                                                                                                                    | ``8``                                                                                     |
+|                                                                           | Must be multiple of 8.                                                                                                                                                                                                                 |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``Scheduler=[``                                                           | Selects the thread scheduler to use.                                                                                                                                                                                                   | SCHED_OTHER                                                                               |
+|                                                                           | Setting the scheduler to a value other than the default requires privileges on most systems.                                                                                                                                           |                                                                                           |
+| ``SCHED_RR|``                                                             | A value of ``SCHED_RR``, ``SCHED_FIFO``, or ``SCHED_OTHER`` can be set.                                                                                                                                                                |                                                                                           |
+|                                                                           | ``SCHED_OTHER`` is the default scheduler on most systems; ``SCHED_RR`` is a round robin scheduling algorithm; and ``SCHED_FIFO`` allows each thread to run until it either blocks or completes before switching to a different thread. |                                                                                           |
+| ``SCHED_FIFO|``                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+| ``SCHED_OTHER]``                                                          |                                                                                                                                                                                                                                        |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``scheduler_slice=usec``                                                  | Some operating systems, such as SunOS, require a time slice value to be set when selecting schedulers other than the default.                                                                                                          | ``none``                                                                                  |
+|                                                                           | For those systems, this option can be used to set a value in microseconds.                                                                                                                                                             |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSBidirGIOP=[0|1]``                                                   | Use TAO’s BiDirectional GIOP feature for interaction with the DCPSInfoRepo.                                                                                                                                                            | ``1``                                                                                     |
+|                                                                           | With BiDir enabled, fewer sockets are needed since the same socket can be used for both client and server roles.                                                                                                                       |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSThreadStatusInterval=sec``                                          | Enable internal thread status reporting (see section :ref:`built_in_topics--openddsinternalthread-topic`) using the specified reporting interval, in seconds.                                                                          | ``0 (disabled)``                                                                          |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
+| ``DCPSTypeObjectEncoding=[  Normal |  WriteOldFormat |  ReadOldFormat ]`` | Before version 3.18, OpenDDS had a bug in the encoding used for TypeObject (from XTypes) and related data types.                                                                                                                       | ``Normal``                                                                                |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | If this application needs to be compatible with an application built with an older OpenDDS (that has XTypes), select one of WriteOldFormat or ReadOldFormat.                                                                           |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | Using WriteOldFormat means that the TypeInformation written by this application will be understood by legacy applications.                                                                                                             |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | Using WriteOldFormat or ReadOldFormat means that TypeInformation written in the legacy format will be understood by this application.                                                                                                  |                                                                                           |
+|                                                                           |                                                                                                                                                                                                                                        |                                                                                           |
+|                                                                           | These options are designed to enable a phased migration from the incorrect implementation (pre-3.18) to a compliant one.                                                                                                               |                                                                                           |
+|                                                                           | In the first phase, legacy applications can coexist with WriteOldFormat.                                                                                                                                                               |                                                                                           |
+|                                                                           | In the second phase (once all legacy applications have been upgraded), WriteOldFormat can communicate with ReadOldFormat.                                                                                                              |                                                                                           |
+|                                                                           | In the final phase (once all WriteOldFormat applications have been upgraded), ReadOldFormat applications can be transitioned to Normal.                                                                                                |                                                                                           |
++---------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------+
 
 The ``DCPSInfoRepo`` option’s value is passed to ``CORBA::ORB::string_to_object()`` and can be any Object URL type understandable by TAO (file, IOR, corbaloc, corbaname).
 A simplified endpoint description of the form ``<host>:<port>`` is also accepted.
@@ -287,9 +308,14 @@ The ``DCPSChunks`` option allows application developers to tune the amount of me
 Once the allocated memory is exhausted, additional chunks are allocated/deallocated from the heap.
 This feature of allocating from the heap when the preallocated memory is exhausted provides flexibility but performance will decrease when the preallocated memory is exhausted.
 
+.. _run_time_configuration--discovery-configuration:
+
 ***********************
 Discovery Configuration
 ***********************
+
+..
+    Sect<7.3>
 
 In DDS implementations, participants are instantiated in application processes and must discover one another in order to communicate.
 A DDS implementation uses the feature of domains to give context to the data being exchanged between DDS participants in the same domain.
@@ -305,8 +331,13 @@ Except for static discovery, each mechanism uses default values if no configurat
 The following sections show how to configure the advanced discovery capabilities.
 For example, some deployments may need to use multiple ``DCPSInfoRepo`` services or DDSI-RTPS discovery to satisfy interoperability requirements.
 
+.. _run_time_configuration--domain-configuration:
+
 Domain Configuration
 ====================
+
+..
+    Sect<7.3.1>
 
 An OpenDDS configuration file uses the ``[domain]`` section type to configure one or more discovery domains with each domain pointing to a discovery configuration in the same file or a default discovery configuration.
 OpenDDS applications can use a centralized discovery approach using the ``DCPSInfoRepo`` service or a peer-to-peer discovery approach using the RTPS discovery protocol standard or a combination of the two in the same deployment.
@@ -315,7 +346,7 @@ The static discovery mechanism does not have a dedicated section.
 Instead, users are expected to refer to the ``DEFAULT_STATIC`` instance.
 A single domain can refer to only one type of discovery section.
 
-See Sections :ref:`Configuring Applications for DCPSInfoRepo` for configuring ``[repository]`` sections, :ref:`Configuring for DDSI-RTPS Discovery` for configuring ``[rtps_discovery]``, and :ref:`Configuring for Static Discovery` for configuring static discovery.
+See Sections :ref:`run_time_configuration--configuring-applications-for-dcpsinforepo` for configuring ``[repository]`` sections, :ref:`run_time_configuration--configuring-for-ddsi-rtps-discovery` for configuring ``[rtps_discovery]``, and :ref:`run_time_configuration--configuring-for-static-discovery` for configuring static discovery.
 
 Ultimately a domain is assigned an integer value and a configuration file can support this in two ways.
 The first is to simply make the instance value the integer value assigned to the domain as shown here:
@@ -358,7 +389,7 @@ Here is an extension of our example:
     RepositoryIor=host1.mydomain.com:12345
 
 In this case our domain points to a ``[repository]`` section which is used for an OpenDDS ``DCPSInfoRepo`` service.
-See Section :ref:`Configuring Applications for DCPSInfoRepo` for more details.
+See Section :ref:`run_time_configuration--configuring-applications-for-dcpsinforepo` for more details.
 
 There are going to be occasions when specific domains are not identified in the configuration file.
 For example, if an OpenDDS application assigns a domain ID of 3 to its participants and the above example does not supply a configuration for domain id of 3 then the following can be used:
@@ -377,7 +408,7 @@ For example, if an OpenDDS application assigns a domain ID of 3 to its participa
 
 The ``DCPSDefaultDiscovery`` property tells the application to assign any participant that doesn’t have a domain id found in the configuration file to use a discovery type of ``DEFAULT_REPO`` which means “use a ``DCPSInfoRepo`` service”  and that ``DCPSInfoRepo`` service can be found at ``host3.mydomain.com:12345``.
 
-As shown in Table 7-2 the ``DCPSDefaultDiscovery`` property has three other values that can be used.
+As shown in :ref:`Table 7-2 <run_time_configuration--reftable9>` the ``DCPSDefaultDiscovery`` property has three other values that can be used.
 The ``DEFAULT_RTPS`` constant value informs participants that don’t have a domain configuration to use RTPS discovery to find other participants.
 Similarly, the ``DEFAULT_STATIC`` constant value informs the participants that don't have a domain configuration to use static discovery to find other participants.
 
@@ -402,11 +433,13 @@ Here is an example:
     RepositoryIor=host2.mydomain.com:12345
 
 By adding the ``DCPSDefaultDiscovery`` property to the ``[common]`` section, any participant that hasn’t been assigned to a domain id of ``1`` or ``2`` will use the configuration of ``DiscoveryConfig2``.
-For more explanation of a similar configuration for RTPS discovery see Section :ref:`Configuring for DDSI-RTPS Discovery`.
+For more explanation of a similar configuration for RTPS discovery see Section :ref:`run_time_configuration--configuring-for-ddsi-rtps-discovery`.
 
 Here are the available properties for the [domain] section.
 
-**Table 7-3 Domain Section Configuration Properties**
+.. _run_time_configuration--reftable10:
+
+**Table  Domain Section Configuration Properties**
 
 +------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                                   | Description                                                                                                                                                                                                                                    |
@@ -419,14 +452,19 @@ Here are the available properties for the [domain] section.
 |                                          | Provided for backward compatibility).                                                                                                                                                                                                          |
 +------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``DiscoveryConfig=config instance name`` | A user-defined string that refers to the instance name of a ``[repository]`` or ``[rtps_discovery]`` section in the same configuration file or one of the internal default values (``DEFAULT_REPO``, ``DEFAULT_RTPS``, or ``DEFAULT_STATIC``). |
-|                                          | (Also see the ``DCPSDefaultDiscovery`` property in Table 7-2)                                                                                                                                                                                  |
+|                                          | (Also see the ``DCPSDefaultDiscovery`` property in :ref:`Table 7-2 <run_time_configuration--reftable9>`)                                                                                                                                       |
 +------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``DefaultTransportConfig=config``        | A user-defined string that refers to the instance name of a ``[config]`` section.                                                                                                                                                              |
-|                                          | See Section :ref:`Transport Configuration`.                                                                                                                                                                                                    |
+|                                          | See Section :ref:`run_time_configuration--transport-configuration`.                                                                                                                                                                            |
 +------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+.. _run_time_configuration--configuring-applications-for-dcpsinforepo:
 
 Configuring Applications for DCPSInfoRepo
 =========================================
+
+..
+    Sect<7.3.2>
 
 An OpenDDS ``DCPSInfoRepo`` is a service on a local or remote node used for participant discovery.
 Configuring how participants should find ``DCPSInfoRepo`` is the purpose of this section.
@@ -538,15 +576,20 @@ This sets the value of ``DCPSInfoRepo`` such that if participants reading the co
 If ``DCPSInfoRepo`` is not defined in a configuration file or on the command line, then the OpenDDS default value for ``DCPSInfoRepo`` is ``file://repo.ior``.
 As mentioned prior, this is not likely to be the most useful in production environments and should lead to setting the value of ``DCPSInfoRepo`` by one of the means described in this section.
 
+.. _run_time_configuration--configuring-for-multiple-dcpsinforepo-instances:
+
 Configuring for Multiple DCPSInfoRepo Instances
 -----------------------------------------------
+
+..
+    Sect<7.3.2.1>
 
 The DDS entities in a single OpenDDS process can be associated with multiple DCPS information repositories (``DCPSInfoRepo``).
 
 The repository information and domain associations can be configured using a configuration file, or via application API.
 Internal defaults, command line arguments, and configuration file options will work as-is for existing applications that do not want to use multiple ``DCPSInfoRepo`` associations.
 
-Refer to Figure 7-1 as an example of a process that uses multiple ``DCPSInfoRepo`` repositories.
+Refer to :ref:`Figure 7-1 <run_time_configuration--reffigure4>` as an example of a process that uses multiple ``DCPSInfoRepo`` repositories.
 Processes ``A`` and ``B`` are typical application processes that have been configured to communicate with one another and discover one another in ``InfoRepo_1``.
 This is a simple use of basic discovery.
 However, an additional layer of context has been applied with the use of a specified domain (Domain ``1``).
@@ -558,7 +601,11 @@ This is Process ``E`` in our example.
 It contains two subscribers, one subscribing to publications from ``InfoRepo_1`` and the other subscribing to publications in ``InfoRepo_2``.
 What allows this configuration to work can be found in the ``configE.ini`` file.
 
-**Figure 7-1 Multiple DCPSInfoRepo Configuration**
+.. _run_time_configuration--reffigure4:
+
+.. image:: images/10000001000005B4000003E0BE5C08B1D30CA54A.png
+
+**Figure  Multiple DCPSInfoRepo Configuration**
 
 We will now look at the configuration file (referred to as ``configE.ini``) to demonstrate how Process ``E`` can communicate to both domains and separate ``DCPSInfoRepo`` services.
 For this example we will only show the discovery aspects of the configuration and not show transport content.
@@ -579,7 +626,7 @@ For this example we will only show the discovery aspects of the configuration an
     RepositoryIor=host2.mydomain.com:12345
 
 
-When Process ``E`` in Figure 7-1 reads in the above configuration it finds the occurrence of multiple domain sections.
+When Process ``E`` in :ref:`Figure 7-1 <run_time_configuration--reffigure4>` reads in the above configuration it finds the occurrence of multiple domain sections.
 As described in Section  each domain has an instance integer and a property of ``DiscoveryConfig`` defined.
 
 For the first domain (``[domain/1]``), the ``DiscoveryConfig`` property is supplied with the user-defined name of ``DiscoveryConfig1`` value.
@@ -598,7 +645,9 @@ There may be any number of repository or domain sections within a single configu
 
 Here are the valid properties for a ``[repository]`` section.
 
-**Table 7-4 Multiple repository configuration sections**
+.. _run_time_configuration--reftable11:
+
+**Table  Multiple repository configuration sections**
 
 +-----------------------+--------------------------------------+
 | Option                | Description                          |
@@ -610,8 +659,13 @@ Here are the valid properties for a ``[repository]`` section.
 |                       | Provided for backward compatibility) |
 +-----------------------+--------------------------------------+
 
+.. _run_time_configuration--configuring-for-ddsi-rtps-discovery:
+
 Configuring for DDSI-RTPS Discovery
 ===================================
+
+..
+    Sect<7.3.3>
 
 The OMG DDSI-RTPS specification gives the following simple description that forms the basis for the discovery approach used by OpenDDS and the two different protocols used to accomplish the discovery operations.
 The excerpt from the OMG DDSI-RTPS specification Section 8.5.1 is as follows:
@@ -630,7 +684,7 @@ Apart from this causality relationship, both protocols can be considered indepen
 
 The configuration options discussed in this section allow a user to specify property values to change the behavior of the Simple Participant Discovery Protocol (SPDP) and/or the Simple Endpoint Discovery Protocol (SEDP) default settings.
 
-DDSI-RTPS can be configured for a single domain or for multiple domains as was done in Section :ref:`Configuring for Multiple DCPSInfoRepo Instances`.
+DDSI-RTPS can be configured for a single domain or for multiple domains as was done in Section :ref:`run_time_configuration--configuring-for-multiple-dcpsinforepo-instances`.
 
 A simple configuration is achieved by specifying a property in the ``[common]`` section of our example configuration file.
 
@@ -683,12 +737,14 @@ Some important implementation notes regarding DDSI-RTPS discovery in OpenDDS are
 #. Domain IDs should be between 0 and 231 (inclusive) due to the way UDP ports are assigned to domain IDs.
    In each OpenDDS process, up to 120 domain participants are supported in each domain.
 
-#. OpenDDS's multicast transport (:ref:`IP Multicast Transport Configuration Options`) does not work with RTPS Discovery due to the way GUIDs are assigned (a warning will be issued if this is attempted).
+#. OpenDDS's multicast transport (:ref:`run_time_configuration--ip-multicast-transport-configuration-options`) does not work with RTPS Discovery due to the way GUIDs are assigned (a warning will be issued if this is attempted).
 
 The OMG DDSI-RTPS specification details several properties that can be adjusted from their defaults that influence the behavior of DDSI-RTPS discovery.
-Those properties, along with options specific to OpenDDS’s RTPS Discovery implementation, are listed in Table 7-5.
+Those properties, along with options specific to OpenDDS’s RTPS Discovery implementation, are listed in :ref:`Table 7-5 <run_time_configuration--reftable12>`.
 
-**Table 7-5 RTPS Discovery Configuration Options**
+.. _run_time_configuration--reftable12:
+
+**Table  RTPS Discovery Configuration Options**
 
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | Option                                        | Description                                                                                                                                                                                                           | Default                                  |
@@ -795,56 +851,56 @@ Those properties, along with options specific to OpenDDS’s RTPS Discovery impl
 | ``GuidInterface=iface``                       | Specifies the network interface to use when determining which local MAC address should appear in a GUID generated by this node.                                                                                       | The system / ACE library default is used |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SpdpRtpsRelayAddress=host:port``            | Specifies the address of the RtpsRelay for SPDP messages.                                                                                                                                                             |                                          |
-|                                               | See section :ref:`The RtpsRelay`.                                                                                                                                                                                     |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                                                                              |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SpdpRtpsRelaySendPeriod=period``            | Specifies the interval between SPDP announcements sent to the RtpsRelay.                                                                                                                                              | 30 seconds                               |
-|                                               | See section :ref:`The RtpsRelay`.                                                                                                                                                                                     |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                                                                              |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SedpRtpsRelayAddress=host:port``            | Specifies the address of the RtpsRelay for SEDP messages.                                                                                                                                                             |                                          |
-|                                               | See section :ref:`The RtpsRelay`.                                                                                                                                                                                     |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                                                                              |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``RtpsRelayOnly=[0|1]``                       | Only send RTPS message to the RtpsRelay (for debugging).                                                                                                                                                              | 0                                        |
-|                                               | See section :ref:`The RtpsRelay`.                                                                                                                                                                                     |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                                                                              |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``UseRtpsRelay=[0|1]``                        | Send messages to the RtpsRelay.                                                                                                                                                                                       | 0                                        |
 |                                               | Messages will only be sent if SpdpRtpsRelayAddress and/or SedpRtpsRelayAddress is set.                                                                                                                                |                                          |
-|                                               | See section :ref:`The RtpsRelay`.                                                                                                                                                                                     |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                                                                              |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SpdpStunServerAddress=host:port``           | Specifies the address of the STUN server to use for SPDP when using ICE.                                                                                                                                              |                                          |
-|                                               | See section 15.3                                                                                                                                                                                                      |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`                                                                                                                         |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SedpStunServerAddress=host:port``           | Specifies the address of the STUN server to use for SEDP when using ICE.                                                                                                                                              |                                          |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``UseIce=[0|1]``                              | Enable or disable ICE for both SPDP and SEDP.                                                                                                                                                                         | 0                                        |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceTa=msec``                                | Minimum interval between ICE sends.                                                                                                                                                                                   | 50                                       |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceConnectivityCheckTTL=sec``               | Maximum duration of connectivity check.                                                                                                                                                                               | 300                                      |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceChecklistPeriod=sec``                    | Attempt to cycle through all of the connectivity checks for a candidate in this amount of time.                                                                                                                       | 10                                       |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceIndicationPeriod=sec``                   | Send STUN indications to peers to maintain NAT bindings at this period.                                                                                                                                               | 15                                       |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceNominatedTTL=sec``                       | Forget a valid candidate if an indication is not received in this amount of time.                                                                                                                                     | 300                                      |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceServerReflexiveAddressPeriod=sec``       | Send a messages to the STUN server at this period.                                                                                                                                                                    | 30                                       |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceServerReflexiveIndicationCount=integer`` | Send this many indications before sending a new binding request to the STUN server.                                                                                                                                   | 10                                       |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceDeferredTriggeredCheckTTL=sec``          | Purge deferred checks after this amount of time.                                                                                                                                                                      | 300                                      |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``IceChangePasswordPeriod=sec``               | Change the ICE password after this amount of time.                                                                                                                                                                    | 300                                      |
-|                                               | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                                                                             |                                          |
+|                                               | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                                                                        |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``MaxAuthTime=sec``                           | Set the maximum time for authentication with DDS Security.                                                                                                                                                            | 300                                      |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
@@ -853,11 +909,13 @@ Those properties, along with options specific to OpenDDS’s RTPS Discovery impl
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SecureParticipantUserData=[0|1]``           | If DDS Security is enabled, the Participant’s USER_DATA QoS is omitted from unsecured discovery messages.                                                                                                             | ``0``                                    |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
-| ``UseXTypes=[``                               | Enables discovery extensions from the XTypes specification.                                                                                                                                                           | ``minimal``                              |
+| .. _run_time_configuration--usextypes:        | Enables discovery extensions from the XTypes specification.                                                                                                                                                           | ``minimal``                              |
 |                                               | Participants exchange top-level type information in endpoint announcements and extended type information using the Type Lookup Service.                                                                               |                                          |
-| ``no|0|``                                     |                                                                                                                                                                                                                       |                                          |
+| ``UseXTypes=[``                               |                                                                                                                                                                                                                       |                                          |
 |                                               | ``minimal`` or ``1`` uses ``MinimalTypeObject`` and ``complete`` or ``2`` uses ``CompleteTypeObject`` if available.                                                                                                   |                                          |
-| ``minimal|1|``                                | See :ref:`Representing Types with TypeObject and DynamicType` for more information on ``CompleteTypeObject`` and its use in the dynamic binding.                                                                      |                                          |
+| ``no|0|``                                     | See :ref:`xtypes--representing-types-with-typeobject-and-dynamictype` for more information on ``CompleteTypeObject`` and its use in the dynamic binding.                                                              |                                          |
+|                                               |                                                                                                                                                                                                                       |                                          |
+| ``minimal|1|``                                |                                                                                                                                                                                                                       |                                          |
 |                                               |                                                                                                                                                                                                                       |                                          |
 | ``complete|2``                                |                                                                                                                                                                                                                       |                                          |
 |                                               |                                                                                                                                                                                                                       |                                          |
@@ -878,10 +936,10 @@ Those properties, along with options specific to OpenDDS’s RTPS Discovery impl
 | ``MaxParticipantsInAuthentication=n``         | If DDS Security is enabled, this option (when set to a positive number) limits the number of peer participants that can be concurrently in the process of authenticating – that is, not yet completed authentication. | 0 (unlimited)                            |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SedpReceivePreallocatedMessageBlocks=n``    | Configure the receive_preallocated_message_blocks attribute of SEDP’s transport.                                                                                                                                      | 0 (use default)                          |
-|                                               | See :ref:`Configuration Options Common to All Transports`.                                                                                                                                                            |                                          |
+|                                               | See :ref:`run_time_configuration--configuration-options-common-to-all-transports`.                                                                                                                                    |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``SedpReceivePreallocatedDataBlocks=n``       | Configure the receive_preallocated_data_blocks attribute of SEDP’s transport.                                                                                                                                         | 0 (use default)                          |
-|                                               | See :ref:`Configuration Options Common to All Transports`.                                                                                                                                                            |                                          |
+|                                               | See :ref:`run_time_configuration--configuration-options-common-to-all-transports`.                                                                                                                                    |                                          |
 +-----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------+
 | ``CheckSourceIp=[0|1]``                       | Incoming participant announcements (SPDP) are checked to verify that their source IP address matches one of:                                                                                                          | 1 (enabled)                              |
 |                                               |                                                                                                                                                                                                                       |                                          |
@@ -896,14 +954,24 @@ Those properties, along with options specific to OpenDDS’s RTPS Discovery impl
 
 .. note:: If the environment variable ``OPENDDS_RTPS_DEFAULT_D0`` is set, its value is used as the ``D0`` default value.
 
+.. _run_time_configuration--additional-ddsi-rtps-discovery-features:
+
 Additional DDSI-RTPS Discovery Features
 ---------------------------------------
 
+..
+    Sect<7.3.3.1>
+
 The DDSI_RTPS discovery implementation creates and manages a transport instance –  specifically an object of class ``RtpsUdpInst``.
-In order for applications to access this object and enable advanced features (see Additional RTPS_UDP Features on page 136), the ``RtpsDiscovery`` class provides the method ``sedp_transport_inst(domainId, participant)``.
+In order for applications to access this object and enable advanced features (see :ref:`Additional RTPS_UDP Features <run_time_configuration--additional-rtps-udp-features>`), the ``RtpsDiscovery`` class provides the method ``sedp_transport_inst(domainId, participant)``.
+
+.. _run_time_configuration--configuring-for-static-discovery:
 
 Configuring for Static Discovery
 ================================
+
+..
+    Sect<7.3.4>
 
 Static discovery may be used when a DDS domain has a fixed number of processes and data readers/writers that are all known *a priori*.
 Data readers and writers are collectively known as *endpoints*.
@@ -914,9 +982,9 @@ A domain participant learns about the existence of an endpoint through hints sup
 .. note:: Currently, static discovery can only be used for endpoints using the RTPS UDP transport.
 
 Static discovery introduces the following configuration file sections:  ``[topic/*]``,``[datawriterqos/*]``, ``[datareaderqos/*]``, ``[publisherqos/*]``, ``[subscriberqos/*]``, and ``[endpoint/*]``.
-The ``[topic/*]`` (Table 7-6) section is used to introduce a topic.
-The ``[datawriterqos/*]`` (Table 7-7), ``[datareaderqos/*]`` (Table 7-8), ``[publisherqos/*]`` (Table 7-9), and ``[subscriberqos/*]`` (Table 7-10) sections are used to describe a QoS of the associated type.
-The ``[endpoint/*]`` (Table 7-11) section describes a data reader or writer.
+The ``[topic/*]`` (:ref:`Table 7-6 <run_time_configuration--reftable13>`) section is used to introduce a topic.
+The ``[datawriterqos/*]`` (:ref:`Table 7-7 <run_time_configuration--reftable14>`), ``[datareaderqos/*]`` (:ref:`Table 7-8 <run_time_configuration--reftable15>`), ``[publisherqos/*]`` (:ref:`Table 7-9 <run_time_configuration--reftable16>`), and ``[subscriberqos/*]`` (:ref:`Table 7-10 <run_time_configuration--reftable17>`) sections are used to describe a QoS of the associated type.
+The ``[endpoint/*]`` (:ref:`Table 7-11 <run_time_configuration--reftable18>`) section describes a data reader or writer.
 
 Data reader and writer objects must be identified by the user so that the static discovery mechanism can associate them with the correct ``[endpoint/*]`` section in the configuration file.
 This is done by setting the ``user_data`` of the ``DomainParticipantQos`` to an octet sequence of length 6.
@@ -973,12 +1041,14 @@ The code to configure the DataReaderQos is similar:
 The domain id, which is 34 in the example, should be passed to the call to ``create_participant``.
 
 In the example, the endpoint configuration for ``MyReader`` references ``MyConfig`` which in turn references ``MyTransport``.
-Transport configuration is described in Section :ref:`Transport Configuration`.
+Transport configuration is described in Section :ref:`run_time_configuration--transport-configuration`.
 The important detail for static discovery is that at least one of the transports contains a known network address (``1.2.3.4:30000``).
 An error will be issued if an address cannot be determined for an endpoint.
 The static discovery implementation also checks that the QoS of a data reader or data writer object matches the QoS specified in the configuration file.
 
-**Table 7-6 [topic/*] Configuration Options**
+.. _run_time_configuration--reftable13:
+
+**Table  [topic/*] Configuration Options**
 
 +----------------------+------------------------------------------------------------+------------------------------+
 | Option               | Description                                                | Default                      |
@@ -989,171 +1059,186 @@ The static discovery implementation also checks that the QoS of a data reader or
 |                      | This is typically a  CORBA interface repository type name. |                              |
 +----------------------+------------------------------------------------------------+------------------------------+
 
-**Table 7-7 [datawriterqos/*] Configuration Options**
+.. _run_time_configuration--reftable14:
 
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| Option                                                                          | Description                            | Default        |
-+=================================================================================+========================================+================+
-| ``durability.kind=[  VOLATILE|TRANSIENT_LOCAL]``                                | See Section :ref:`DURABILITY`.         | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``deadline.period.sec=[  numeric|DURATION_INFINITE_SEC]``                       | See Section :ref:`DEADLINE`.           | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``deadline.period.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``               | See Section :ref:`DEADLINE`.           | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``latency_budget.duration.sec=[  numeric|DURATION_INFINITE_SEC]``               | See Section :ref:`LATENCY_BUDGET`.     | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``latency_budget.duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``       | See Section :ref:`LATENCY_BUDGET`.     | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``liveliness.kind=[  AUTOMATIC|  MANUAL_BY_TOPIC|  MANUAL_BY_PARTICIPANT]``     | See Section :ref:`LIVELINESS`.         | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``liveliness.lease_duration.sec=[  numeric|DURATION_INFINITE_SEC]``             | See Section :ref:`LIVELINESS`.         | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``liveliness.lease_duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``     | See Section :ref:`LIVELINESS`.         | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``reliability.kind=[BEST_EFFORT|RELIABILE]``                                    | See Section :ref:`RELIABILITY`.        | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``reliability.max_blocking_time.sec=[  numeric|DURATION_INFINITE_SEC]``         | See Section :ref:`RELIABILITY`.        | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``reliability.max_blocking_time.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]`` | See Section :ref:`RELIABILITY`.        | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``destination_order.kind=[  BY_SOURCE_TIMESTAMP|  BY_RECEPTION_TIMESTAMP]``     | See Section :ref:`DESTINATION_ORDER`.  | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``history.kind=[KEEP_LAST|KEEP_ALL]``                                           | See Section :ref:`HISTORY`.            | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``history.depth=numeric``                                                       | See Section :ref:`HISTORY`.            | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``resource_limits.max_samples=numeric``                                         | See Section :ref:`RESOURCE_LIMITS`.    | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``resource_limits.max_instances=numeric``                                       | See Section :ref:`RESOURCE_LIMITS`.    | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``resource_limits.max_samples_per_instance=  numeric``                          | See Section :ref:`RESOURCE_LIMITS`.    | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``transport_priority.value=numeric``                                            | See Section :ref:`TRANSPORT_PRIORITY`. | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``lifespan.duration.sec=[  numeric|DURATION_INFINITE_SEC]``                     | See Section :ref:`LIFESPAN`.           | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``lifespan.duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``             | See Section :ref:`LIFESPAN`.           | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``ownership.kind=[SHARED|EXCLUSIVE]``                                           | See Section :ref:`OWNERSHIP`.          | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
-| ``ownership_strength.value=numeric``                                            | See Section :ref:`OWNERSHIP_STRENGTH`. | See Table 3-5. |
-+---------------------------------------------------------------------------------+----------------------------------------+----------------+
+**Table  [datawriterqos/*] Configuration Options**
 
-**Table 7-8 [datareaderqos/*] Configuration Options**
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| Option                                                                          | Description                                                | Default                                               |
++=================================================================================+============================================================+=======================================================+
+| ``durability.kind=[  VOLATILE|TRANSIENT_LOCAL]``                                | See Section :ref:`quality_of_service--durability`.         | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``deadline.period.sec=[  numeric|DURATION_INFINITE_SEC]``                       | See Section :ref:`quality_of_service--deadline`.           | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``deadline.period.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``               | See Section :ref:`quality_of_service--deadline`.           | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``latency_budget.duration.sec=[  numeric|DURATION_INFINITE_SEC]``               | See Section :ref:`quality_of_service--latency-budget`.     | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``latency_budget.duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``       | See Section :ref:`quality_of_service--latency-budget`.     | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``liveliness.kind=[  AUTOMATIC|  MANUAL_BY_TOPIC|  MANUAL_BY_PARTICIPANT]``     | See Section :ref:`quality_of_service--liveliness`.         | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``liveliness.lease_duration.sec=[  numeric|DURATION_INFINITE_SEC]``             | See Section :ref:`quality_of_service--liveliness`.         | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``liveliness.lease_duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``     | See Section :ref:`quality_of_service--liveliness`.         | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``reliability.kind=[BEST_EFFORT|RELIABILE]``                                    | See Section :ref:`quality_of_service--reliability`.        | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``reliability.max_blocking_time.sec=[  numeric|DURATION_INFINITE_SEC]``         | See Section :ref:`quality_of_service--reliability`.        | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``reliability.max_blocking_time.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]`` | See Section :ref:`quality_of_service--reliability`.        | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``destination_order.kind=[  BY_SOURCE_TIMESTAMP|  BY_RECEPTION_TIMESTAMP]``     | See Section :ref:`quality_of_service--destination-order`.  | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``history.kind=[KEEP_LAST|KEEP_ALL]``                                           | See Section :ref:`quality_of_service--history`.            | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``history.depth=numeric``                                                       | See Section :ref:`quality_of_service--history`.            | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``resource_limits.max_samples=numeric``                                         | See Section :ref:`quality_of_service--resource-limits`.    | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``resource_limits.max_instances=numeric``                                       | See Section :ref:`quality_of_service--resource-limits`.    | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``resource_limits.max_samples_per_instance=  numeric``                          | See Section :ref:`quality_of_service--resource-limits`.    | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``transport_priority.value=numeric``                                            | See Section :ref:`quality_of_service--transport-priority`. | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``lifespan.duration.sec=[  numeric|DURATION_INFINITE_SEC]``                     | See Section :ref:`quality_of_service--lifespan`.           | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``lifespan.duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``             | See Section :ref:`quality_of_service--lifespan`.           | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``ownership.kind=[SHARED|EXCLUSIVE]``                                           | See Section :ref:`quality_of_service--ownership`.          | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
+| ``ownership_strength.value=numeric``                                            | See Section :ref:`quality_of_service--ownership-strength`. | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------------------------------------------------------------+------------------------------------------------------------+-------------------------------------------------------+
 
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| Option                                                                                                   | Description                               | Default        |
-+==========================================================================================================+===========================================+================+
-| ``durability.kind=[  VOLATILE|TRANSIENT_LOCAL]``                                                         | See Section :ref:`DURABILITY`.            | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``deadline.period.sec=[  numeric|DURATION_INFINITE_SEC]``                                                | See Section :ref:`DEADLINE`.              | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``deadline.period.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                                        | See Section :ref:`DEADLINE`.              | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``latency_budget.duration.sec=[  numeric|DURATION_INFINITE_SEC]``                                        | See Section :ref:`LATENCY_BUDGET`.        | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``latency_budget.duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                                | See Section :ref:`LATENCY_BUDGET`.        | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``liveliness.kind=[  AUTOMATIC|  MANUAL_BY_TOPIC|  MANUAL_BY_PARTICIPANT]``                              | See Section :ref:`LIVELINESS`.            | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``liveliness.lease_duration.sec=[  numeric|DURATION_INFINITE_SEC]``                                      | See Section :ref:`LIVELINESS`.            | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``liveliness.lease_duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                              | See Section :ref:`LIVELINESS`.            | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reliability.kind=[BEST_EFFORT|RELIABILE]``                                                             | See Section :ref:`RELIABILITY`.           | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reliability.max_blocking_time.sec=[  numeric|DURATION_INFINITE_SEC]``                                  | See Section :ref:`RELIABILITY`.           | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reliability.max_blocking_time.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                          | See Section :ref:`RELIABILITY`.           | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``destination_order.kind=[  BY_SOURCE_TIMESTAMP|  BY_RECEPTION_TIMESTAMP]``                              | See Section :ref:`DESTINATION_ORDER`.     | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``history.kind=[KEEP_LAST|KEEP_ALL]``                                                                    | See Section :ref:`HISTORY`.               | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``history.depth=numeric``                                                                                | See Section :ref:`HISTORY`.               | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``resource_limits.max_samples=numeric``                                                                  | See Section :ref:`RESOURCE_LIMITS`.       | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``resource_limits.max_instances=numeric``                                                                | See Section :ref:`RESOURCE_LIMITS`.       | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``resource_limits.max_samples_per_instance=  numeric``                                                   | See Section :ref:`RESOURCE_LIMITS`.       | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``time_based_filter.minimum_separation.sec=[  numeric|DURATION_INFINITE_SEC]``                           | See Section :ref:`TIME_BASED_FILTER`.     | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``time_based_filter.minimum_separation.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                   | See Section :ref:`TIME_BASED_FILTER`.     | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reader_data_lifecycle.autopurge_nowriter_samples_delay.sec=[  numeric|DURATION_INFINITE_SEC]``         | See Section :ref:`READER_DATA_LIFECYCLE`. | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reader_data_lifecycle.autopurge_nowriter_samples_delay.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]`` | See Section :ref:`READER_DATA_LIFECYCLE`. | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reader_data_lifecycle.autopurge_dispose_samples_delay.sec=[  numeric|DURATION_INFINITE_SEC]``          | See Section :ref:`READER_DATA_LIFECYCLE`. | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
-| ``reader_data_lifecycle.autopurge_dispose_samples_delay.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``  | See Section :ref:`READER_DATA_LIFECYCLE`. | See Table 3-6. |
-+----------------------------------------------------------------------------------------------------------+-------------------------------------------+----------------+
+.. _run_time_configuration--reftable15:
 
-**Table 7-9 [publisherqos/*] Configuration Options**
+**Table  [datareaderqos/*] Configuration Options**
 
-+------------------------------------------------------+----------------------------------+----------------+
-| Option                                               | Description                      | Default        |
-+======================================================+==================================+================+
-| ``presentation.access_scope=[INSTANCE|TOPIC|GROUP]`` | See Section :ref:`PRESENTATION`. | See Table 3-3. |
-+------------------------------------------------------+----------------------------------+----------------+
-| ``presentation.coherent_access=[true|false]``        | See Section :ref:`PRESENTATION`. | See Table 3-3. |
-+------------------------------------------------------+----------------------------------+----------------+
-| ``presentation.ordered_access=[true|false]``         | See Section :ref:`PRESENTATION`. | See Table 3-3. |
-+------------------------------------------------------+----------------------------------+----------------+
-| ``partition.name=name0,name1,...``                   | See Section :ref:`PARTITION`.    | See Table 3-3. |
-+------------------------------------------------------+----------------------------------+----------------+
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| Option                                                                                                   | Description                                                   | Default                                               |
++==========================================================================================================+===============================================================+=======================================================+
+| ``durability.kind=[  VOLATILE|TRANSIENT_LOCAL]``                                                         | See Section :ref:`quality_of_service--durability`.            | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``deadline.period.sec=[  numeric|DURATION_INFINITE_SEC]``                                                | See Section :ref:`quality_of_service--deadline`.              | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``deadline.period.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                                        | See Section :ref:`quality_of_service--deadline`.              | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``latency_budget.duration.sec=[  numeric|DURATION_INFINITE_SEC]``                                        | See Section :ref:`quality_of_service--latency-budget`.        | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``latency_budget.duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                                | See Section :ref:`quality_of_service--latency-budget`.        | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``liveliness.kind=[  AUTOMATIC|  MANUAL_BY_TOPIC|  MANUAL_BY_PARTICIPANT]``                              | See Section :ref:`quality_of_service--liveliness`.            | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``liveliness.lease_duration.sec=[  numeric|DURATION_INFINITE_SEC]``                                      | See Section :ref:`quality_of_service--liveliness`.            | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``liveliness.lease_duration.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                              | See Section :ref:`quality_of_service--liveliness`.            | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reliability.kind=[BEST_EFFORT|RELIABILE]``                                                             | See Section :ref:`quality_of_service--reliability`.           | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reliability.max_blocking_time.sec=[  numeric|DURATION_INFINITE_SEC]``                                  | See Section :ref:`quality_of_service--reliability`.           | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reliability.max_blocking_time.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                          | See Section :ref:`quality_of_service--reliability`.           | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``destination_order.kind=[  BY_SOURCE_TIMESTAMP|  BY_RECEPTION_TIMESTAMP]``                              | See Section :ref:`quality_of_service--destination-order`.     | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``history.kind=[KEEP_LAST|KEEP_ALL]``                                                                    | See Section :ref:`quality_of_service--history`.               | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``history.depth=numeric``                                                                                | See Section :ref:`quality_of_service--history`.               | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``resource_limits.max_samples=numeric``                                                                  | See Section :ref:`quality_of_service--resource-limits`.       | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``resource_limits.max_instances=numeric``                                                                | See Section :ref:`quality_of_service--resource-limits`.       | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``resource_limits.max_samples_per_instance=  numeric``                                                   | See Section :ref:`quality_of_service--resource-limits`.       | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``time_based_filter.minimum_separation.sec=[  numeric|DURATION_INFINITE_SEC]``                           | See Section :ref:`quality_of_service--time-based-filter`.     | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``time_based_filter.minimum_separation.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``                   | See Section :ref:`quality_of_service--time-based-filter`.     | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reader_data_lifecycle.autopurge_nowriter_samples_delay.sec=[  numeric|DURATION_INFINITE_SEC]``         | See Section :ref:`quality_of_service--reader-data-lifecycle`. | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reader_data_lifecycle.autopurge_nowriter_samples_delay.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]`` | See Section :ref:`quality_of_service--reader-data-lifecycle`. | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reader_data_lifecycle.autopurge_dispose_samples_delay.sec=[  numeric|DURATION_INFINITE_SEC]``          | See Section :ref:`quality_of_service--reader-data-lifecycle`. | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
+| ``reader_data_lifecycle.autopurge_dispose_samples_delay.nanosec=[  numeric|DURATION_INFINITE_NANOSEC]``  | See Section :ref:`quality_of_service--reader-data-lifecycle`. | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++----------------------------------------------------------------------------------------------------------+---------------------------------------------------------------+-------------------------------------------------------+
 
-**Table 7-10 [subscriberqos/*] Configuration Options**
+.. _run_time_configuration--reftable16:
 
-+------------------------------------------------------+----------------------------------+----------------+
-| Option                                               | Description                      | Default        |
-+======================================================+==================================+================+
-| ``presentation.access_scope=[INSTANCE|TOPIC|GROUP]`` | See Section :ref:`PRESENTATION`. | See Table 3-4. |
-+------------------------------------------------------+----------------------------------+----------------+
-| ``presentation.coherent_access=[true|false]``        | See Section :ref:`PRESENTATION`. | See Table 3-4. |
-+------------------------------------------------------+----------------------------------+----------------+
-| ``presentation.ordered_access=[true|false]``         | See Section :ref:`PRESENTATION`. | See Table 3-4. |
-+------------------------------------------------------+----------------------------------+----------------+
-| ``partition.name=name0,name1,...``                   | See Section :ref:`PARTITION`.    | See Table 3-4. |
-+------------------------------------------------------+----------------------------------+----------------+
+**Table  [publisherqos/*] Configuration Options**
 
-**Table 7-11 [endpoint/*] Configuration Options**
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| Option                                               | Description                                          | Default                                               |
++======================================================+======================================================+=======================================================+
+| ``presentation.access_scope=[INSTANCE|TOPIC|GROUP]`` | See Section :ref:`quality_of_service--presentation`. | See :ref:`Table 3-3 <quality_of_service--reftable4>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| ``presentation.coherent_access=[true|false]``        | See Section :ref:`quality_of_service--presentation`. | See :ref:`Table 3-3 <quality_of_service--reftable4>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| ``presentation.ordered_access=[true|false]``         | See Section :ref:`quality_of_service--presentation`. | See :ref:`Table 3-3 <quality_of_service--reftable4>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| ``partition.name=name0,name1,...``                   | See Section :ref:`quality_of_service--partition`.    | See :ref:`Table 3-3 <quality_of_service--reftable4>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
 
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| Option                    | Description                                                                               | Default        |
-+===========================+===========================================================================================+================+
-| ``domain=numeric``        | Domain id for endpoint in range 0-231.                                                    | Required       |
-|                           | Used to form GUID of endpoint.                                                            |                |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``participant=hexstring`` | String of 12 hexadecimal digits.                                                          | Required       |
-|                           | Used to form GUID of endpoint.                                                            |                |
-|                           | All endpoints with the same domain/participant combination should be in the same process. |                |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``entity=hexstring``      | String of 6 hexadecimal digits.                                                           | Required       |
-|                           | Used to form GUID of endpoint.                                                            |                |
-|                           | The combination of domain/participant/entity should be unique.                            |                |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``type=[reader|writer]``  | Determines if the entity is a data reader or data writer.                                 | Required       |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``topic=name``            | Refers to a ``[topic/*]`` section.                                                        | Required       |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``datawriterqos=name``    | Refers to a ``[datawriterqos/*]`` section.                                                | See Table 3-5. |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``datareaderqos=name``    | Refers to a ``[datareaderqos/*]`` section.                                                | See Table 3-6. |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``publisherqos=name``     | Refers to a ``[publisherqos/*]`` section.                                                 | See Table 3-3. |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``subscriberqos=name``    | Refers to a ``[subscriberqos/*]`` section.                                                | See Table 3-4. |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ``config``                | Refers to a transport configuration in a ``[config/*]`` section.                          |                |
-|                           | This is used to determine a network address for the endpoint.                             |                |
-+---------------------------+-------------------------------------------------------------------------------------------+----------------+
+.. _run_time_configuration--reftable17:
+
+**Table  [subscriberqos/*] Configuration Options**
+
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| Option                                               | Description                                          | Default                                               |
++======================================================+======================================================+=======================================================+
+| ``presentation.access_scope=[INSTANCE|TOPIC|GROUP]`` | See Section :ref:`quality_of_service--presentation`. | See :ref:`Table 3-4 <quality_of_service--reftable5>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| ``presentation.coherent_access=[true|false]``        | See Section :ref:`quality_of_service--presentation`. | See :ref:`Table 3-4 <quality_of_service--reftable5>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| ``presentation.ordered_access=[true|false]``         | See Section :ref:`quality_of_service--presentation`. | See :ref:`Table 3-4 <quality_of_service--reftable5>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+| ``partition.name=name0,name1,...``                   | See Section :ref:`quality_of_service--partition`.    | See :ref:`Table 3-4 <quality_of_service--reftable5>`. |
++------------------------------------------------------+------------------------------------------------------+-------------------------------------------------------+
+
+.. _run_time_configuration--reftable18:
+
+**Table  [endpoint/*] Configuration Options**
+
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| Option                    | Description                                                                               | Default                                               |
++===========================+===========================================================================================+=======================================================+
+| ``domain=numeric``        | Domain id for endpoint in range 0-231.                                                    | Required                                              |
+|                           | Used to form GUID of endpoint.                                                            |                                                       |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``participant=hexstring`` | String of 12 hexadecimal digits.                                                          | Required                                              |
+|                           | Used to form GUID of endpoint.                                                            |                                                       |
+|                           | All endpoints with the same domain/participant combination should be in the same process. |                                                       |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``entity=hexstring``      | String of 6 hexadecimal digits.                                                           | Required                                              |
+|                           | Used to form GUID of endpoint.                                                            |                                                       |
+|                           | The combination of domain/participant/entity should be unique.                            |                                                       |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``type=[reader|writer]``  | Determines if the entity is a data reader or data writer.                                 | Required                                              |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``topic=name``            | Refers to a ``[topic/*]`` section.                                                        | Required                                              |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``datawriterqos=name``    | Refers to a ``[datawriterqos/*]`` section.                                                | See :ref:`Table 3-5 <quality_of_service--reftable6>`. |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``datareaderqos=name``    | Refers to a ``[datareaderqos/*]`` section.                                                | See :ref:`Table 3-6 <quality_of_service--reftable7>`. |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``publisherqos=name``     | Refers to a ``[publisherqos/*]`` section.                                                 | See :ref:`Table 3-3 <quality_of_service--reftable4>`. |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``subscriberqos=name``    | Refers to a ``[subscriberqos/*]`` section.                                                | See :ref:`Table 3-4 <quality_of_service--reftable5>`. |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+| ``config``                | Refers to a transport configuration in a ``[config/*]`` section.                          |                                                       |
+|                           | This is used to determine a network address for the endpoint.                             |                                                       |
++---------------------------+-------------------------------------------------------------------------------------------+-------------------------------------------------------+
+
+.. _run_time_configuration--transport-configuration:
 
 ***********************
 Transport Configuration
 ***********************
+
+..
+    Sect<7.4>
 
 Beginning with OpenDDS 3.0, a new transport configuration design has been implemented.
 The basic goals of this design were to:
@@ -1174,13 +1259,23 @@ The basic goals of this design were to:
 * Whenever possible, avoid dependence on the ACE Service Configurator and its configuration files.
 
 Unfortunately, implementing these new capabilities involved breaking of backward compatibility with OpenDDS transport configuration code and files from previous releases.
-See ``$DDS_ROOT/docs/OpenDDS_3.0_Transition.txt`` for information on how to convert your existing application to use the new transport configuration design.
+See :ghfile:`docs/OpenDDS_3.0_Transition.txt` for information on how to convert your existing application to use the new transport configuration design.
+
+.. _run_time_configuration--overview:
 
 Overview
 ========
 
+..
+    Sect<7.4.1>
+
+.. _run_time_configuration--transport-concepts:
+
 Transport Concepts
 ------------------
+
+..
+    Sect<7.4.1.1>
 
 This section provides an overview of the concepts involved in transport configuration and how they interact.
 
@@ -1198,8 +1293,13 @@ The Global Transport Configuration can be specified by the user via either confi
 If not defined by the user, a default transport configuration is used which contains all available transport implementations with their default configuration parameters.
 If you don’t specifically load or link in any other transport implementations, OpenDDS uses the tcp transport for all communication.
 
+.. _run_time_configuration--how-opendds-selects-a-transport:
+
 How OpenDDS Selects a Transport
 -------------------------------
+
+..
+    Sect<7.4.1.2>
 
 Currently, the behavior for OpenDDS is that Data Writers actively connect to Data Readers, which are passively awaiting those connections.
 Data Readers “listen” for connections on each of the Transport Instances that are defined in their Transport Configuration.
@@ -1216,14 +1316,24 @@ For example, if the writer specifies udp and tcp transport instances and the rea
 Matching algorithms may also be affected by QoS parameters, configuration of the instances, and other specifics of the transport implementation.
 The first pair of Transport Instances that successfully “connect” results in a data link that is used for all subsequent data sample publication.
 
+.. _run_time_configuration--configuration-file-examples:
+
 Configuration File Examples
 ===========================
+
+..
+    Sect<7.4.2>
 
 The following examples explain the basic features of transport configuration via files and describe some common use cases.
 These are followed by full reference documentation for these features.
 
+.. _run_time_configuration--single-transport-configuration:
+
 Single Transport Configuration
 ------------------------------
+
+..
+    Sect<7.4.2.1>
 
 The simplest way to provide a transport configuration for your application is to use the OpenDDS configuration file.
 Here is a sample configuration file that might be used by an application running on a computer with two network interfaces that only wants to communicate using one of them:
@@ -1242,16 +1352,21 @@ Here is a sample configuration file that might be used by an application running
 
 This file does the following (starting from the bottom up):
 
-* Defines a transport instance named ``mytcp`` with a transport type of tcp and the local address specified as ``myhost``, which is the host name corresponding to the network interface we want to use.
+#. Defines a transport instance named ``mytcp`` with a transport type of tcp and the local address specified as ``myhost``, which is the host name corresponding to the network interface we want to use.
 
-* Defines a transport configuration named ``myconfig`` that uses the transport instance ``mytcp`` as its only transport.
+#. Defines a transport configuration named ``myconfig`` that uses the transport instance ``mytcp`` as its only transport.
 
-* Makes the transport configuration named ``myconfig`` the global transport configuration for all entities in this process.
+#. Makes the transport configuration named ``myconfig`` the global transport configuration for all entities in this process.
 
-A process using this configuration file utilizes our customized transport configuration for all Data Readers and Writers created by it (unless we specifically bind another configuration in the code as described in :ref:`Using Multiple Configurations`).
+A process using this configuration file utilizes our customized transport configuration for all Data Readers and Writers created by it (unless we specifically bind another configuration in the code as described in :ref:`run_time_configuration--using-multiple-configurations`).
+
+.. _run_time_configuration--using-mixed-transports:
 
 Using Mixed Transports
 ----------------------
+
+..
+    Sect<7.4.2.2>
 
 This example configures an application to primarily use multicast and to “fall back” to tcp when it is unable to use multicast.
 Here is the configuration file:
@@ -1277,8 +1392,13 @@ Users are free to use any of the transport-specific configuration parameters tha
 Assuming that all participating processes use this configuration file, the application attempts to use multicast to initiate communication between data writers and readers.
 If the initial multicast communication fails for any reason (possibly because an intervening router is not passing multicast traffic) tcp is used to initiate the connection.
 
+.. _run_time_configuration--using-multiple-configurations:
+
 Using Multiple Configurations
 -----------------------------
+
+..
+    Sect<7.4.2.3>
 
 For many applications, one configuration is not equally applicable to all communication within a given process.
 These applications must create multiple Transport Configurations and then assign them to the different entities of the process.
@@ -1330,10 +1450,15 @@ Any Data Writers or Readers owned by this Domain Participant should now use the 
 
 .. note:: When directly binding a configuration to a data writer or reader, the ``bind_config`` call must occur before the reader or writer is enabled.
   This is not an issue when binding configurations to Domain Participants, Publishers, or Subscribers.
-  See Section :ref:`ENTITY_FACTORY` for details on how to create entities that are not enabled.
+  See Section :ref:`quality_of_service--entity-factory` for details on how to create entities that are not enabled.
+
+.. _run_time_configuration--transport-registry-example:
 
 Transport Registry Example
 ==========================
+
+..
+    Sect<7.4.3>
 
 OpenDDS allows developers to also define transport configurations and instances via C++ APIs.
 The ``OpenDDS::DCPS::TransportRegistry`` class is used to construct ``OpenDDS::DCPS::TransportConfig`` and ``OpenDDS::DCPS::TransportInst`` objects.
@@ -1379,13 +1504,20 @@ See the option descriptions in the following sections for a full understanding o
 Stepping back and comparing this code to the original configuration file from , the configuration file is much simpler than the corresponding C++ code and has the added advantage of being modifiable at run-time.
 It is easy to see why we recommend that almost all applications should use the configuration file mechanism for transport configuration.
 
+.. _run_time_configuration--transport-configuration-options:
+
 Transport Configuration Options
 ===============================
+
+..
+    Sect<7.4.4>
 
 Transport Configurations are specified in the OpenDDS configuration file via sections with the format of ``[config/<name>]``, where ``<name>`` is a unique name for that configuration within that process.
 The following table summarizes the options when specifying a transport configuration:
 
-**Table 7-12 Transport Configuration Options**
+.. _run_time_configuration--reftable19:
+
+**Table  Transport Configuration Options**
 
 +------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------+
 | Option                             | Description                                                                                                                                                | Default           |
@@ -1416,8 +1548,13 @@ It is given the same name as the file being read and includes all the transport 
 The user can most easily utilize this configuration by specifying the ``DCPSGlobalTransportConfiguration=$file`` option in the same file.
 The $file value always binds to the implicit file configuration of the current file.
 
+.. _run_time_configuration--transport-instance-options:
+
 Transport Instance Options
 ==========================
+
+..
+    Sect<7.4.5>
 
 Transport Instances are specified in the OpenDDS configuration file via sections with the format of ``[transport/<name>]``, where ``<name>`` is a unique name for that instance within that process.
 Each Transport Instance must specify the ``transport_type`` option with a valid transport implementation type.
@@ -1426,12 +1563,19 @@ The following sections list the other options that can be specified, starting wi
 When using dynamic libraries, the OpenDDS transport libraries are dynamically loaded whenever an instance of that type is defined in a configuration file.
 When using custom transport implementations or static linking, the application developer is responsible for ensuring that the transport implementation code is linked with their executables.
 
+.. _run_time_configuration--configuration-options-common-to-all-transports:
+
 Configuration Options Common to All Transports
 ----------------------------------------------
 
+..
+    Sect<7.4.5.1>
+
 The following table summarizes the transport configuration options that are common to all transports:
 
-**Table 7-13 Common Transport Configuration Options**
+.. _run_time_configuration--reftable20:
+
+**Table  Common Transport Configuration Options**
 
 +-------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+---------------------+
 | Option                                    | Description                                                                                                                         | Default             |
@@ -1467,8 +1611,13 @@ Enabling the ``thread_per_connection`` option will increase performance when wri
 This balance of network performance to context switching overhead is best determined by experimenting.
 If a machine has multiple network cards, it may improve performance by creating a transport for each network card.
 
+.. _run_time_configuration--tcp-ip-transport-configuration-options:
+
 TCP/IP Transport Configuration Options
 --------------------------------------
+
+..
+    Sect<7.4.5.2>
 
 There are a number of configurable options for the tcp transport.
 A properly configured transport provides added resilience to underlying stack disturbances.
@@ -1497,12 +1646,14 @@ When using a dynamically-linked build, OpenDDS automatically loads the transport
 When the ``tcp`` library is built statically, your application must link directly against the library.
 To do this, your application must first include the proper header for service initialization: ``<dds/DCPS/transport/tcp/Tcp.h>``.
 
-You can also configure the publisher and subscriber transport implementations programatically, as described in :ref:`Transport Registry Example`.
+You can also configure the publisher and subscriber transport implementations programatically, as described in :ref:`run_time_configuration--transport-registry-example`.
 Configuring subscribers and publishers should be identical, but different addresses/ports should be assigned to each Transport Instance.
 
 The following table summarizes the transport configuration options that are unique to the ``tcp`` transport:
 
-**Table 7-14 TCP/IP Configuration Options**
+.. _run_time_configuration--reftable21:
+
+**Table  TCP/IP Configuration Options**
 
 +-------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
 | Option                              | Description                                                                                                                                                                                                                                                                                                                                      | Default         |
@@ -1540,8 +1691,13 @@ The following table summarizes the transport configuration options that are uniq
 |                                     | This can be used for firewall traversal and other advanced network configurations.                                                                                                                                                                                                                                                               |                 |
 +-------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
 
+.. _run_time_configuration--tcp-ip-reconnection-options:
+
 TCP/IP Reconnection Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..
+    Sect<7.4.5.2.1>
 
 When a TCP/IP connection gets closed OpenDDS attempts to reconnect.
 The reconnection process is (a successful reconnect ends this sequence):
@@ -1552,9 +1708,13 @@ The reconnection process is (a successful reconnect ends this sequence):
 
 * While we have not tried more than ``conn_retry_attempts``, wait (previous wait time * ``conn_retry_backoff_multiplier``) milliseconds and attempt to reconnect.
 
+.. _run_time_configuration--udp-ip-transport-configuration-options:
 
 UDP/IP Transport Configuration Options
 --------------------------------------
+
+..
+    Sect<7.4.5.3>
 
 The ``udp`` transport is a bare bones transport that supports best-effort delivery only.
 Like ``tcp``, ``local_address``, it supports both IPv4 and IPv6 addresses.
@@ -1566,7 +1726,9 @@ Additionally, your application must also include the proper header for service i
 
 The following table summarizes the transport configuration options that are unique to the ``udp`` transport:
 
-**Table 7-15 UDP/IP Configuration Options**
+.. _run_time_configuration--reftable22:
+
+**Table  UDP/IP Configuration Options**
 
 +-----------------------------+---------------------------------------------------------------------+-----------------------------------------------------+
 | Option                      | Description                                                         | Default                                             |
@@ -1580,8 +1742,13 @@ The following table summarizes the transport configuration options that are uniq
 | ``rcv_buffer_size=n``       | Total receive buffer size in bytes for UDP payload.                 | ``Platform value of ACE_DEFAULT_MAX_SOCKET_BUFSIZ`` |
 +-----------------------------+---------------------------------------------------------------------+-----------------------------------------------------+
 
+.. _run_time_configuration--ip-multicast-transport-configuration-options:
+
 IP Multicast Transport Configuration Options
 --------------------------------------------
+
+..
+    Sect<7.4.5.4>
 
 The ``multicast`` transport provides unified support for best-effort and reliable delivery based on a transport configuration parameter.
 
@@ -1647,7 +1814,9 @@ Additionally, your application must also include the proper header for service i
 
 The following table summarizes the transport configuration options that are unique to the ``multicast`` transport:
 
-**Table 7-16 IP Multicast Configuration Options**
+.. _run_time_configuration--reftable23:
+
+**Table  IP Multicast Configuration Options**
 
 +-----------------------------+-----------------------------------------------------------------------------------------------------------+-------------------------+
 | Option                      | Description                                                                                               | Default                 |
@@ -1694,14 +1863,19 @@ The following table summarizes the transport configuration options that are uniq
 | ``async_send=[0|1]``        | Send datagrams using Async I/O (on platforms that support it efficiently).                                |                         |
 +-----------------------------+-----------------------------------------------------------------------------------------------------------+-------------------------+
 
+.. _run_time_configuration--rtps-udp-transport-configuration-options:
+
 RTPS_UDP Transport Configuration Options
 ----------------------------------------
+
+..
+    Sect<7.4.5.5>
 
 The OpenDDS implementation of the OMG DDSI-RTPS (``formal/2014-09-01``) specification includes the transport protocols necessary to fulfill the specification requirements and those needed to be interoperable with other DDS implementations.
 The ``rtps_udp`` transport is one of the pluggable transports available to a developer and is necessary for interoperable communication between implementations.
 This section will discuss the options available to the developer for configuring OpenDDS to use this transport.
 
-To provide an RTPS variant of the single configuration example from Section :ref:`Single Transport Configuration`, the configuration file below simply introduces the ``myrtps`` transport and modifies the ``transport_type`` property to the value ``rtps_udp``.
+To provide an RTPS variant of the single configuration example from Section :ref:`run_time_configuration--single-transport-configuration`, the configuration file below simply introduces the ``myrtps`` transport and modifies the ``transport_type`` property to the value ``rtps_udp``.
 All other items remain the same.
 
 .. code-block:: ini
@@ -1716,7 +1890,7 @@ All other items remain the same.
     transport_type=rtps_udp
     local_address=myhost
 
-To extend our examples to a mixed transport configuration as shown in Section :ref:`Using Mixed Transports`, below shows the use of an ``rtps_udp`` transport mixed with a ``tcp`` transport.
+To extend our examples to a mixed transport configuration as shown in Section :ref:`run_time_configuration--using-mixed-transports`, below shows the use of an ``rtps_udp`` transport mixed with a ``tcp`` transport.
 The interesting pattern that this allows for is a deployed OpenDDS application that can be, for example, communicating using ``tcp`` with other OpenDDS participants while communicating in an interoperability configuration with a non-OpenDDS participant using ``rtps_udp``.
 
 .. code-block:: ini
@@ -1735,14 +1909,16 @@ The interesting pattern that this allows for is a deployed OpenDDS application t
 
 Some implementation notes related to using the ``rtps_udp`` transport protocol are as follows:
 
-* ``WRITER_DATA_LIFECYCLE`` (8.7.2.2.7) notes that the same Data sub-message should dispose and unregister an instance.
-  OpenDDS may use two Data sub-messages.
+#. ``WRITER_DATA_LIFECYCLE`` (8.7.2.2.7) notes that the same Data sub-message should dispose and unregister an instance.
+   OpenDDS may use two Data sub-messages.
 
-* RTPS transport instances can not be shared by different Domain Participants.
+#. RTPS transport instances can not be shared by different Domain Participants.
 
-* Transport auto-selection (negotiation) is partially supported with RTPS such that the ``rtps_udp`` transport goes through a handshaking phase only in reliable mode.
+#. Transport auto-selection (negotiation) is partially supported with RTPS such that the ``rtps_udp`` transport goes through a handshaking phase only in reliable mode.
 
-**Table 7-17 RTPS_UDP Configuration Options**
+.. _run_time_configuration--reftable24:
+
+**Table  RTPS_UDP Configuration Options**
 
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | Option                              | Description                                                                                                                                                   | Default                              |
@@ -1797,24 +1973,29 @@ Some implementation notes related to using the ``rtps_udp`` transport protocol a
 |                                     | The default value of 1 means that all data is restricted to the local network subnet.                                                                         |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | ``DataRtpsRelayAddress=host:port``  | Specifies the address of the RtpsRelay for RTPS messages.                                                                                                     |                                      |
-|                                     | See section :ref:`The RtpsRelay`.                                                                                                                             |                                      |
+|                                     | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                      |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | ``RtpsRelayOnly=[0|1]``             | Only send RTPS message to the RtpsRelay (for debugging).                                                                                                      | 0                                    |
-|                                     | See section :ref:`The RtpsRelay`.                                                                                                                             |                                      |
+|                                     | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                      |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | ``UseRtpsRelay=[0|1]``              | Send messages to the RtpsRelay.                                                                                                                               | 0                                    |
 |                                     | Messages will only be sent if DataRtpsRelayAddress is set.                                                                                                    |                                      |
-|                                     | See section :ref:`The RtpsRelay`.                                                                                                                             |                                      |
+|                                     | See section :ref:`internet_enabled_rtps--the-rtpsrelay`.                                                                                                      |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | ``DataStunServerAddress=host:port`` | Specifies the address of the STUN server to use for RTPS when using ICE.                                                                                      |                                      |
-|                                     | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                     |                                      |
+|                                     | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
 | ``UseIce=[0|1]``                    | Enable or disable ICE for this transport instance.                                                                                                            | ``0``                                |
-|                                     | See section :ref:`Interactive Connectivity Establishment (ICE) for RTPS`.                                                                                     |                                      |
+|                                     | See section :ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`.                                                                |                                      |
 +-------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------+
+
+.. _run_time_configuration--additional-rtps-udp-features:
 
 Additional RTPS_UDP Features
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+..
+    Sect<7.4.5.5.1>
 
 The RTPS_UDP transport implementation has capabilities that can only be enabled by API.
 These features cannot be enabled using configuration files.
@@ -1864,15 +2045,22 @@ The elements of that sequence are defined in IDL: ``OpenDDS::DCPS::TransportStat
 | unsigned long    | recv_bytes      | Number of bytes received from the locator.                                           |
 +------------------+-----------------+--------------------------------------------------------------------------------------+
 
+.. _run_time_configuration--shared-memory-transport-configuration-options:
+
 Shared-Memory Transport Configuration Options
 ---------------------------------------------
+
+..
+    Sect<7.4.5.6>
 
 The following table summarizes the transport configuration options that are unique to the ``shmem`` transport.
 This transport type is supported Unix-like platforms with POSIX/XSI shared memory and on Windows platforms.
 The shared memory transport type can only provide communication between transport instances on the same host.
-As part of transport negotiation (see :ref:`Using Mixed Transports`), if there are multiple transport instances available for communication between hosts, the shared memory transport instances will be skipped so that other types can be used.
+As part of transport negotiation (see :ref:`run_time_configuration--using-mixed-transports`), if there are multiple transport instances available for communication between hosts, the shared memory transport instances will be skipped so that other types can be used.
 
-**Table 7-18 Shared-Memory Transport Configuration Options**
+.. _run_time_configuration--reftable25:
+
+**Table  Shared-Memory Transport Configuration Options**
 
 +---------------------------------+---------------------------------------------------------------------------+----------------------------------+
 | Option                          | Description                                                               | Default                          |
@@ -1885,9 +2073,14 @@ As part of transport negotiation (see :ref:`Using Mixed Transports`), if there a
 | ``host_name=host``              | Override the host name used to identify the host machine.                 | Uses fully qualified domain name |
 +---------------------------------+---------------------------------------------------------------------------+----------------------------------+
 
+.. _run_time_configuration--discovery-and-transport-configuration-templates:
+
 ***********************************************
 Discovery and Transport Configuration Templates
 ***********************************************
+
+..
+    Sect<7.5>
 
 OpenDDS supports dynamic configuration of RTPS discovery and transports by means of configuration templates in OpenDDS configuration files.
 This feature adds 3 optional file sections, ``[DomainRange]``, ``[transport_template]``, and ``[Customization]``, as well as a new transport property, ``instantiation_rule``, which specifies when transport instances are created.
@@ -1902,8 +2095,13 @@ This creates a unique address for each domain.
 The ``[transport_template]`` rule, ``instantiation_rule=per_participant``, configures OpenDDS to create a separate transport instance for each domain participant.
 This allows applications to have multiple participants per domain when using RTPS.
 
+.. _run_time_configuration--configuring-discovery-for-a-set-of-similar-domains:
+
 Configuring Discovery for a Set of Similar Domains
 ==================================================
+
+..
+    Sect<7.5.1>
 
 Domain range sections are similar to domain sections and use the same configuration properties with 3 notable differences.
 
@@ -1913,10 +2111,15 @@ Domain range sections are similar to domain sections and use the same configurat
 
 * Domain ranges can have an optional ``Customization`` property that maps to a named ``[Customization]`` section
 
-See section :ref:`Example Config.ini` for a ``[DomainRange]`` example.
+See section :ref:`run_time_configuration--example-config-ini` for a ``[DomainRange]`` example.
+
+.. _run_time_configuration--configuring-a-set-of-similar-transports:
 
 Configuring a Set of Similar Transports
 =======================================
+
+..
+    Sect<7.5.2>
 
 Transport template sections are specified as ``[transport_template/name]``.
 They are similar to ``[transport]`` sections and use the same configuration properties as well as an optional ``Customization`` property that maps to a named ``[Customization]`` section.
@@ -1944,14 +2147,19 @@ and the partial transport template would be
     transport_type=rtps_udp
 
 Domain participants that belong to a domain that is configured by a template can bind to non-global transport configurations using the ``bind_config`` function.
-See section :ref:`Using Multiple Configurations` for a discussion of ``bind_config``.
+See section :ref:`run_time_configuration--using-multiple-configurations` for a discussion of ``bind_config``.
 
 If the ``[transport_template]`` sets the property ``instantiation_rule=per_participant``, a separate transport instance will be created for each participant in the domain.
 
-See section :ref:`Example Config.ini` for a ``[transport_template]`` example.
+See section :ref:`run_time_configuration--example-config-ini` for a ``[transport_template]`` example.
+
+.. _run_time_configuration--adding-customizations:
 
 Adding Customizations
 =====================
+
+..
+    Sect<7.5.3>
 
 ``[Customization]`` sections can modify the InteropMulticastOverride property in [rtps_discovery] sections and the multicast_group_address property in ``[transport_template]`` sections.
 
@@ -1961,9 +2169,13 @@ Adding Customizations
 
 * ``multicast_group_address=add_domain_id_to_port`` uses the domain ID in the port calculation for the multicast group address
 
+.. _run_time_configuration--example-config-ini:
 
 Example Config.ini
 ==================
+
+..
+    Sect<7.5.4>
 
 The following is an example configuration file for domains 2 through 10.
 It includes customizations to add the domain ID to the discovery ``InteropMulticastOverride`` address and customizations to add the domain ID to the transport’s multicast group IP address and port.
@@ -1996,53 +2208,60 @@ It includes customizations to add the domain ID to the discovery ``InteropMultic
     Customization=transport_customization
     multicast_group_address=239.255.2.0
 
+.. _run_time_configuration--logging:
+
 *******
 Logging
 *******
+
+..
+    Sect<7.6>
 
 By default, the OpenDDS framework will only log serious errors and warnings that can’t be conveyed to the user in the API.
 An OpenDDS user may increase the amount of logging via the log level and debug logging via controls at the DCPS, Transport, or Security layers.
 
 The default destination of these log messages is the process’s standard error stream.
-See Table 7-2 Common Configuration Options for options controlling the destination and formatting of log messages.
+See :ref:`Table 7-2 Common Configuration Options <run_time_configuration--reftable9>` for options controlling the destination and formatting of log messages.
 
 The highest level logging is controlled by the general log levels listed in the following table.
 
-**Table 7-19: Log Levels**
+.. _run_time_configuration--reftable26:
 
-+-------------+------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Level       | ``Values``                                     | Description                                                                                                    |
-+=============+================================================+================================================================================================================+
-| Error       | ``DCPSLogLevel``: ``error``                    | Logs issues that may prevent OpenDDS from functioning properly or functioning as configured.                   |
-|             |                                                |                                                                                                                |
-|             | ``log_level``: L ``og_Level::Error``           |                                                                                                                |
-|             |                                                |                                                                                                                |
-|             | ``ACE_Log_Priority:LM_ERROR``                  |                                                                                                                |
-+-------------+------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| ``Warning`` | ``DCPSLogLevel``: ``warning``                  | Log issues that should probably be addressed, but don’t prevent OpenDDS from functioning.                      |
-|             |                                                | This is the default.                                                                                           |
-|             | ``log_level``: L ``og_Level::Warning``         |                                                                                                                |
-|             |                                                |                                                                                                                |
-|             | ``ACE_Log_Priority:LM_WARNING``                |                                                                                                                |
-+-------------+------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| ``Notice``  | ``DCPSLogLevel``: ``notice``                   | Logs details of issues that are returned to the user via the API, for example through a ``DDS::ReturnCode_t``. |
-|             |                                                |                                                                                                                |
-|             | ``log_level``: L ``og_Level::Notice``          |                                                                                                                |
-|             |                                                |                                                                                                                |
-|             | ``ACE_Log_Priority:LM_NOTICE``                 |                                                                                                                |
-+-------------+------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| ``Info``    | ``DCPSLogLevel``: ``info``                     | Logs a small amount of basic information, such as the version of OpenDDS being used.                           |
-|             |                                                |                                                                                                                |
-|             | .. note:: ``log_level``: L ``og_Level::Info``  |                                                                                                                |
-|             |                                                |                                                                                                                |
-|             | ``ACE_Log_Priority:LM_INFO``                   |                                                                                                                |
-+-------------+------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| ``Debug``   | ``DCPSLogLevel``: ``debug``                    | This level doesn’t directly control any logging but will enable at least DCPS and security debug level 1.      |
-|             |                                                | For backwards compatibility, setting DCPS debug logging to greater than zero will set this log level.          |
-|             | .. note:: ``log_level``: L ``og_Level::Debug`` | Setting the log level to below this level will disable all debug logging.                                      |
-|             |                                                |                                                                                                                |
-|             | ``ACE_Log_Priority:LM_DEBUG``                  |                                                                                                                |
-+-------------+------------------------------------------------+----------------------------------------------------------------------------------------------------------------+
+**Table : Log Levels**
+
++-------------+-------------------------------------+----------------------------------------------------------------------------------------------------------------+
+| Level       | ``Values``                          | Description                                                                                                    |
++=============+=====================================+================================================================================================================+
+| ``Error``   | ``DCPSLogLevel``: ``error``         | Logs issues that may prevent OpenDDS from functioning properly or functioning as configured.                   |
+|             |                                     |                                                                                                                |
+|             | ``log_level: Log_Level::Error``     |                                                                                                                |
+|             |                                     |                                                                                                                |
+|             | ``ACE_Log_Priority:LM_ERROR``       |                                                                                                                |
++-------------+-------------------------------------+----------------------------------------------------------------------------------------------------------------+
+| ``Warning`` | ``DCPSLogLevel``: ``warning``       | Log issues that should probably be addressed, but don’t prevent OpenDDS from functioning.                      |
+|             |                                     | This is the default.                                                                                           |
+|             | ``log_level: Log_Level::Warning``   |                                                                                                                |
+|             |                                     |                                                                                                                |
+|             | ``ACE_Log_Priority:LM_WARNING``     |                                                                                                                |
++-------------+-------------------------------------+----------------------------------------------------------------------------------------------------------------+
+| ``Notice``  | ``DCPSLogLevel``: ``notice``        | Logs details of issues that are returned to the user via the API, for example through a ``DDS::ReturnCode_t``. |
+|             |                                     |                                                                                                                |
+|             | ``log_level: Log_Level::Notice``    |                                                                                                                |
+|             |                                     |                                                                                                                |
+|             | ``ACE_Log_Priority:LM_NOTICE``      |                                                                                                                |
++-------------+-------------------------------------+----------------------------------------------------------------------------------------------------------------+
+| ``Info``    | ``DCPSLogLevel``: ``info``          | Logs a small amount of basic information, such as the version of OpenDDS being used.                           |
+|             |                                     |                                                                                                                |
+|             | ``log_level: Log_Level::Info``      |                                                                                                                |
+|             |                                     |                                                                                                                |
+|             | ``ACE_Log_Priority:LM_INFO``        |                                                                                                                |
++-------------+-------------------------------------+----------------------------------------------------------------------------------------------------------------+
+| ``Debug``   | ``DCPSLogLevel``: ``debug``         | This level doesn’t directly control any logging but will enable at least DCPS and security debug level 1.      |
+|             |                                     | For backwards compatibility, setting DCPS debug logging to greater than zero will set this log level.          |
+|             | ``log_level``: ``Log_Level::Debug`` | Setting the log level to below this level will disable all debug logging.                                      |
+|             |                                     |                                                                                                                |
+|             | ``ACE_Log_Priority:LM_DEBUG``       |                                                                                                                |
++-------------+-------------------------------------+----------------------------------------------------------------------------------------------------------------+
 
 The log level can be set a number of ways.
 To do it with command line arguments, pass:
@@ -2058,12 +2277,17 @@ Doing this from code can be done using an enumerator or a string:
 .. code-block:: cpp
 
     OpenDDS::DCPS::log_level.set(OpenDDS::DCPS::LogLevel::Notice);
-    OpenDDS::DCPS::log_level.set_from_string(“notice”);
+    OpenDDS::DCPS::log_level.set_from_string("notice");
 
 Passing invalid levels to the text-based methods will cause warning messages to be logged unconditionally, but will not cause the ``DomainParticipantFactory`` to fail to initialize.
 
+.. _run_time_configuration--dcps-layer-debug-logging:
+
 DCPS Layer Debug Logging
 ========================
+
+..
+    Sect<7.6.1>
 
 Debug logging in the DCPS layer of OpenDDS is controlled by the ``DCPSDebugLevel`` configuration option and command-line option.
 It can also be set in application code using:
@@ -2088,9 +2312,13 @@ The *level* defaults to a value of 0 and has values of 0 to 10 as defined below:
 
 * 10 - logs that may happen more than once per sample write/read
 
+.. _run_time_configuration--transport-layer-debug-logging:
 
 Transport Layer Debug Logging
 =============================
+
+..
+    Sect<7.6.2>
 
 OpenDDS transport debug layer logging is controlled via the ``DCPSTransportDebugLevel`` configuration option.
 For example, to add transport layer logging to any OpenDDS application that uses ``TheParticipantFactoryWithArgs``, add the following option to the command line:
@@ -2118,7 +2346,9 @@ For the moment this can only be configured using C++; for example:
 
     OpenDDS::DCPS::transport_debug.log_progress = true;
 
-**Table 7-20 Transport Debug Logging Categories**
+.. _run_time_configuration--reftable27:
+
+**Table  Transport Debug Logging Categories**
 
 +---------------------------+------------------------------------------------------------------------+
 | Option                    | Description                                                            |
@@ -2136,13 +2366,20 @@ For the moment this can only be configured using C++; for example:
 | ``log_remote_counts``     | Log number of associations and pending associations of RTPS entities.  |
 +---------------------------+------------------------------------------------------------------------+
 
+.. _run_time_configuration--security-debug-logging:
+
 Security Debug Logging
 ======================
 
-When OpenDDS is compiled with security enabled, debug logging for security can be enabled using ``DCPSecurityDebug``(See Table 7-2 Common Configuration Options).
+..
+    Sect<7.6.3>
+
+When OpenDDS is compiled with security enabled, debug logging for security can be enabled using ``DCPSecurityDebug``(See :ref:`Table 7-2 Common Configuration Options <run_time_configuration--reftable9>`).
 Security logging is divided into categories, although ``DCPSSecurityDebugLevel`` is also provided, which controls the categories in a similar manner and using the same scale as ``DCPSDebugLevel``.
 
-**Table 7-21 Security Debug Logging Categories**
+.. _run_time_configuration--reftable28:
+
+**Table  Security Debug Logging Categories**
 
 +----------------------+-------------+--------------------------------------------------------------------------------------------------------------------------------+
 | Option               | Debug Level | Description                                                                                                                    |
@@ -2195,5 +2432,5 @@ All the following are equivalent:
 
     OpenDDS::DCPS::security_debug.access_warn = true;
     OpenDDS::DCPS::security_debug.set_debug_level(1);
-    OpenDDS::DCPS::security_debug.parse_flags(ACE_TEXT(“access_warn”));
+    OpenDDS::DCPS::security_debug.parse_flags(ACE_TEXT("access_warn"));
 

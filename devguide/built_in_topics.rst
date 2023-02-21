@@ -1,22 +1,37 @@
+.. _built_in_topics--built-in-topics:
+
 ###############
 Built-In Topics
 ###############
+
+..
+    Sect<6>
+
+.. _built_in_topics--introduction:
 
 ************
 Introduction
 ************
 
+..
+    Sect<6.1>
+
 In OpenDDS, Built-In-Topics are created and published by default to exchange information about DDS participants operating in the deployment.
 When OpenDDS is used in a centralized discovery approach using the ``DCPSInfoRepo`` service, the Built-In-Topics are published by this service.
 For DDSI-RTPS discovery, the internal OpenDDS implementation instantiated in a process populates the caches of the Built-In Topic DataReaders.
-See Section :ref:`Configuring for DDSI-RTPS Discovery` for a description of RTPS discovery configuration.
+See Section :ref:`run_time_configuration--configuring-for-ddsi-rtps-discovery` for a description of RTPS discovery configuration.
 
 The IDL struct ``BuiltinTopicKey_t`` is used by the Built-In Topics.
 This structure contains an array of 16 octets (bytes) which corresponds to an InfoRepo identifier or a DDSI-RTPS GUID.
 
+.. _built_in_topics--built-in-topics-for-dcpsinforepo-configuration:
+
 **********************************************
 Built-In Topics for DCPSInfoRepo Configuration
 **********************************************
+
+..
+    Sect<6.2>
 
 When starting the ``DCPSInfoRepo`` a command line option of ``-NOBITS`` may be used to suppress publication of built-in topics.
 
@@ -24,20 +39,25 @@ Four separate topics are defined for each domain.
 Each is dedicated to a particular entity (domain participant, topic, data writer, data reader) and publishes instances describing the state for each entity in the domain.
 
 Subscriptions to built-in topics are automatically created for each domain participant.
-A participant’s support for Built-In-Topics can be toggled via the ``DCPSBit`` configuration option (see the table in Section :ref:`Common Configuration Options`) (Note: this option cannot be used for RTPS discovery).
+A participant’s support for Built-In-Topics can be toggled via the ``DCPSBit`` configuration option (see the table in Section :ref:`run_time_configuration--common-configuration-options`) (Note: this option cannot be used for RTPS discovery).
 To view the built-in topic data, simply obtain the built-in Subscriber and then use it to access the Data Reader for the built-in topic of interest.
 The Data Reader can then be used like any other Data Reader.
 
-Sections :ref:`DCPSParticipant Topic` through :ref:`DCPSSubscription Topic` provide details on the data published for each of the four built-in topics.
+Sections :ref:`built_in_topics--dcpsparticipant-topic` through :ref:`built_in_topics--dcpssubscription-topic` provide details on the data published for each of the four built-in topics.
 An example showing how to read from a built-in topic follows those sections.
 
 If you are not planning on using Built-in-Topics in your application, you can configure OpenDDS to remove Built-In-Topic support at build time.
 Doing so can reduce the footprint of the core DDS library by up to 30%.
-See Section :ref:`Disabling the Building of Built-In Topic Support` for information on disabling Built-In-Topic support.
+See Section :ref:`introduction--disabling-the-building-of-built-in-topic-support` for information on disabling Built-In-Topic support.
+
+.. _built_in_topics--dcpsparticipant-topic:
 
 *********************
 DCPSParticipant Topic
 *********************
+
+..
+    Sect<6.3>
 
 The ``DCPSParticipant`` topic publishes information about the Domain Participants of the Domain.
 Here is the IDL that defines the structure published for this topic:
@@ -51,9 +71,14 @@ Here is the IDL that defines the structure published for this topic:
 
 Each Domain Participant is defined by a unique key and is its own instance within this topic.
 
+.. _built_in_topics--dcpstopic-topic:
+
 ***************
 DCPSTopic Topic
 ***************
+
+..
+    Sect<6.4>
 
 .. note:: OpenDDS does not support this Built-In-Topic when configured for RTPS discovery.
 
@@ -83,9 +108,14 @@ Here is the IDL that defines the structure published for this topic:
 Each topic is identified by a unique key and is its own instance within this built-in topic.
 The members above identify the name of the topic, the name of the topic type, and the set of QoS policies for that topic.
 
+.. _built_in_topics--dcpspublication-topic:
+
 *********************
 DCPSPublication Topic
 *********************
+
+..
+    Sect<6.5>
 
 The ``DCPSPublication`` topic publishes information about the Data Writers in the Domain.
 Here is the IDL that defines the structure published for this topic:
@@ -114,9 +144,14 @@ Here is the IDL that defines the structure published for this topic:
 Each Data Writer is assigned a unique key when it is created and defines its own instance within this topic.
 The fields above identify the Domain Participant (via its key) that the Data Writer belongs to, the topic name and type, and the various QoS policies applied to the Data Writer.
 
+.. _built_in_topics--dcpssubscription-topic:
+
 **********************
 DCPSSubscription Topic
 **********************
+
+..
+    Sect<6.6>
 
 The ``DCPSSubscription`` topic publishes information about the Data Readers in the Domain.
 Here is the IDL that defines the structure published for this topic:
@@ -145,9 +180,14 @@ Here is the IDL that defines the structure published for this topic:
 Each Data Reader is assigned a unique key when it is created and defines its own instance within this topic.
 The fields above identify the Domain Participant (via its key) that the Data Reader belongs to, the topic name and type, and the various QoS policies applied to the Data Reader.
 
+.. _built_in_topics--built-in-topic-subscription-example:
+
 ***********************************
 Built-In Topic Subscription Example
 ***********************************
+
+..
+    Sect<6.7>
 
 The following code uses a domain participant to get the built-in subscriber.
 It then uses the subscriber to get the Data Reader for the ``DCPSParticipant`` topic and subsequently reads samples for that reader.
@@ -171,16 +211,26 @@ It then uses the subscriber to get the Data Reader for the ``DCPSParticipant`` t
 
 The code for the other built-in topics is similar.
 
+.. _built_in_topics--opendds-specific-built-in-topics:
+
 ********************************
 OpenDDS-specific Built-In Topics
 ********************************
 
+..
+    Sect<6.8>
+
+.. _built_in_topics--openddsparticipantlocation-topic:
+
 OpenDDSParticipantLocation Topic
 ================================
 
+..
+    Sect<6.8.1>
+
 The Built-In Topic “OpenDDSParticipantLocation” is published by the DDSI-RTPS discovery implementation to give applications visibility into the details of how each remote participant is connected over the network.
-If the RtpsRelay (:ref:`The RtpsRelay`) and/or IETF ICE (:ref:`Interactive Connectivity Establishment (ICE) for RTPS`) are enabled, their usage is reflected in the OpenDDSParticipantLocation topic data.
-The topic type ParticipantLocationBuiltinTopicData is defined in ``dds/OpenddsDcpsExt.idl`` in the ``OpenDDS::DCPS`` module:
+If the RtpsRelay (:ref:`internet_enabled_rtps--the-rtpsrelay`) and/or IETF ICE (:ref:`internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps`) are enabled, their usage is reflected in the OpenDDSParticipantLocation topic data.
+The topic type ParticipantLocationBuiltinTopicData is defined in :ghfile:`dds/OpenddsDcpsExt.idl` in the ``OpenDDS::DCPS`` module:
 
 * ``guid`` (key) – The GUID of the remote participant.
   Also, a key into the DCPSParticipant topic.
@@ -203,14 +253,18 @@ The topic type ParticipantLocationBuiltinTopicData is defined in ``dds/OpenddsDc
 
 * ``local6_addr, local6_timestamp, ice6_addr, ice6_timestamp, relay6_addr,`` and ``relay6_timestamp``– Are the IPV6 equivalents.
 
+.. _built_in_topics--openddsconnectionrecord-topic:
 
 OpenDDSConnectionRecord Topic
 =============================
 
-The Built-In Topic “OpenDDSConnectionRecord” is published by the DDSI-RTPS discovery implementation and RTPS_UDP transport implementation to give applications visibility into the details of a participant’s connection to an RtpsRelay instance.
-Security must be enabled in the build of OpenDDS (see section :ref:`Building OpenDDS with Security Enabled`) to use this topic.
+..
+    Sect<6.8.2>
 
-The topic type ConnectionRecord is defined in ``dds/OpenddsDcpsExt.idl`` in the ``OpenDDS::DCPS`` module:
+The Built-In Topic “OpenDDSConnectionRecord” is published by the DDSI-RTPS discovery implementation and RTPS_UDP transport implementation to give applications visibility into the details of a participant’s connection to an RtpsRelay instance.
+Security must be enabled in the build of OpenDDS (see section :ref:`dds_security--building-opendds-with-security-enabled`) to use this topic.
+
+The topic type ConnectionRecord is defined in :ghfile:`dds/OpenddsDcpsExt.idl` in the ``OpenDDS::DCPS`` module:
 
 * ``guid`` (key) – The GUID of the remote participant.
   Also, a key into the DCPSParticipant topic.
@@ -222,15 +276,19 @@ The topic type ConnectionRecord is defined in ``dds/OpenddsDcpsExt.idl`` in the 
 
 * ``latency`` – A measured round-trip latency for protocols that support it.
 
+.. _built_in_topics--openddsinternalthread-topic:
 
 OpenDDSInternalThread Topic
 ===========================
 
-The Built-In Topic “OpenDDSInternalThread” is published when OpenDDS is configured with DCPSThreadStatusInterval (see section :ref:`Common Configuration Options`).
+..
+    Sect<6.8.3>
+
+The Built-In Topic “OpenDDSInternalThread” is published when OpenDDS is configured with DCPSThreadStatusInterval (see section :ref:`run_time_configuration--common-configuration-options`).
 When enabled, the DataReader for this Built-In Topic will report the status of threads created and managed by OpenDDS within the current process.
 The timestamp associated with samples can be used to determine the health (responsiveness) of the thread.
 
-The topic type InternalThreadBuiltinTopicData is defined in ``dds/OpenddsDcpsExt.idl`` in the ``OpenDDS::DCPS`` module:
+The topic type InternalThreadBuiltinTopicData is defined in :ghfile:`dds/OpenddsDcpsExt.idl` in the ``OpenDDS::DCPS`` module:
 
 * ``thread_id`` (key) – A string identifier for the thread.
 

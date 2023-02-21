@@ -1,25 +1,40 @@
+.. _java_bindings--java-bindings:
+
 #############
 Java Bindings
 #############
+
+..
+    Sect<10>
+
+.. _java_bindings--introduction:
 
 ************
 Introduction
 ************
 
+..
+    Sect<10.1>
+
 OpenDDS provides JNI bindings.
 Java applications can make use of the complete OpenDDS middleware just like C++ applications.
 
-See the ``$DDS_ROOT/java/INSTALL`` file for information on getting started, including the prerequisites and dependencies.
+See the :ghfile:`java/INSTALL` file for information on getting started, including the prerequisites and dependencies.
 
-Java versions 9 and up use the `Java Platform Module System <https://en.wikipedia.org/wiki/Java_Platform_Module_System>`_.
+Java versions 9 and up use the `Java Platform Module System <https://en.wikipedia.org/wiki/Java_Platform_Module_System>`__.
 To use OpenDDS with one of these Java versions, set the MPC feature java_pre_jpms to 0.
 OpenDDS’s configure script will attempt to detect the Java version and set this automatically.
 
-See the ``$DDS_ROOT/java/FAQ`` file for information on common issues encountered while developing applications with the Java bindings.
+See the :ghfile:`java/FAQ` file for information on common issues encountered while developing applications with the Java bindings.
+
+.. _java_bindings--idl-and-code-generation:
 
 ***********************
 IDL and Code Generation
 ***********************
+
+..
+    Sect<10.2>
 
 The OpenDDS Java binding is more than just a library that lives in one or two .jar files.
 The DDS specification defines the interaction between a DDS application and the DDS middleware.
@@ -34,7 +49,9 @@ Below is a description of the generated files and which tools generate them.
 In this example, ``Foo.idl`` contains a single struct ``Bar`` contained in module ``Baz`` (IDL modules are similar to C++ namespaces and Java packages).
 To the right of each file name is the name of the tool that generates it, followed by some notes on its purpose.
 
-**Table 10-1 Generated files descriptions**
+.. _java_bindings--reftable34:
+
+**Table  Generated files descriptions**
 
 +--------------------------------------+------------------------------------------------------+
 | File                                 | Generation Tool                                      |
@@ -69,26 +86,30 @@ To the right of each file name is the name of the tool that generates it, follow
 | ``{h,cpp}``                          |                                                      |
 +--------------------------------------+------------------------------------------------------+
 
-.. code-block:: omg-idl
+Foo.idl:
 
-    Foo.idl:
+.. code-block:: omg-idl
 
     module Baz {
       @topic
-      struct Bar {
-        long x;
-      };
+      struct Bar {
+        long x;
+      };
     };
 
+.. _java_bindings--setting-up-an-opendds-java-project:
 
 **********************************
 Setting up an OpenDDS Java Project
 **********************************
 
-These instructions assume you have completed the installation steps in the ``$DDS_ROOT/java/INSTALL`` document, including having the various environment variables defined.
+..
+    Sect<10.3>
+
+These instructions assume you have completed the installation steps in the :ghfile:`java/INSTALL` document, including having the various environment variables defined.
 
 * Start with an empty directory that will be used for your IDL and the code generated from it.
-  ``$DDS_ROOT/java/tests/messenger/messenger_idl/`` is set up this way.
+  :ghfile:`java/tests/messenger/messenger_idl/` is set up this way.
 
 * Create an IDL file describing the data structure you will be using with OpenDDS.
   See ``Messenger.idl`` for an example.
@@ -116,23 +137,22 @@ Windows:
 
 .. code-block:: mpc
 
-         project: dcps_java {
+    project: dcps_java {
+     idlflags += -Wb,stub_export_include=Foo_Export.h \
+     -Wb,stub_export_macro=Foo_Export
+     dcps_ts_flags += -Wb,export_macro=Foo_Export
+     idl2jniflags += -Wb,stub_export_include=Foo_Export.h \
+        -Wb,stub_export_macro=Foo_Export
+     dynamicflags += FOO_BUILD_DLL
 
-         idlflags      += -Wb,stub_export_include=Foo_Export.h \
-                          -Wb,stub_export_macro=Foo_Export
-         dcps_ts_flags += -Wb,export_macro=Foo_Export
-         idl2jniflags  += -Wb,stub_export_include=Foo_Export.h \
-                          -Wb,stub_export_macro=Foo_Export
-         dynamicflags  += FOO_BUILD_DLL
+     specific {
+     jarname = DDS_Foo_types
+     }
 
-         specific {
-           jarname      = DDS_Foo_types
-         }
-
-         TypeSupport_Files {
-           Foo.idl
-         }
-       }
+     TypeSupport_Files {
+     Foo.idl
+     }
+    }
 
 You can leave out the specific {...} block if you do not need to create a jar file.
 In this case you can directly use the Java .class files which will be generated under the classes subdirectory of the current directory.
@@ -207,23 +227,32 @@ Add the directory containing ``Foo.dll`` (or ``Food.dll``) to the ``PATH``.
 If you are using the debug version (``Food.dll``) you will need to inform the OpenDDS middleware that it should not look for ``Foo.dll``.
 To do this, add ``-Dopendds.native.debug=1`` to the Java VM arguments.
 
-See the publisher and subscriber directories in ``$DDS_ROOT/java/tests/messenger/`` for examples of publishing and subscribing applications using the OpenDDS Java bindings.
+See the publisher and subscriber directories in :ghfile:`java/tests/messenger/` for examples of publishing and subscribing applications using the OpenDDS Java bindings.
 
 * If you make subsequent changes to ``Foo.idl``, start by re-running MPC (step #5 above).
   This is needed because certain changes to ``Foo.idl`` will affect which files are generated and need to be compiled.
 
+.. _java_bindings--a-simple-message-publisher:
 
 **************************
 A Simple Message Publisher
 **************************
 
+..
+    Sect<10.4>
+
 This section presents a simple OpenDDS Java publishing process.
-The complete code for this can be found at ``$DDS_ROOT/java/tests/messenger/publisher/TestPublisher.java``.
+The complete code for this can be found at :ghfile:`java/tests/messenger/publisher/TestPublisher.java`.
 Uninteresting segments such as imports and error handling have been omitted here.
 The code has been broken down and explained in logical subsections.
 
+.. _java_bindings--initializing-the-participant:
+
 Initializing the Participant
 ============================
+
+..
+    Sect<10.4.1>
 
 DDS applications are boot-strapped by obtaining an initial reference to the Participant Factory.
 A call to the static method ``TheParticipantFactory.WithArgs()`` returns a Factory reference.
@@ -252,8 +281,13 @@ Object creation failure is indicated by a null return.
 The third argument to ``create_participant()`` takes a Participant events listener.
 If one is not available, a null can be passed instead as done in our example.
 
+.. _java_bindings--registering-the-data-type-and-creating-a-topic:
+
 Registering the Data Type and Creating a Topic
 ==============================================
+
+..
+    Sect<10.4.2>
 
 Next we register our data type with the ``DomainParticipant`` using the ``register_type()`` operation.
 We can specify a type name or pass an empty string.
@@ -278,8 +312,13 @@ Next we create a topic using the type support servant’s registered name.
 
 Now we have a topic named “*Movie Discussion List*” with the registered data type and default QoS policies.
 
+.. _java_bindings--creating-a-publisher:
+
 Creating a Publisher
 ====================
+
+..
+    Sect<10.4.3>
 
 Next, we create a publisher:
 
@@ -290,9 +329,13 @@ Next, we create a publisher:
               null,
               DEFAULT_STATUS_MASK.value);
 
+.. _java_bindings--creating-a-datawriter-and-registering-an-instance:
 
 Creating a DataWriter and Registering an Instance
 =================================================
+
+..
+    Sect<10.4.4>
 
 With the publisher, we can now create a DataWriter:
 
@@ -325,10 +368,14 @@ It then publishes a few messages which are distributed to any subscribers of thi
             msg.count = 0;
             int ret = mdw.write(msg, handle);
 
+.. _java_bindings--setting-up-the-subscriber:
 
 *************************
 Setting up the Subscriber
 *************************
+
+..
+    Sect<10.5>
 
 Much of the initialization code for a subscriber is identical to the publisher.
 The subscriber needs to create a participant in the same domain, register an identical data type, and create the same named topic.
@@ -360,9 +407,13 @@ The subscriber needs to create a participant in the same domain, register an ide
                                         TOPIC_QOS_DEFAULT.get(), null,
                                         DEFAULT_STATUS_MASK.value);
 
+.. _java_bindings--creating-a-subscriber:
 
 Creating a Subscriber
 =====================
+
+..
+    Sect<10.5.1>
 
 As with the publisher, we create a subscriber:
 
@@ -371,9 +422,13 @@ As with the publisher, we create a subscriber:
             Subscriber sub = dp.create_subscriber(
               SUBSCRIBER_QOS_DEFAULT.get(), null, DEFAULT_STATUS_MASK.value);
 
+.. _java_bindings--creating-a-datareader-and-listener:
 
 Creating a DataReader and Listener
 ==================================
+
+..
+    Sect<10.5.2>
 
 Providing a ``DataReaderListener`` to the middleware is the simplest way to be notified of the receipt of data and to access the data.
 We therefore create an instance of a ``DataReaderListenerImpl`` and pass it as a ``DataReader`` creation parameter:
@@ -388,9 +443,14 @@ We therefore create an instance of a ``DataReaderListenerImpl`` and pass it as a
 Any incoming messages will be received by the Listener in the middleware’s thread.
 The application thread is free to perform other tasks at this time.
 
+.. _java_bindings--the-datareader-listener-implementation:
+
 **************************************
 The DataReader Listener Implementation
 **************************************
+
+..
+    Sect<10.6>
 
 The application defined ``DataReaderListenerImpl`` needs to implement the specification’s ``DDS.DataReaderListener`` interface.
 OpenDDS provides an abstract class ``DDS._DataReaderListenerLocalBase``.
@@ -469,9 +529,14 @@ Once taken, that sample is removed from the ``DataReader``’s available sample 
 
 The ``SampleInfo`` contains meta-information regarding the message such as the message validity, instance state, etc.
 
+.. _java_bindings--cleaning-up-opendds-java-clients:
+
 ********************************
 Cleaning up OpenDDS Java Clients
 ********************************
+
+..
+    Sect<10.7>
 
 An application should clean up its OpenDDS environment with the following steps:
 
@@ -495,9 +560,14 @@ Shuts down the ``ServiceParticipant``.
 This cleans up all OpenDDS associated resources.
 Cleaning up these resources is necessary to prevent the ``DCPSInfoRepo`` from forming associations between endpoints which no longer exist.
 
+.. _java_bindings--configuring-the-example:
+
 ***********************
 Configuring the Example
 ***********************
+
+..
+    Sect<10.8>
 
 OpenDDS offers a file-based configuration mechanism.
 The syntax of the configuration file is similar to a Windows INI file.
@@ -522,11 +592,16 @@ The ``[transport/1]`` section contains configuration information for the transpo
 It is defined to be of type ``tcp``.
 The global transport configuration setting above causes this transport instance to be used by all readers and writers in the process.
 
-See Chapter :ref:`Run-time Configuration` for a complete description of all OpenDDS configuration parameters.
+See Chapter :ref:`run_time_configuration--run-time-configuration` for a complete description of all OpenDDS configuration parameters.
+
+.. _java_bindings--running-the-example:
 
 *******************
 Running the Example
 *******************
+
+..
+    Sect<10.9>
 
 To run the Messenger Java OpenDDS application, use the following commands:
 
@@ -540,12 +615,17 @@ To run the Messenger Java OpenDDS application, use the following commands:
 
 The ``-DCPSConfigFile`` command-line argument passes the location of the OpenDDS configuration file.
 
+.. _java_bindings--java-message-service-jms-support:
+
 **********************************
 Java Message Service (JMS) Support
 **********************************
 
+..
+    Sect<10.10>
+
 OpenDDS provides partial support for JMS version 1.1 <http://docs.oracle.com/javaee/6/tutorial/doc/bncdq.html>.
 Enterprise Java applications can make use of the complete OpenDDS middleware just like standard Java and C++ applications.
 
-See the ``INSTALL`` file in the ``$DDS_ROOT/java/jms/`` directory for information on getting started with the OpenDDS JMS support, including the prerequisites and dependencies.
+See the ``INSTALL`` file in the :ghfile:`java/jms/` directory for information on getting started with the OpenDDS JMS support, including the prerequisites and dependencies.
 

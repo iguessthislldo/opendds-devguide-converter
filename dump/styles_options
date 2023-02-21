@@ -205,7 +205,6 @@
     - 00c4dae9
     - 00c66643
     - 00c7e26b
-    - 00cc0ac1
     - 00d2d7e2
     - 00d3174d
     - 00d4a98f
@@ -256,6 +255,13 @@
     - 0150be5d
     - 0153c78e
     - 0154eb4a
+    - 01827176
+    - 019fed91
+    - 01c5ed3d
+    - 01c7db71
+    - 01cf18cd
+    - 01d39aca
+    - 01d451b1
   - ('http://openoffice.org/2009/office', 'rsid')
     - 0019c347
     - 001b623f
@@ -357,6 +363,7 @@
     - 00ca5ed5
     - 00cb05ec
     - 00cb14fe
+    - 00cc0ac1
     - 00cfc05c
     - 00d0ec70
     - 00d2d7e2
@@ -438,6 +445,18 @@
     - 015fef51
     - 0164af0b
     - 016b145b
+    - 0172dec2
+    - 0180e71b
+    - 018256b4
+    - 01930a81
+    - 0195fcbd
+    - 0199331b
+    - 019fdbcb
+    - 01a7cd57
+    - 01aadea5
+    - 01bea355
+    - 01d39aca
+    - 01d451b1
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'country-complex')
     - SA
   - ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-family-asian')

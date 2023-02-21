@@ -1,14 +1,26 @@
+.. _the_dcps_information_repository--the-dcps-information-repository:
+
 ###############################
 The DCPS Information Repository
 ###############################
+
+..
+    Sect<9>
+
+.. _the_dcps_information_repository--dcps-information-repository-options:
 
 ***********************************
 DCPS Information Repository Options
 ***********************************
 
+..
+    Sect<9.1>
+
 The table below shows the command line options for the ``DCPSInfoRepo`` server:
 
-**Table 9-1 DCPS Information Repository Options**
+.. _the_dcps_information_repository--reftable30:
+
+**Table  DCPS Information Repository Options**
 
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 | Option                  | Description                                                                                                              | Default                       |
@@ -21,7 +33,7 @@ The table below shows the command line options for the ``DCPSInfoRepo`` server:
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 | ``-z``                  | Turn on verbose transport logging                                                                                        | Minimal transport logging.    |
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
-| ``-r``                  | Resurrect from persistent file                                                                                           | ``1``(true)                   |
+| ``-r``                  | Resurrect from persistent file                                                                                           | ``1`` (true)                  |
 +-------------------------+--------------------------------------------------------------------------------------------------------------------------+-------------------------------+
 | ``-FederationId <id>``  | Unique identifier for this repository within any federation.                                                             | N/A                           |
 |                         | This is supplied as a 32 bit decimal numeric value.                                                                      |                               |
@@ -43,12 +55,14 @@ Using the ``-z`` option causes the invocation of many transport-level debug mess
 This option is only effective when the DCPS library is built with the ``DCPS_TRANS_VERBOSE_DEBUG`` environment variable defined.
 
 The ``-FederationId`` and ``-FederateWith`` options are used to control the federation of multiple ``DCPSInfoRepo`` servers into a single logical repository.
-See :ref:`Repository Federation` for descriptions of the federation capabilities and how to use these options.
+See :ref:`the_dcps_information_repository--repository-federation` for descriptions of the federation capabilities and how to use these options.
 
 File persistence is implemented as an ACE Service object and is controlled via service config directives.
 Currently available configuration options are:
 
-**Table 9-2 InfoRepo persistence directives**
+.. _the_dcps_information_repository--reftable31:
+
+**Table  InfoRepo persistence directives**
 
 +------------+-------------------------------+---------------------+
 | Options    | Description                   | Defaults            |
@@ -74,10 +88,14 @@ This allows existing clients to reconnect to a restarted InfoRepo.
 
     -ORBListenEndpoints iiop://:<port>
 
+.. _the_dcps_information_repository--repository-federation:
 
 *********************
 Repository Federation
 *********************
+
+..
+    Sect<9.2>
 
 .. note:: Repository federation should be considered an experimental feature.
 
@@ -102,14 +120,14 @@ The default domain used for federation is defined by the constant ``Federator::D
 
 Currently only static specification of federation topology is available.
 This means that each DCPS Information Repository, as well as each application using a federated DDS service, needs to include federation configuration as part of its configuration data.
-This is done by specifying each available repository within the federation to each participating process and assigning each repository to a different key value in the configuration files as described in Section :ref:`Configuring for Multiple DCPSInfoRepo Instances`.
+This is done by specifying each available repository within the federation to each participating process and assigning each repository to a different key value in the configuration files as described in Section :ref:`run_time_configuration--configuring-for-multiple-dcpsinforepo-instances`.
 
 Each application and repository must include the same set of repositories in its configuration information.
 Failover sequencing will attempt to reach the next repository in numeric sequence (wrapping from the last to the first) of the repository key values.
 This sequence is unique to each application configured, and should be different to avoid overloading any individual repository.
 
 Once the topology information has been specified, then repositories will need to be started with two additional command line arguments.
-These are shown in Table 9-1.
+These are shown in :ref:`Table 9-1 <the_dcps_information_repository--reftable30>`.
 One, ``-FederationId <value>``, specifies the unique identifier for a repository within the federation.
 This is a 32 bit numeric value and needs to be unique for all possible federation topologies.
 
@@ -120,30 +138,37 @@ Only repositories which are started with a federation identification number may 
 The first repository started should not be given a ``-FederateWith`` command line directive.
 All others are required to have this directive in order to establish the initial federation.
 There is a command line tool (``federation``) supplied that can be used to establish federation associations if this is not done at startup.
-See Section  9.2.1  for a description.
+See Section :ref:`the_dcps_information_repository--federation-management` for a description.
 It is possible, with the current static-only implementation, that the failure of a repository before a federation topology is entirely established could result in a partially unusable service.
 Due to this current limitation, it is highly recommended to always establish the federation topology of repositories prior to starting the applications.
 
+.. _the_dcps_information_repository--federation-management:
+
 Federation Management
 =====================
+
+..
+    Sect<9.2.1>
 
 A new command line tool has been provided to allow some minimal run-time management of repository federation.
 This tool allows repositories started without the ``-FederateWith`` option to be commanded to participate in a federation.
 Since the operation of the federated repositories and failover sequencing depends on the presence of connected topology, it is recommended that this tool be used before starting applications that will be using the federated set of repositories.
 
-The command is named ``repoctl`` and is located in the ``$DDS_ROOT/bin/`` directory.
+The command is named ``repoctl`` and is located in the :ghfile:`bin/` directory.
 It has a command format syntax of:
 
 ::
 
        repoctl <cmd> <arguments>
 
-Where each individual command has its own format as shown in Table 9-3.
+Where each individual command has its own format as shown in :ref:`Table 9-3 <the_dcps_information_repository--reftable32>`.
 Some options contain endpoint information.
 This information consists of an optional host specification, separated from a required port specification by a colon.
 This endpoint information is used to create a CORBA object reference using the corbaloc: syntax in order to locate the 'Federator' object of the repository server.
 
-**Table 9-3 repoctl Repository Management Command**
+.. _the_dcps_information_repository--reftable32:
+
+**Table  repoctl Repository Management Command**
 
 +--------------+----------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Command      | Syntax                                                   | Description                                                                                                                                                                                                              |
@@ -170,9 +195,11 @@ A join command specifies two repository servers (by endpoint) and asks the secon
 This generates a CORBA object reference of ``corbaloc::otherhost:1812/Federator`` that the federator connects to and invokes a join operation.
 The join operation invocation passes the default Federation Domain value (because we did not specify one) and the location of the joining repository which is obtained by resolving the object reference ``corbaloc::localhost:2112/Federator``.
 
-A full description of the command arguments are shown in Table 9-4.
+A full description of the command arguments are shown in :ref:`Table 9-4 <the_dcps_information_repository--reftable33>`.
 
-**Table 9-4 Federation Management Command Arguments**
+.. _the_dcps_information_repository--reftable33:
+
+**Table  Federation Management Command Arguments**
 
 +-------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                  | Description                                                                                                                                                     |
@@ -188,15 +215,25 @@ A full description of the command arguments are shown in Table 9-4.
 |                         | The default domain is sufficient for single federations.                                                                                                        |
 +-------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
+.. _the_dcps_information_repository--federation-example:
+
 Federation Example
 ==================
 
+..
+    Sect<9.2.2>
+
 In order to illustrate the setup and use of a federation, this section walks through a simple example that establishes a federation and a working service that uses it.
 
-This example is based on a two repository federation, with the simple Message publisher and subscriber from :ref:`Using DCPS` configured to use the federated repositories.
+This example is based on a two repository federation, with the simple Message publisher and subscriber from :ref:`getting_started--using-dcps` configured to use the federated repositories.
+
+.. _the_dcps_information_repository--configuring-the-federation-example:
 
 Configuring the Federation Example
 ----------------------------------
+
+..
+    Sect<9.2.2.1>
 
 There are two configuration files to create for this example one each for the message publisher and subscriber.
 
@@ -255,10 +292,15 @@ In each case, if a repository is detected as unavailable the application will at
 
 The repositories do not need any special configuration specifications in order to participate in federation, and so no files are required for them in this example.
 
+.. _the_dcps_information_repository--running-the-federation-example:
+
 Running the Federation Example
 ------------------------------
 
-The example is executed by first starting the repositories and federating them, then starting the application publisher and subscriber processes the same way as was done in the example of  Section :ref:`Running the Example`.
+..
+    Sect<9.2.2.2>
+
+The example is executed by first starting the repositories and federating them, then starting the application publisher and subscriber processes the same way as was done in the example of  Section :ref:`getting_started--running-the-example`.
 
 Start the first repository as:
 
@@ -282,5 +324,5 @@ The ``-ORBListenEndpoints iiop://localhost:2112`` option ensures that the reposi
 The ``-FederationId 2048`` option assigns the value 2048 as the repositories unique id within the federation.
 The ``-FederateWith file://repo.ior`` option initiates federation with the repository located at the IOR contained within the named file - which was written by the previously started repository.
 
-Once the repositories have been started and federation has been established (this will be done automatically after the second repository has initialized), the application publisher and subscriber processes can be started and should execute as they did for the previous example in Section :ref:`Running the Example`.
+Once the repositories have been started and federation has been established (this will be done automatically after the second repository has initialized), the application publisher and subscriber processes can be started and should execute as they did for the previous example in Section :ref:`getting_started--running-the-example`.
 

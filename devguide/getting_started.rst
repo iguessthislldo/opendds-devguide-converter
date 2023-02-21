@@ -1,25 +1,45 @@
+.. _getting_started--getting-started:
+
 ###############
 Getting Started
 ###############
+
+..
+    Sect<2>
+
+.. _getting_started--using-dcps:
 
 **********
 Using DCPS
 **********
 
+..
+    Sect<2.1>
+
 This chapter focuses on an example application using DCPS to distribute data from a single publisher process to a single subscriber process.
 It is based on a simple messenger application where a single publisher publishes messages and a single subscriber subscribes to them.
 We use the default QoS properties and the default TCP/IP transport.
-Full source code for this example may be found under the ``$DDS_ROOT/DevGuideExamples/DCPS/Messenger/`` directory.
+Full source code for this example may be found under the :ghfile:`DevGuideExamples/DCPS/Messenger/` directory.
 Additional DDS and DCPS features are discussed in later chapters.
+
+.. _getting_started--defining-data-types-with-idl:
 
 Defining Data Types with IDL
 ============================
 
+..
+    Sect<2.1.1>
+
 In this example, data types for topics will be defined using the OMG Interface Definition Language (IDL).
-For details on how to build OpenDDS applications that don't use IDL for topic data types, see section  16.7.4 .
+For details on how to build OpenDDS applications that don't use IDL for topic data types, see section :ref:`xtypes--dynamicdatawriters-and-dynamicdatareaders`.
+
+.. _getting_started--identifying-topic-types:
 
 Identifying Topic Types
 -----------------------
+
+..
+    Sect<2.1.1.1>
 
 Each data type used by DDS is defined using OMG Interface Definition Language (IDL).
 OpenDDS uses IDL annotations1For backwards compatibility, OpenDDS also parses ``#pragma`` directives which were used before release 3.14.
@@ -46,11 +66,16 @@ The ``@topic`` annotation marks a data type that can be used as a topic’s type
 This must be a structure or a union.
 The structure or union may contain basic types (short, long, float, etc.
 ), enumerations, strings, sequences, arrays, structures, and unions.
-See section :ref:`IDL Compliance` for more details on the use of IDL for OpenDDS topic types.
+See section :ref:`introduction--idl-compliance` for more details on the use of IDL for OpenDDS topic types.
 The IDL above defines the structure Message in the Messenger module for use in this example.
+
+.. _getting_started--keys:
 
 Keys
 ----
+
+..
+    Sect<2.1.1.2>
 
 The ``@key`` annotation identifies a field that is used as a key for this topic type.
 A topic type may have zero or more key fields.
@@ -128,13 +153,17 @@ Fields marked with ``@key(FALSE)`` are always excluded from being a key, such as
   There is an example of a keyed union topic type in the next section, but keep in mind a union being used as a key doesn’t have to be a topic type.
 
 * Arrays of any of the previous data types.
-  @key can’t be applied to sequences, even if the base type would be valid in an array.
-  Also @key, when applied to arrays, it makes every element in the array part of the key.
+  ``@key`` can’t be applied to sequences, even if the base type would be valid in an array.
+  Also ``@key``, when applied to arrays, it makes every element in the array part of the key.
   They can’t be applied to individual array elements.
 
+.. _getting_started--union-topic-types:
 
 Union Topic Types
 -----------------
+
+..
+    Sect<2.1.1.3>
 
 Unions can be used as topic types.
 Here is an example:
@@ -159,16 +188,21 @@ Here is an example:
 
 Unions can be keyed like structures, but only the union discriminator can be a key, so the set of possible DDS Instances of topics using keyed unions are values of the discriminator.
 Designating a key for a union topic type is done by putting ``@key`` before the discriminator type like in the example above.
-Like structures, it is also possible to have no key fields, in which case @key would be omitted and there would be only one DDS Instance.
+Like structures, it is also possible to have no key fields, in which case ``@key`` would be omitted and there would be only one DDS Instance.
+
+.. _getting_started--topic-types-vs-nested-types:
 
 Topic Types vs. Nested Types
 ----------------------------
+
+..
+    Sect<2.1.1.4>
 
 In addition to ``@topic``, the set of IDL types OpenDDS can use can also be controlled using ``@nested`` and ``@default_nested``.
 Types that are “nested” are the opposite of topic types; they can’t be used for the top-level type of a topic, but they can be nested inside the top-level type (at any level of nesting).
 All types are nested by default in OpenDDS to reduce the code generated for type support, but there a number of ways to change this:
 
-* The type can be annotated with ``@topic`` (see section :ref:`Identifying Topic Types`), or with ``@nested(FALSE)``, which is equivalent to ``@topic``.
+* The type can be annotated with ``@topic`` (see section :ref:`getting_started--identifying-topic-types`), or with ``@nested(FALSE)``, which is equivalent to ``@topic``.
 
 * The enclosing module can be annotated with ``@default_nested(FALSE)``.
 
@@ -178,16 +212,21 @@ All types are nested by default in OpenDDS to reduce the code generated for type
   * When using MPC, add ``dcps_ts_flags += --no-default-nested`` to the project.
 
   * When using CMake, this can be done by setting either the ``OPENDDS_DEFAULT_NESTED`` global variable to ``FALSE`` or adding ``--no-default-nested`` to the ``OPENDDS_IDL_OPTIONS`` parameter for ``OPENDDS_TARGET_SOURCES``.
-    See ``docs/cmake.md`` in the source for more information about using OpenDDS with CMake.
+    See ``$DDS_ROOT/docs/cmake.md`` in the source for more information about using OpenDDS with CMake.
 
 In cases where the module default is not nested, you can reverse this by using ``@nested`` or ``@nested(TRUE)`` for structures/unions and ``@default_nested`` or ``@default_nested(TRUE)`` for modules.
 NOTE: the ``@topic`` annotation doesn’t take a boolean argument, so ``@topic(FALSE)`` would cause an error in the OpenDDS IDL Compiler.
 
+.. _getting_started--processing-the-idl:
+
 Processing the IDL
 ==================
 
+..
+    Sect<2.1.2>
+
 This section uses the OMG IDL-to-C++ mapping (“C++ classic”) as part of the walk-through.
-OpenDDS also supports the OMG IDL-to-C++11 mapping, see section :ref:`Using the IDL-to-C++11 Mapping` for details.
+OpenDDS also supports the OMG IDL-to-C++11 mapping, see section :ref:`opendds_idl--using-the-idl-to-c-11-mapping` for details.
 
 The OpenDDS IDL is first processed by the TAO IDL compiler.
 
@@ -196,7 +235,7 @@ The OpenDDS IDL is first processed by the TAO IDL compiler.
     tao_idl Messenger.idl
 
 In addition, we need to process the IDL file with the OpenDDS IDL compiler to generate the serialization and key support code that OpenDDS requires to marshal and demarshal the Message, as well as the type support code for the data readers and writers.
-This IDL compiler is located in ``$DDS_ROOT/bin`` and generates three files for each IDL file processed.
+This IDL compiler is located in :ghfile:`bin` and generates three files for each IDL file processed.
 The three files all begin with the original IDL file name and would appear as follows:
 
 * ``<filename>TypeSupport.idl``
@@ -218,7 +257,7 @@ The implementation files contain implementations for these interfaces.
 The generated IDL file should itself be compiled with the TAO IDL compiler to generate stubs and skeletons.
 These and the implementation file should be linked with your OpenDDS applications that use the Message type.
 The OpenDDS IDL compiler has a number of options that specialize the generated code.
-These options are described in Chapter 8.
+These options are described in Chapter :ref:`opendds_idl--opendds-idl`.
 
 Typically, you do not directly invoke the TAO or OpenDDS IDL compilers as above, but let your build system do it for you.
 Two different build systems are supported for projects that use OpenDDS:
@@ -286,16 +325,26 @@ For completeness, here is the subscriber section of the MPC file:
       }
     }
 
+.. _getting_started--a-simple-message-publisher:
+
 A Simple Message Publisher
 ==========================
+
+..
+    Sect<2.1.3>
 
 In this section we describe the steps involved in setting up a simple OpenDDS publication process.
 The code is broken into logical sections and explained as we present each section.
 We omit some uninteresting sections of the code (such as ``#include`` directives, error handling, and cross-process synchronization).
-The full source code for this sample publisher is found in the ``Publisher.cpp`` and ``Writer.cpp`` files in ``$DDS_ROOT/DevGuideExamples/DCPS/Messenger/``.
+The full source code for this sample publisher is found in the ``Publisher.cpp`` and ``Writer.cpp`` files in :ghfile:`DevGuideExamples/DCPS/Messenger/`.
+
+.. _getting_started--initializing-the-participant:
 
 Initializing the Participant
 ----------------------------
+
+..
+    Sect<2.1.3.1>
 
 The first section of ``main()`` initializes the current process as an OpenDDS participant.
 
@@ -314,11 +363,14 @@ The first section of ``main()`` initializes the current process as an OpenDDS pa
           std::cerr << "create_participant failed." << std::endl;
           return 1;
         }
+        // ...
+      }
+    }
 
 The ``TheParticipantFactoryWithArgs`` macro is defined in ``Service_Participant.h`` and initializes the Domain Participant Factory with the command line arguments.
 These command line arguments are used to initialize the ORB that the OpenDDS service uses as well as the service itself.
-This allows us to pass ``ORB_init``() options on the command line as well as OpenDDS configuration options of the form -DCPS*.
-Available OpenDDS options are fully described in Chapter 7.
+This allows us to pass ``ORB_init()`` options on the command line as well as OpenDDS configuration options of the form ``-DCPS*``.
+Available OpenDDS options are fully described in Chapter :ref:`run_time_configuration--run-time-configuration`.
 
 The ``create_participant()`` operation uses the domain participant factory to register this process as a participant in the domain specified by the ID of 42.
 The participant uses the default QoS policies and no listeners.
@@ -329,8 +381,13 @@ All other values are reserved for internal use by the implementation.
 
 The Domain Participant object reference returned is then used to register our Message data type.
 
+.. _getting_started--registering-the-data-type-and-creating-a-topic:
+
 Registering the Data Type and Creating a Topic
 ----------------------------------------------
+
+..
+    Sect<2.1.3.2>
 
 First, we create a ``MessageTypeSupportImpl`` object, then register the type with a type name using the ``register_type()`` operation.
 In this example, we register the type with a nil string type name, which causes the ``MessageTypeSupport`` interface repository identifier to be used as the type name.
@@ -364,8 +421,13 @@ Next, we obtain the registered type name from the type support object and create
 
 We have created a topic named “*Movie Discussion List*” with the registered type and the default QoS policies.
 
+.. _getting_started--creating-a-publisher:
+
 Creating a Publisher
 --------------------
+
+..
+    Sect<2.1.3.3>
 
 Now, we are ready to create the publisher with the default publisher QoS.
 
@@ -380,8 +442,13 @@ Now, we are ready to create the publisher with the default publisher QoS.
           return 1;
         }
 
+.. _getting_started--creating-a-datawriter-and-waiting-for-the-subscriber:
+
 Creating a DataWriter and Waiting for the Subscriber
 ----------------------------------------------------
+
+..
+    Sect<2.1.3.4>
 
 With the publisher in place, we create the data writer.
 
@@ -419,13 +486,17 @@ The basic steps involved in waiting for the subscriber are:
 
 * Attach the status condition to the wait set
 
-* Get the publication matched status
+* .. _getting_started--rtf35353737353a204e756d6265:
+
+  .. _getting_started--refnumpara-2987-508699783:
+
+  Get the publication matched status
 
 * If the current count of matches is one or more, detach the condition from the wait set and proceed to publication
 
 * Wait on the wait set (can be bounded by a specified period of time)
 
-* Loop back around to step :ref:`5) <_bookmark__RefNumPara__2987_508699783>`
+* Loop back around to step :ref:`5) <getting_started--refnumpara-2987-508699783>`
 
 Here is the corresponding code:
 
@@ -463,10 +534,15 @@ Here is the corresponding code:
 
         ws->detach_condition(condition);
 
-For more details about status, conditions, and wait sets, see Chapter :ref:`Conditions and Listeners`.
+For more details about status, conditions, and wait sets, see Chapter :ref:`conditions_and_listeners--conditions-and-listeners`.
+
+.. _getting_started--sample-publication:
 
 Sample Publication
 ------------------
+
+..
+    Sect<2.1.3.5>
 
 The message publication is quite straightforward:
 
@@ -490,21 +566,31 @@ The message publication is quite straightforward:
         }
 
 For each loop iteration, calling ``write()`` causes a message to be distributed to all connected subscribers that are registered for our topic.
-Since the subject_id is the key for Message, each time subject_id is incremented and ``write()`` is called, a new instance is created (see :ref:`Topic`).
+Since the subject_id is the key for Message, each time subject_id is incremented and ``write()`` is called, a new instance is created (see :ref:`introduction--topic`).
 The second argument to ``write()`` specifies the instance on which we are publishing the sample.
 It should be passed either a handle returned by ``register_instance()`` or ``DDS::HANDLE_NIL``.
 Passing a ``DDS::HANDLE_NIL`` value indicates that the data writer should determine the instance by inspecting the key of the sample.
-See Section :ref:`Registering and Using Instances in the Publisher` for details on using instance handles during publication.
+See Section :ref:`getting_started--registering-and-using-instances-in-the-publisher` for details on using instance handles during publication.
+
+.. _getting_started--setting-up-the-subscriber:
 
 Setting up the Subscriber
 =========================
 
+..
+    Sect<2.1.4>
+
 Much of the subscriber’s code is identical or analogous to the publisher that we just finished exploring.
 We will progress quickly through the similar parts and refer you to the discussion above for details.
-The full source code for this sample subscriber is found in the ``Subscriber.cpp`` and ``DataReaderListener.cpp`` files in ``$DDS_ROOT/DevGuideExamples/DCPS/Messenger/``.
+The full source code for this sample subscriber is found in the ``Subscriber.cpp`` and ``DataReaderListener.cpp`` files in :ghfile:`DevGuideExamples/DCPS/Messenger/`.
+
+.. _getting_started--initializing-the-participant-1:
 
 Initializing the Participant
 ----------------------------
+
+..
+    Sect<2.1.4.1>
 
 The beginning of the subscriber is identical to the publisher as we initialize the service and join our domain:
 
@@ -525,8 +611,13 @@ The beginning of the subscriber is identical to the publisher as we initialize t
           return 1;
         }
 
+.. _getting_started--registering-the-data-type-and-creating-a-topic-1:
+
 Registering the Data Type and Creating a Topic
 ----------------------------------------------
+
+..
+    Sect<2.1.4.2>
 
 Next, we initialize the message type and topic.
 Note that if the topic has already been initialized in this domain with the same data type and compatible QoS, the ``create_topic()`` invocation returns a reference corresponding to the existing topic.
@@ -542,7 +633,7 @@ There is also a ``find_topic()`` operation our subscriber could use to simply re
           return 1;
         }
 
-        CORBA::String_var type_name = mts->get_type_name ();
+        CORBA::String_var type_name = mts->get_type_name();
 
         DDS::Topic_var topic =
           participant->create_topic("Movie Discussion List",
@@ -555,8 +646,13 @@ There is also a ``find_topic()`` operation our subscriber could use to simply re
           return 1;
         }
 
+.. _getting_started--creating-the-subscriber:
+
 Creating the subscriber
 -----------------------
+
+..
+    Sect<2.1.4.3>
 
 Next, we create the subscriber with the default QoS.
 
@@ -572,8 +668,13 @@ Next, we create the subscriber with the default QoS.
           return 1;
         }
 
+.. _getting_started--creating-a-datareader-and-listener:
+
 Creating a DataReader and Listener
 ----------------------------------
+
+..
+    Sect<2.1.4.4>
 
 We need to associate a listener object with the data reader we create, so we can use it to detect when data is available.
 The code below constructs the listener object.
@@ -583,7 +684,7 @@ The ``DataReaderListenerImpl`` class is shown in the next subsection.
 
         DDS::DataReaderListener_var listener(new DataReaderListenerImpl);
 
-The listener is allocated on the heap and assigned to a ``DataReaderListener``_var object.
+The listener is allocated on the heap and assigned to a ``DataReaderListener_var`` object.
 This type provides reference counting behavior so the listener is automatically cleaned up when the last reference to it is removed.
 This usage is typical for heap allocations in OpenDDS application code and frees the application developer from having to actively manage the lifespan of the allocated objects.
 
@@ -605,8 +706,13 @@ Now we can create the data reader and associate it with our topic, the default Q
 This thread is now free to perform other application work.
 Our listener object will be called on an OpenDDS thread when a sample is available.
 
+.. _getting_started--the-data-reader-listener-implementation:
+
 The Data Reader Listener Implementation
 =======================================
+
+..
+    Sect<2.1.5>
 
 Our listener class implements the ``DDS::DataReaderListener`` interface defined by the DDS specification.
 The ``DataReaderListener`` is wrapped within a ``DCPS::LocalObject`` which resolves ambiguously-inherited members such as ``_narrow`` and ``_ptr_type``.
@@ -699,10 +805,15 @@ The dispose notification is delivered with the instance state set to ``NOT_ALIVE
 If additional samples are available, the service calls this function again.
 However, reading values a single sample at a time is not the most efficient way to process incoming data.
 The Data Reader interface provides a number of different options for processing data in a more efficient manner.
-We discuss some of these operations in Section :ref:`Data Handling Optimizations`.
+We discuss some of these operations in Section :ref:`getting_started--data-handling-optimizations`.
+
+.. _getting_started--cleaning-up-in-opendds-clients:
 
 Cleaning up in OpenDDS Clients
 ==============================
+
+..
+    Sect<2.1.6>
 
 After we are finished in the publisher and subscriber, we can use the following code to clean up the OpenDDS-related objects:
 
@@ -732,8 +843,13 @@ The following code illustrates the use of ``wait_for_acknowledgments()`` to bloc
                   << "may not have been delivered." << std::endl;
       }
 
+.. _getting_started--running-the-example:
+
 Running the Example
 ===================
+
+..
+    Sect<2.1.7>
 
 We are now ready to run our simple example.
 Running each of these commands in its own window should enable you to most easily understand the output.
@@ -742,7 +858,7 @@ First we will start a ``DCPSInfoRepo`` service so our publishers and subscribers
 
 .. note:: This step is not necessary if you are using peer-to-peer discovery by configuring your environment to use RTPS discovery.
 
-The ``DCPSInfoRepo``  executable is found in ``$DDS_ROOT/bin/DCPSInfoRepo``.
+The ``DCPSInfoRepo``  executable is found in :ghfile:`bin/DCPSInfoRepo`.
 When we start the ``DCPSInfoRepo`` we need to ensure that publisher and subscriber application processes can also find the started ``DCPSInfoRepo``.
 This information can be provided in one of three ways: a.)
 parameters on the command line , b.)
@@ -770,7 +886,7 @@ Windows:
 
 ::
 
-    subscriber -DCPSInfoRepo `file://simple.ior <smb://simple.ior/>`_
+    subscriber -DCPSInfoRepo file://simple.ior
 
 Unix:
 
@@ -796,12 +912,17 @@ Unix
 The publisher connects to the ``DCPSInfoRepo`` to find the location of any subscribers and begins to publish messages as well as write them to the console.
 In the subscriber window, you should also now be seeing console output from the subscriber that is reading messages from the topic demonstrating a simple publish and subscribe application.
 
-You can read more about configuring your application for RTPS and other more advanced configuration options in Section 7.3.3 and Section 7.4.5.5 .
-To read more about configuring and using the ``DCPSInfoRepo`` go to Section 7.3 and Chapter 9.
-To find more about setting and using QoS features that modify the behavior of your application read Chapter 3.
+You can read more about configuring your application for RTPS and other more advanced configuration options in Section :ref:`run_time_configuration--configuring-for-ddsi-rtps-discovery` and Section :ref:`run_time_configuration--rtps-udp-transport-configuration-options` .
+To read more about configuring and using the ``DCPSInfoRepo`` go to Section :ref:`run_time_configuration--discovery-configuration` and Chapter :ref:`the_dcps_information_repository--the-dcps-information-repository`.
+To find more about setting and using QoS features that modify the behavior of your application read Chapter :ref:`quality_of_service--quality-of-service`.
+
+.. _getting_started--running-our-example-with-rtps:
 
 Running Our Example with RTPS
 =============================
+
+..
+    Sect<2.1.8>
 
 The prior OpenDDS example has demonstrated how to build and execute an OpenDDS application using basic OpenDDS configurations and centralized discovery using the ``DCPSInfoRepo`` service.
 The following details what is needed to run the same example using RTPS for discovery and with an interoperable transport.
@@ -809,7 +930,7 @@ This is important in scenarios when your OpenDDS application needs to interopera
 
 The coding and building of the Messenger example above is not changed for using RTPS, so you will not need to modify or rebuild your publisher and subscriber services.
 This is a strength of the OpenDDS architecture in that to enable the RTPS capabilities, it is an exercise of configuration.
-Chapter 7 will cover more details concerning the configuration of all the available transports including RTPS, however, for this exercise we will enable RTPS for the Messenger example using a configuration file that the publisher and subscriber will share.
+Chapter :ref:`run_time_configuration--run-time-configuration` will cover more details concerning the configuration of all the available transports including RTPS, however, for this exercise we will enable RTPS for the Messenger example using a configuration file that the publisher and subscriber will share.
 
 Navigate to the directory where your publisher and subscriber have been built.
 Create a new text file named ``rtps.ini`` and populate it with the following content:
@@ -859,18 +980,28 @@ Unix:
 Since there is no centralized discovery in the RTPS specification, there are provisions to allow for wait times to allow discovery to occur.
 The specification sets the default to 30 seconds.
 When the two above processes are started there may be up to a 30 second delay depending on how far apart they are started from each other.
-This time can be adjusted in OpenDDS configuration files discussed later Section :ref:`Configuring for DDSI-RTPS Discovery`.
+This time can be adjusted in OpenDDS configuration files discussed later Section :ref:`run_time_configuration--configuring-for-ddsi-rtps-discovery`.
 
 Because the architecture of OpenDDS allows for pluggable discovery and pluggable transports the two configuration entries called out in the ``rtps.ini`` file above can be changed independently with one using RTPS and the other not using RTPS (e.g.
 centralized discovery using ``DCPSInfoRepo``).
 Setting them both to RTPS in our example makes this application fully interoperable with other non-OpenDDS implementations.
 
+.. _getting_started--data-handling-optimizations:
+
 ***************************
 Data Handling Optimizations
 ***************************
 
+..
+    Sect<2.2>
+
+.. _getting_started--registering-and-using-instances-in-the-publisher:
+
 Registering and Using Instances in the Publisher
 ================================================
+
+..
+    Sect<2.2.1>
 
 The previous example implicitly specifies the instance it is publishing via the sample’s data fields.
 When ``write()`` is called, the data writer queries the sample’s key fields to determine the instance.
@@ -896,8 +1027,13 @@ Without explicit registration, the first write causes resource allocation by Ope
 
 Because resource limitations can cause instance registration to fail, many applications consider registration as part of setting up the publisher and always do it when initializing the data writer.
 
+.. _getting_started--reading-multiple-samples:
+
 Reading Multiple Samples
 ========================
+
+..
+    Sect<2.2.2>
 
 The DDS specification provides a number of operations for reading and writing data samples.
 In the examples above we used the ``take_next_sample()`` operation, to read the next sample and “take” ownership of it from the reader.
@@ -928,8 +1064,13 @@ Here is a sample call to ``take()`` that reads up to 5 samples at a time.
 The three state parameters potentially specialize which samples are returned from the reader.
 See the DDS specification for details on their usage.
 
+.. _getting_started--zero-copy-read:
+
 Zero-Copy Read
 ==============
+
+..
+    Sect<2.2.3>
 
 The read and take operations that return a sequence of samples provide the user with the option of obtaining a copy of the samples (single-copy read) or a reference to the samples (zero-copy read).
 The zero-copy read can have significant performance improvements over the single-copy read for large sample types.

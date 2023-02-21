@@ -1,18 +1,33 @@
+.. _quality_of_service--quality-of-service:
+
 ##################
 Quality of Service
 ##################
+
+..
+    Sect<3>
+
+.. _quality_of_service--introduction:
 
 ************
 Introduction
 ************
 
+..
+    Sect<3.1>
+
 The previous examples use default QoS policies for the various entities.
 This chapter discusses the QoS policies which are implemented in OpenDDS and the details of their usage.
 See the DDS specification for further information about the policies discussed in this chapter.
 
+.. _quality_of_service--qos-policies:
+
 ************
 QoS Policies
 ************
+
+..
+    Sect<3.2>
 
 Each policy defines a structure to specify its data.
 Each entity supports a subset of the policies and defines a QoS structure that is composed of the supported policy structures.
@@ -31,7 +46,7 @@ For example, the Publisher’s QoS structure is defined in the specification’s
     };
 
 Setting policies is as simple as obtaining a structure with the default values already set, modifying the individual policy structures as necessary, and then applying the QoS structure to an entity (usually when it is created).
-We show examples of how to obtain the default QoS policies for various entity types in Section :ref:`Default QoS Policy Values`.
+We show examples of how to obtain the default QoS policies for various entity types in Section :ref:`quality_of_service--default-qos-policy-values`.
 
 Applications can change the QoS of any entity by calling the set_qos() operation on the entity.
 If the QoS is changeable, existing associations are removed if they are no longer compatible and new associations are added if they become compatible.
@@ -47,8 +62,13 @@ The ``DEADLINE`` and ``LATENCY_BUDGET`` QoS policies require compatibility re-ev
 The ``PARTITION`` QoS policy does not require compatibility re-evaluation, but does require association re-evaluation.
 The DDS specification lists ``TRANSPORT_PRIORITY`` as changeable, but the OpenDDS implementation does not support dynamically modifying this policy.
 
+.. _quality_of_service--default-qos-policy-values:
+
 Default QoS Policy Values
 =========================
+
+..
+    Sect<3.2.1>
 
 Applications obtain the default QoS policies for an entity by instantiating a QoS structure of the appropriate type for the entity and passing it by reference to the appropriate ``get_default_entity_qos()`` operation on the appropriate factory entity.
 (For example, you would use a domain participant to obtain the default QoS for a publisher or subscriber.)
@@ -101,7 +121,9 @@ The following examples illustrate how to obtain the default policies for publish
 
 The following tables summarize the default QoS policies for each entity type in OpenDDS to which policies can be applied.
 
-**Table 3-1 Default DomainParticipant QoS Policies**
+.. _quality_of_service--reftable2:
+
+**Table  Default DomainParticipant QoS Policies**
 
 +--------------------+---------------------------------+----------------------+
 | Policy             | Member                          | Default Value        |
@@ -111,7 +133,9 @@ The following tables summarize the default QoS policies for each entity type in 
 | ``ENTITY_FACTORY`` | ``autoenable_created_entities`` | ``true``             |
 +--------------------+---------------------------------+----------------------+
 
-**Table 3-2 Default Topic QoS Policies**
+.. _quality_of_service--reftable3:
+
+**Table  Default Topic QoS Policies**
 
 +------------------------+-----------------------------------+-------------------------------------------------+
 | Policy                 | Member                            | Default Value                                   |
@@ -179,7 +203,9 @@ The following tables summarize the default QoS policies for each entity type in 
 | ``OWNERSHIP``          | ``kind``                          | ``SHARED_OWNERSHIP_QOS``                        |
 +------------------------+-----------------------------------+-------------------------------------------------+
 
-**Table 3-3 Default Publisher QoS Policies**
+.. _quality_of_service--reftable4:
+
+**Table  Default Publisher QoS Policies**
 
 +--------------------+---------------------------------+-------------------------------+
 | Policy             | Member                          | Default Value                 |
@@ -197,7 +223,9 @@ The following tables summarize the default QoS policies for each entity type in 
 | ``ENTITY_FACTORY`` | ``autoenable_created_entities`` | ``true``                      |
 +--------------------+---------------------------------+-------------------------------+
 
-**Table 3-4 Default Subscriber QoS Policies**
+.. _quality_of_service--reftable5:
+
+**Table  Default Subscriber QoS Policies**
 
 +--------------------+---------------------------------+-------------------------------+
 | Policy             | Member                          | Default Value                 |
@@ -215,7 +243,9 @@ The following tables summarize the default QoS policies for each entity type in 
 | ``ENTITY_FACTORY`` | ``autoenable_created_entities`` | ``true``                      |
 +--------------------+---------------------------------+-------------------------------+
 
-**Table 3-5 Default DataWriter QoS Policies**
+.. _quality_of_service--reftable6:
+
+**Table  Default DataWriter QoS Policies**
 
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 | Policy                    | Member                                 | Default Value                                                                                                               |
@@ -288,7 +318,9 @@ The following tables summarize the default QoS policies for each entity type in 
 | ``WRITER_DATA_LIFECYCLE`` | ``autodispose_unregistered_instances`` | ``1``                                                                                                                       |
 +---------------------------+----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------+
 
-**Table 3-6 Default DataReader QoS Policies**
+.. _quality_of_service--reftable7:
+
+**Table  Default DataReader QoS Policies**
 
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 | Policy                    | Member                                       | Default Value                                   |
@@ -348,8 +380,13 @@ The following tables summarize the default QoS policies for each entity type in 
 |                           | ``autopurge_disposed_samples_delay.nanosec`` | ``DURATION_INFINITE_NSEC``                      |
 +---------------------------+----------------------------------------------+-------------------------------------------------+
 
+.. _quality_of_service--liveliness:
+
 LIVELINESS
 ==========
+
+..
+    Sect<3.2.2>
 
 The ``LIVELINESS`` policy applies to the topic, data reader, and data writer entities via the liveliness member of their respective QoS structures.
 Setting this policy on a topic means it is in effect for all data readers and data writers on that topic.
@@ -397,8 +434,13 @@ The liveliness kind values are ordered as follows:
 In addition, the writer’s offered lease duration must be less than or equal to the reader’s requested lease duration.
 Both of these conditions must be met for the offered and requested liveliness policy settings to be considered compatible and the association established.
 
+.. _quality_of_service--reliability:
+
 RELIABILITY
 ===========
+
+..
+    Sect<3.2.3>
 
 The ``RELIABILITY`` policy applies to the topic, data reader, and data writer entities via the reliability member of their respective QoS structures.
 Below is the IDL related to the reliability QoS policy:
@@ -428,8 +470,13 @@ This policy is considered during the creation of associations between data write
 The value of both sides of the association must be compatible in order for an association to be created.
 The reliability kind of data writer must be greater than or equal to the value of data reader.
 
+.. _quality_of_service--history:
+
 HISTORY
 =======
+
+..
+    Sect<3.2.4>
 
 The ``HISTORY`` policy determines how samples are held in the data writer and data reader for a particular instance.
 For data writers these values are held until the publisher retrieves them and successfully sends them to all connected subscribers.
@@ -458,8 +505,13 @@ When a data reader contains depth samples of a given instance, any incoming samp
 
 This policy defaults to a “keep last” with a ``depth`` of one.
 
+.. _quality_of_service--durability:
+
 DURABILITY
 ==========
+
+..
+    Sect<3.2.5>
 
 The ``DURABILITY`` policy controls whether data writers should maintain samples after they have been sent to known subscribers.
 This policy applies to the topic, data reader, and data writer entities via the durability member of their respective QoS structures.
@@ -505,9 +557,13 @@ The durability kind values are ordered as follows:
     TRANSIENT_LOCAL_DURABILITY_QOS >
     VOLATILE_DURABILITY_QOS
 
+.. _quality_of_service--durability-service:
 
 DURABILITY_SERVICE
 ==================
+
+..
+    Sect<3.2.6>
 
 The ``DURABILITY_SERVICE`` policy controls deletion of samples in ``TRANSIENT`` or ``PERSISTENT`` durability cache.
 This policy applies to the topic and data writer entities via the durability_service member of their respective QoS structures and provides a way to specify ``HISTORY`` and ``RESOURCE_LIMITS`` for the sample cache.
@@ -528,8 +584,13 @@ The history and resource limits members are analogous to, although independent o
 The ``service_cleanup_delay`` can be set to a desired value.
 By default, it is set to zero, which means never clean up cached samples.
 
+.. _quality_of_service--resource-limits:
+
 RESOURCE_LIMITS
 ===============
+
+..
+    Sect<3.2.7>
 
 The ``RESOURCE_LIMITS`` policy determines the amount of resources the service can consume in order to meet the requested QoS.
 This policy applies to the topic, data reader, and data writer entities via the resource_limits member of their respective QoS structures.
@@ -551,8 +612,13 @@ The values of all these members default to unlimited (``DDS::LENGTH_UNLIMITED``)
 Resources are used by the data writer to queue samples written to the data writer but not yet sent to all data readers because of backpressure from the transport.
 Resources are used by the data reader to queue samples that have been received, but not yet read/taken from the data reader.
 
+.. _quality_of_service--partition:
+
 PARTITION
 =========
+
+..
+    Sect<3.2.8>
 
 The ``PARTITION`` QoS policy allows the creation of logical partitions within a domain.
 It only allows data readers and data writers to be associated if they have matched partition strings.
@@ -575,8 +641,13 @@ Failure to match partitions is not considered a failure and does not trigger any
 The value of this policy may be changed at any time.
 Changes to this policy may cause associations to be removed or added.
 
+.. _quality_of_service--deadline:
+
 DEADLINE
 ========
+
+..
+    Sect<3.2.9>
 
 The ``DEADLINE`` QoS policy allows the application to detect when data is not written or read within a specified amount of time.
 This policy applies to the topic, data writer, and data reader entities via the deadline member of their respective QoS structures.
@@ -601,8 +672,13 @@ In the case where the policy of a data reader or data writer is made, the change
 If the policy of a topic is changed, it will affect only data readers and writers that are created after the change has been made.
 Any existing readers or writers, and any existing associations between them, will not be affected by the topic policy value change.
 
+.. _quality_of_service--lifespan:
+
 LIFESPAN
 ========
+
+..
+    Sect<3.2.10>
 
 The ``LIFESPAN`` QoS policy allows the application to specify when a sample expires.
 Expired samples will not be delivered to subscribers.
@@ -622,8 +698,13 @@ The current OpenDDS implementation may not remove samples from the data writer a
 The value of this policy may be changed at any time.
 Changes to this policy affect only data written after the change.
 
+.. _quality_of_service--user-data:
+
 USER_DATA
 =========
+
+..
+    Sect<3.2.11>
 
 The ``USER_DATA`` policy applies to the domain participant, data reader, and data writer entities via the user_data member of their respective QoS structures.
 Below is the IDL related to the user data QoS policy:
@@ -640,8 +721,13 @@ The value of the ``USER_DATA`` policy is available in respective built-in topic 
 The remote application can obtain the information via the built-in topic and use it for its own purposes.
 For example, the application could attach security credentials via the ``USER_DATA`` policy that can be used by the remote application to authenticate the source.
 
+.. _quality_of_service--topic-data:
+
 TOPIC_DATA
 ==========
+
+..
+    Sect<3.2.12>
 
 The ``TOPIC_DATA`` policy applies to topic entities via the topic_data member of TopicQoS structures.
 Below is the IDL related to the topic data QoS policy:
@@ -657,8 +743,13 @@ It can be set to attach additional information to the created topic.
 The value of the ``TOPIC_DATA`` policy is available in data writer, data reader, and topic built-in topic data.
 The remote application can obtain the information via the built-in topic and use it in an application-defined way.
 
+.. _quality_of_service--group-data:
+
 GROUP_DATA
 ==========
+
+..
+    Sect<3.2.13>
 
 The ``GROUP_DATA`` policy applies to the publisher and subscriber entities via the group_data member of their respective QoS structures.
 Below is the IDL related to the group data QoS policy:
@@ -675,8 +766,13 @@ The value of the ``GROUP_DATA`` policy is propagated via built-in topics.
 The data writer built-in topic data contains the ``GROUP_DATA`` from the publisher and the data reader built-in topic data contains the ``GROUP_DATA`` from the subscriber.
 The ``GROUP_DATA`` policy could be used to implement matching mechanisms similar to those of the ``PARTITION`` policy described in 1.1.6 except the decision could be made based on an application-defined policy.
 
+.. _quality_of_service--transport-priority:
+
 TRANSPORT_PRIORITY
 ==================
+
+..
+    Sect<3.2.14>
 
 The ``TRANSPORT_PRIORITY`` policy applies to topic and data writer entities via the transport_priority member of their respective QoS policy structures.
 Below is the IDL related to the TransportPriority QoS policy:
@@ -711,8 +807,13 @@ Priority values from 1 through 63 are then mapped to the corresponding codepoint
 OpenDDS does not currently support modifications of the transport_priority policy values after creation of the data writer.
 This can be worked around by creating new data writers as different priority values are required.
 
+.. _quality_of_service--latency-budget:
+
 LATENCY_BUDGET
 ==============
+
+..
+    Sect<3.2.15>
 
 The ``LATENCY_BUDGET`` policy applies to topic, data reader, and data writer entities via the latency_budget member of their respective QoS policy structures.
 Below is the IDL related to the LatencyBudget QoS policy:
@@ -822,9 +923,13 @@ In the following example, we assume that reader is initialized correctly by call
         std::cout << "  variance = " << stats[i].variance << std::endl;
       }
 
+.. _quality_of_service--entity-factory:
 
 ENTITY_FACTORY
 ==============
+
+..
+    Sect<3.2.16>
 
 The ``ENTITY_FACTORY`` policy controls whether entities are automatically enabled when they are created.
 Below is the IDL related to the Entity Factory QoS policy:
@@ -844,8 +949,13 @@ The application must then manually enable the entity by calling the entity’s `
 The value of this policy may be changed at any time.
 Changes to this policy affect only entities created after the change.
 
+.. _quality_of_service--presentation:
+
 PRESENTATION
 ============
+
+..
+    Sect<3.2.17>
 
 The ``PRESENTATION`` QoS policy controls how changes to instances by publishers are presented to data readers.
 It affects the relative ordering of these changes and the scope of this ordering.
@@ -888,8 +998,13 @@ By default, ``ordered_access`` is ``false``.
 .. note:: This policy controls the ordering and scope of samples made available to the subscriber, but the subscriber application must use the proper logic in reading samples to guarantee the requested behavior.
   For more details, see Section 2.2.2.5.1.9 of the Version 1.4 DDS Specification.
 
+.. _quality_of_service--destination-order:
+
 DESTINATION_ORDER
 =================
+
+..
+    Sect<3.2.18>
 
 The ``DESTINATION_ORDER`` QoS policy controls the order in which samples within a given instance are made available to a data reader.
 If a history depth of one (the default) is specified, the instance will reflect the most recent value written by all data writers to that instance.
@@ -913,8 +1028,13 @@ To enforce this type of ordering, the ``BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS
 The ``BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS`` value indicates that samples within an instance are ordered based on a timestamp provided by the data writer.
 It should be noted that if multiple data writers write to the same instance, care should be taken to ensure that clocks are synchronized to prevent incorrect ordering on the data reader.
 
+.. _quality_of_service--writer-data-lifecycle:
+
 WRITER_DATA_LIFECYCLE
 =====================
+
+..
+    Sect<3.2.19>
 
 The ``WRITER_DATA_LIFECYCLE`` QoS policy controls the lifecycle of data instances managed by a data writer.
 Here is the IDL for the Writer Data Lifecycle QoS policy:
@@ -930,8 +1050,13 @@ In some cases, it may be desirable to prevent an instance from being disposed wh
 This policy could, for example, allow an ``EXCLUSIVE`` data writer to gracefully defer to the next data writer without affecting the instance state.
 Deleting a data writer implicitly unregisters all of its instances prior to deletion.
 
+.. _quality_of_service--reader-data-lifecycle:
+
 READER_DATA_LIFECYCLE
 =====================
+
+..
+    Sect<3.2.20>
 
 The ``READER_DATA_LIFECYCLE`` QoS policy controls the lifecycle of data instances managed by a data reader.
 Here is the IDL for the Reader Data Lifecycle QoS policy:
@@ -954,8 +1079,13 @@ By default, ``autopurge_nowriter_samples_delay`` is infinite.
 The ``autopurge_disposed_samples_delay`` controls how long the data reader waits before reclaiming resources once an instance transitions to the ``NOT_ALIVE_DISPOSED`` state.
 By default, ``autopurge_disposed_samples_delay`` is infinite.
 
+.. _quality_of_service--time-based-filter:
+
 TIME_BASED_FILTER
 =================
+
+..
+    Sect<3.2.21>
 
 The ``TIME_BASED_FILTER`` QoS policy controls how often a data reader may be interested in changes in values to a data instance.
 Here is the IDL for the Time Based Filter QoS:
@@ -972,8 +1102,13 @@ By default, minimum_separation is zero, which indicates that no data is filtered
 This QoS policy does not conserve bandwidth as instance value changes are still sent to the subscriber process.
 It only affects which samples are made available via the data reader.
 
+.. _quality_of_service--ownership:
+
 OWNERSHIP
 =========
+
+..
+    Sect<3.2.22>
 
 The ``OWNERSHIP`` policy controls whether more than one Data Writer is able to write samples for the same data-object instance.
 Ownership can be ``EXCLUSIVE`` or ``SHARED``.
@@ -995,8 +1130,13 @@ If the kind member is set to ``EXCLUSIVE_OWNERSHIP_QOS``, only one Data Writer i
 The owner of the instance is determined by value of the ``OWNERSHIP_STRENGTH`` policy; the data writer with the highest value of strength is considered the owner of the data-object instance.
 Other factors may also influence ownership, such as whether the data writer with the highest strength is “alive” (as defined by the ``LIVELINESS`` policy) and has not violated its offered publication deadline constraints (as defined by the ``DEADLINE`` policy).
 
+.. _quality_of_service--ownership-strength:
+
 OWNERSHIP_STRENGTH
 ==================
+
+..
+    Sect<3.2.23>
 
 The ``OWNERSHIP_STRENGTH`` policy is used in conjunction with the ``OWNERSHIP`` policy, when the ``OWNERSHIP`` ``kind`` is set to ``EXCLUSIVE``.
 Below is the IDL related to the Ownership Strength QoS policy:
@@ -1010,9 +1150,14 @@ Below is the IDL related to the Ownership Strength QoS policy:
 The value member is used to determine which Data Writer is the *owner* of the data-object instance.
 The default value is zero.
 
+.. _quality_of_service--policy-example:
+
 **************
 Policy Example
 **************
+
+..
+    Sect<3.3>
 
 The following sample code illustrates some policies being set and applied for a publisher.
 

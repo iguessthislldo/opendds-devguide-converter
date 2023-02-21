@@ -1,10 +1,20 @@
+.. _internet_enabled_rtps--internet-enabled-rtps:
+
 #####################
 Internet-Enabled RTPS
 #####################
 
+..
+    Sect<15>
+
+.. _internet_enabled_rtps--overview:
+
 ********
 Overview
 ********
+
+..
+    Sect<15.1>
 
 Like any specification, standard, or system, RTPS was designed with certain assumptions.
 Two of these assumptions severely limit the ability to use RTPS in modern network environments.
@@ -20,9 +30,14 @@ Second, we introduce Interactive Connection Establishment (ICE) for RTPS.
 Adding ICE to RTPS is an optimization that allows participants that are behind firewalls that perform NAT to exchange messages directly.
 ICE requires a back channel for distributing discovery information and is typically used with the RtpsRelay.
 
+.. _internet_enabled_rtps--the-rtpsrelay:
+
 *************
 The RtpsRelay
 *************
+
+..
+    Sect<15.2>
 
 The RtpsRelay is designed to allow participants to exchange RTPS datagrams when separated by a firewall that performs network address translation (NAT) and/or a network that does not support multicast like the public Internet.
 The RtpsRelay supports both IPv4 and IPv6.
@@ -35,6 +50,8 @@ Each RtpsRelay instance maintains a map of associated readers and writers.
 When a client sends an RTPS datagram to its RtpsRelay instance, the RtpsRelay instance uses the association table to forward the datagram to other clients and other RtpsRelay instances so that they can deliver it to their clients.
 Clients send RTPS datagrams via unicast which is generally supported and compatible with NAT.
 The RtpsRelay can be used in lieu of or in addition to conventional RTPS discovery.
+
+.. image:: images/10000000000001E000000168096C98DBD1C93465.png
 
 The preceding diagram illustrates how the RtpsRelay can be used to connect participants that are behind firewalls that may be performing NAT.
 First, a Participant sends an RTPS datagram to its associated RtpsRelay (1).
@@ -51,28 +68,52 @@ To keep NAT bindings alive, clients send STUN binding requests and indications p
 Participants using ICE may use these ports as a STUN server for determining a server reflexive address.
 The timing parameters for the periodic messages are controlled via the ICE configuration variables for server reflexive addresses.
 
+.. _internet_enabled_rtps--using-the-rtpsrelay:
+
 Using the RtpsRelay
 ===================
 
+..
+    Sect<15.2.1>
+
 Support for the RtpsRelay is activated via configuration.
-See Table 7-5 RTPS Discovery Configuration Options and Table 7-17 RTPS_UDP Configuration Options.
+See :ref:`Table 7-5 RTPS Discovery Configuration Options <run_time_configuration--reftable12>` and :ref:`Table 7-17 RTPS_UDP Configuration Options <run_time_configuration--reftable24>`.
 As an example:
 
 .. code-block:: ini
 
-    [common]DCPSGlobalTransportConfig=$file[domain/4]DiscoveryConfig=rtps[rtps_discovery/rtps]SpdpRtpsRelayAddress=1.2.3.4:4444SedpRtpsRelayAddress=1.2.3.4:4445UseRtpsRelay=1[transport/the_rtps_transport]transport_type=rtps_udpDataRtpsRelayAddress=1.2.3.4:4446UseRtpsRelay=1
+    [common]
+    DCPSGlobalTransportConfig=$file
+
+    [domain/4]
+    DiscoveryConfig=rtps
+
+    [rtps_discovery/rtps]
+    SpdpRtpsRelayAddress=1.2.3.4:4444
+    SedpRtpsRelayAddress=1.2.3.4:4445
+    UseRtpsRelay=1
+
+    [transport/the_rtps_transport]
+    transport_type=rtps_udp
+    DataRtpsRelayAddress=1.2.3.4:4446
+    UseRtpsRelay=1
 
 Each participant should use a single RtpsRelay instance due to the way NAT bindings work.
 Most firewalls will only forward packets received from the destination address that was originally used to create the NAT binding.
 That is, if participant A is interacting with relay A and participant B is interacting with relay B, then a message from A to B must go from A to relay A, to relay B, and finally to B.  Relay A cannot send directly to B since that packet will not be accepted by the firewall.
 
+.. _internet_enabled_rtps--usage:
+
 Usage
 =====
+
+..
+    Sect<15.2.2>
 
 The RtpsRelay itself is an OpenDDS application.
 The source code is located in ``tools/rtpsrelay``.
 Security must be enabled to build the RtpsRelay.
-See section :ref:`Building OpenDDS with Security Enabled`.
+See section :ref:`dds_security--building-opendds-with-security-enabled`.
 Each RtpsRelay process has a set of ports for exchanging RTPS messages with the participants called the "vertical" ports and a set of ports for exchanging RTPS messages with other relays called the “horizontal” ports.
 
 The RtpsRelay contains an embedded webserver called the meta discovery server.
@@ -143,9 +184,13 @@ The command-line options for the RtpsRelay:
 * ``-MetaDiscoveryContentPathPATH-MetaDiscoveryContentCONTENT`` The content returned by the meta discovery config endpoint, default {}.
   If a path is specified, the content of the file will be used.
 
+.. _internet_enabled_rtps--deployment-considerations:
 
 Deployment Considerations
 =========================
+
+..
+    Sect<15.2.3>
 
 Running an RtpsRelay relay cluster with RTPS in the cloud leads to a bootstrapping problem since multicast is not supported in the cloud.
 One option is to not use RTPS for discovery.
@@ -159,9 +204,14 @@ To illustrate, each relay could also run an HTTP server which does nothing but s
 These simple web servers would be exposed via a centralized load balancer.
 A participant, then, could access the HTTP load balancer to select a relay.
 
+.. _internet_enabled_rtps--interactive-connectivity-establishment-ice-for-rtps:
+
 *****************************************************
 Interactive Connectivity Establishment (ICE) for RTPS
 *****************************************************
+
+..
+    Sect<15.3>
 
 Interactive Connectivity Establishment (ICE) is protocol for establishing connectivity between a pair of hosts that are separated by at least one firewall that performs network address translation.
 ICE can be thought of as an optimization for situations that require an RtpsRelay.
@@ -180,29 +230,54 @@ For OpenDDS, ICE can be used to potentially establish connectivity between SPDP 
 SPDP is used as the side channel for SEDP and SEDP is used as the side channel for the ordinary RTPS endpoints.
 To this, we added two parameters to the RTPS protocol for sending general ICE information and ICE candidates and added the ability to execute the ICE protocol and process STUN messages to the RTPS transports.
 
-ICE is defined in `IETF RFC 8445 <https://www.rfc-editor.org/info/rfc8445>`_.
-ICE utilizes the STUN protocol that is defined in `IETF RFC 5389 <https://www.rfc-editor.org/info/rfc5389>`_.
+ICE is defined in `IETF RFC 8445 <https://www.rfc-editor.org/info/rfc8445>`__.
+ICE utilizes the STUN protocol that is defined in `IETF RFC 5389 <https://www.rfc-editor.org/info/rfc5389>`__.
 The ICE implementation in OpenDDS does not use TURN servers.
 
 ICE is enabled through configuration.
 The minimum configuration involves setting the ``UseIce`` flag and providing addresses for the STUN servers.
-See Table 7-5 RTPS Discovery Configuration Options and Table 7-17 RTPS_UDP Configuration Options for details.
+See :ref:`Table 7-5 RTPS Discovery Configuration Options <run_time_configuration--reftable12>` and :ref:`Table 7-17 RTPS_UDP Configuration Options <run_time_configuration--reftable24>` for details.
 
 .. code-block:: ini
 
-    [common]DCPSGlobalTransportConfig=$fileDCPSDefaultDiscovery=DEFAULT_RTPS[transport/the_rtps_transport]transport_type=rtps_udpDataRtpsRelayAddress=5.6.7.8:4446UseIce=1DataStunServerAddress=1.2.3.4:3478[domain/42]DiscoveryConfig=DiscoveryConfig1
-    [rtps_discovery/DiscoveryConfig1]SpdpRtpsRelayAddress=5.6.7.8:4444SedpRtpsRelayAddress=5.6.7.8:4445UseIce=1SedpStunServerAddress=1.2.3.4:3478
+    [common]
+    DCPSGlobalTransportConfig=$file
+    DCPSDefaultDiscovery=DEFAULT_RTPS
+
+    [transport/the_rtps_transport]
+    transport_type=rtps_udp
+    DataRtpsRelayAddress=5.6.7.8:4446
+    UseIce=1
+    DataStunServerAddress=1.2.3.4:3478
+
+    [domain/42]
+    DiscoveryConfig=DiscoveryConfig1
+    [rtps_discovery/DiscoveryConfig1]
+    SpdpRtpsRelayAddress=5.6.7.8:4444
+    SedpRtpsRelayAddress=5.6.7.8:4445
+    UseIce=1
+    SedpStunServerAddress=1.2.3.4:3478
+
+.. _internet_enabled_rtps--security-considerations:
 
 ***********************
 Security Considerations
 ***********************
 
+..
+    Sect<15.4>
+
 The purpose of this section is to inform users about potential security issues when using OpenDDS.
 Users of OpenDDS are encouraged to perform threat modeling, security reviews, assessments, testing, etc.
 to ensure that their applications meet their security objectives.
 
+.. _internet_enabled_rtps--use-dds-security:
+
 Use DDS Security
 ================
+
+..
+    Sect<15.4.1>
 
 Most applications have common objectives with respect to data security:
 
@@ -214,11 +289,16 @@ Most applications have common objectives with respect to data security:
 
 * Privacy - The content of a sample cannot be read by an unauthorized third party.
 
-If an application is subject to any of these security objectives, then it should use the DDS Security features described in Chapter :ref:`DDS Security`.
+If an application is subject to any of these security objectives, then it should use the DDS Security features described in Chapter :ref:`dds_security--dds-security`.
 Using a non-secure discovery mechanism or a non-secure transport leaves the application exposed to data security breaches.
+
+.. _internet_enabled_rtps--understand-the-weaknesses-of-secure-rtps-discovery:
 
 Understand the Weaknesses of (Secure) RTPS Discovery
 ====================================================
+
+..
+    Sect<15.4.2>
 
 Secure RTPS Discovery has a behavior that can be exploited to launch a denial of service attack (see https://us-cert.cisa.gov/ics/advisories/icsa-21-315-02).
 Basically, an attacker can send a fake SPDP message to a secure participant which will cause it to begin authentication with a non-existent participant.
@@ -233,22 +313,26 @@ OpenDDS includes the following features for mitigation:
 * Compare the source IP of the SPDP message to the locators.
   For most applications, the locators advertised by SPDP should match the source IP of the SPDP message.
 
-  * See CheckSourceIp in Table 7-5 RTPS Discovery Configuration Options
+  * See CheckSourceIp in :ref:`Table 7-5 RTPS Discovery Configuration Options <run_time_configuration--reftable12>`
 
 * Use the participant lease time from secure discovery and bound it otherwise.
   By default, OpenDDS will attempt authentication for the participant lease duration specified in the SPDP message.
   However, this data can’t be trusted so a smaller maximum lease time can be specified to force authentication or discovery to terminate before the lease time.
 
-  * See MaxAuthTime in Table 7-5 RTPS Discovery Configuration Options
+  * See MaxAuthTime in :ref:`Table 7-5 RTPS Discovery Configuration Options <run_time_configuration--reftable12>`
 
 * Limit the number of outstanding secure discoveries.
   The number of discovered but not-yet-authenticated participants is capped when using secure discovery.
 
-  * See MaxParticipantsInAuthentication in Table 7-5 RTPS Discovery Configuration Options
+  * See MaxParticipantsInAuthentication in :ref:`Table 7-5 RTPS Discovery Configuration Options <run_time_configuration--reftable12>`
 
+.. _internet_enabled_rtps--run-participants-in-a-secure-network:
 
 Run Participants in a Secure Network
 ====================================
+
+..
+    Sect<15.4.3>
 
 One approach to a secure application without DDS Security is to secure it at the network layer instead of the application layer.
 A physically secure network satisfies this by construction.
