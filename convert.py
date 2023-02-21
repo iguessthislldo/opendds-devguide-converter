@@ -8,16 +8,10 @@ import odf
 from odf import text, element
 from odf.opendocument import load
 
-doc = load(os.environ['OPENDDS_DEVGUIDE_ODT'])
+from slugify import slugify
 
-# Things to fix in this script:
-# - Figure Links (bookmarks?)
-# - Footnotes
-# - List in "Building OpenDDS with Security on Windows"
-# - Replace Section Numbers with Names
-# - Include the preface in the conversion
-# - Images are missing?
-# - More automatic code detection
+doc = load(os.environ['OPENDDS_DEVGUIDE_ODT'])
+opendds_root = Path(os.environ.get('DDS_ROOT', None))
 
 # Tasks to do manually
 # - Merge Installation Section with INSTALL.md
@@ -31,8 +25,22 @@ doc = load(os.environ['OPENDDS_DEVGUIDE_ODT'])
 #   - Quotes around monospace text. See "Persistence Profile" section
 # - Do something about Figure 1-3 "Centralized Discovery with OpenDDS InfoRepo"
 # - Reword references to the words "chapter" and "section" because that doens't
-# make as much sense in Sphinx, specially with the current section name link
-# insertion.
+#   make as much sense in Sphinx, specially with the current section name link
+#   insertion.
+# - Remove/reallocate/modify parts of the preface that doesn't make since in
+#   the Sphinx documentation.
+# - Lists contents like the one in "Setting up an OpenDDS Java project" aren't
+#   logically structured and are defined using "list-item" nodes and margins.
+#   The result is the contents that rely on margins aren't rendered as part of
+#   the list.
+# - Make use of ghfile
+# - Rename image files.
+# - Section "Configuring for DDSI-RTPS Discovery" has a verbatim except from
+#   the RTPS spec that should be formatted correctly.
+# - RTPS Relay Options need to be cleaned up because the OpenOffice XML DOM
+#   was mangled.
+# - XTypes chapter IDL is a little messed up in places.
+
 
 # One Sentence per Line =======================================================
 
@@ -270,24 +278,75 @@ def paragraph_break(text):
   return rv
 
 
+def prefixed_ref(prefix, ref_name):
+  return prefix + '--' + slugify(ref_name)
+
+
+# Node Utils ==================================================================
+
+def get_attr(node, attr):
+  if node is None or node.attributes is None or attr is None:
+    return None
+  return node.attributes.get(attr, None)
+
+def must_get_attr(info, node, attr):
+  value = get_attr(node, attr)
+  if value is None:
+    dump_node_exit(info, node, 'could not get attr ' + repr(attr))
+  return value
+
+
+def text_attr(name):
+  return ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', name)
+
+
+def style_attr(name):
+  return ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', name)
+
+
+# Text Nodes
+style_name_attr = text_attr('style-name')
+start_value = text_attr('start-value')
+c_attr = text_attr('c')
+outline_level = text_attr('outline-level')
+
+# Style Nodes
+parent_style_name_attr = style_attr('parent-style-name')
+style_display_name_attr = style_attr('display-name')
+style_internal_name_attr = style_attr('name')
+
+
+def find_node_where(node, cond):
+  if cond(node):
+    return node
+  for child in node.childNodes:
+    result = find_node_where(child, cond)
+    if result is not None:
+      return result
+  return None
+
+
 # Style =======================================================================
 
-def style_name(node):
-  if node is None or node.attributes is None:
+def get_style_name(node):
+  return get_attr(node, style_name_attr)
+
+
+def get_style_node(name):
+  if not name:
     return None
-  return node.attributes.get(
-    ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'style-name'), None)
+  try:
+    return doc.getStyleByName(name)
+  except AssertionError:
+    return None
 
 
 class Style:
-
   def check_node(self, doc, name):
-    try:
-      node = doc.getStyleByName(name)
-    except AssertionError:
+    node = get_style_node(name)
+    if node is None:
       return
-    parent = node.attributes.get(
-      ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'parent-style-name'), None)
+    parent = get_attr(node, parent_style_name_attr)
     if parent is not None:
       self.check_node(doc, parent)
 
@@ -301,7 +360,7 @@ class Style:
     self.inline = None
     if node is None != name is None:
       raise ValueError('Invalid Arguments')
-    self.name = style_name(node) if node is not None else name
+    self.name = get_style_name(node) if node is not None else name
     if self.name is None:
       return
     if self.name == 'Note': # Ignore Italics on Notes
@@ -314,14 +373,11 @@ class Style:
 
       font_family = get_prop(
         ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-family'))
-      font_name = get_prop(
-        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-name'))
-      font_pitch = get_prop(
-        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-pitch'))
+      font_name = get_prop(style_attr('font-name'))
+      font_pitch = get_prop(style_attr('font-pitch'))
       font_style = get_prop(
         ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-style'))
-      font_style_name = get_prop(
-        ('urn:oasis:names:tc:opendocument:xmlns:style:1.0', 'font-style-name'))
+      font_style_name = get_prop(style_attr('font-style-name'))
       font_weight = get_prop(
         ('urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0', 'font-weight'))
 
@@ -344,6 +400,25 @@ class Style:
   def __repr__(self):
     return '<{} inline={}>'.format(repr(self.name), repr(self.inline))
 
+
+def node_has_style(node, style_name):
+  current_name = get_style_name(node)
+  # print(style_name, current_name)
+  while current_name is not None:
+    # print(' ', current_name)
+    current_style = doc.getStyleByName(current_name)
+    display_name = get_attr(current_style, style_display_name_attr)
+    if display_name is not None:
+      if isinstance(style_name, re.Pattern):
+        m = style_name.match(display_name)
+        if m:
+          return m
+      elif display_name == style_name:
+        return True
+    current_name = get_attr(current_style, parent_style_name_attr)
+  return None
+
+
 # Dump ========================================================================
 
 dump_path = Path('dump')
@@ -359,7 +434,7 @@ with (dump_path / 'main.xml').open('w') as f:
 
 # Dump Nodes
 def dump_node(node, indent, f):
-  style = style_name(node)
+  style = get_style_name(node)
   print(indent + str(node.qname), file=f)
   for k, v in node.attributes.items():
     print(indent + 'ATTRIBUTE:', k, ':', v, file=f)
@@ -529,16 +604,20 @@ Developer's Guide
 
 
 class Info:
-  def __init__(self, doc, sections=None):
+  def __init__(self, doc, copy_from=None):
     self.doc = doc
     self.data = []
     self.all_style_prop_groups = {}
-    if sections is None:
+    self.in_preface = True
+    if copy_from is None:
+      self.section_slugs = {}
       self.sections = {}
       self.push(section_level=0, section_number=0, section_id="")
+      self.references = {}
     else:
-      self.sections = sections
-    self.bookmarks = {}
+      self.sections = copy_from.sections
+      self.references = copy_from.references
+    self.prefix = None
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -559,12 +638,15 @@ class Info:
         return i[what]
     return otherwise
 
+  def getany(self, what, otherwise=None):
+    return self.get(what, otherwise, ignore_last=False)
+
   def push_node_info(self, node):
     self.push()
     self.set(node=node)
     style = None
     if node.nodeType == element.Node.ELEMENT_NODE and node.qname[1] == 'p':
-      if style_name(node) == 'P209':
+      if get_style_name(node) == 'P209':
         style = Style(self, name='Note')
       self.set(paragraph=True)
       if self.get('paragraph'): # Are we nested?
@@ -601,8 +683,7 @@ def convert_child_nodes(info, node, out):
       for grandchild in child.childNodes:
         if grandchild.nodeType == element.Node.ELEMENT_NODE and \
             grandchild.qname[1] == 's':
-          indent = grandchild.attributes.get(
-            ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'c'), None)
+          indent = get_attr(grandchild, c_attr)
           if indent is not None:
             break
       line = get_text(info, child)
@@ -620,7 +701,13 @@ def convert_child_nodes(info, node, out):
     code_lines = []
 
 
+dds_root_path_re = re.compile(r"``\$DDS_ROOT/([^`]*)``")
+dds_path_re = re.compile(r"``(dds/[^`]*)``")
+
 def get_text(info, node):
+  nested_get_text = info.getany('nested_get_text', otherwise=False)
+  if not nested_get_text:
+    info.push(nested_get_text=True)
   pout = Out()
   pout.open()
   for child in node.childNodes:
@@ -630,10 +717,19 @@ def get_text(info, node):
       pout.write(str(child))
   rv = pout.out.getvalue()
   pout.close()
+  if not nested_get_text:
+    mod, n = dds_root_path_re.subn(r':ghfile:`\1`', rv)
+    if n:
+      rv = mod
+    mod, n = dds_path_re.subn(r':ghfile:`\1`', rv)
+    if n:
+      rv = mod
+    info.pop()
   return rv.rstrip()
 
 
 def gather_table_rows(info, parent_node, rows):
+  info.push(in_table=True)
   for child_node in parent_node.childNodes:
     kind = child_node.qname[1]
     if kind == 'table-header-rows':
@@ -645,15 +741,20 @@ def gather_table_rows(info, parent_node, rows):
       rows.append(row)
     elif kind not in ('soft-page-break', 'table-column'):
       dump_node_exit(info, child_node, 'Unexpected type in table: ' + kind)
+  info.pop()
 
-
-start_value = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'start-value')
 
 def gather_list_items(info, parent_node):
   list_level = info.get('list_level', 0, ignore_last=False)
   list_level += 1
   info.push(list_level=list_level)
-  rv = dict(numbered=False, items=[])
+  numbered = False
+  list_style_name = get_style_name(parent_node)
+  list_style = find_node_where(doc.topnode,
+    lambda node: get_attr(node, style_internal_name_attr) == list_style_name)
+  if list_style is not None:
+    numbered = list_style.childNodes[list_level - 1].qname[1] == 'list-level-style-number'
+  rv = dict(numbered=numbered, items=[])
   for child_node in parent_node.childNodes:
     kind = child_node.qname[1]
     if kind == 'list-item':
@@ -666,8 +767,6 @@ def gather_list_items(info, parent_node):
   return rv
 
 
-outline_level = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'outline-level')
-
 def has_outline_level(node):
   if node.nodeType == element.Node.ELEMENT_NODE:
     if outline_level in node.attributes:
@@ -678,10 +777,28 @@ def has_outline_level(node):
   return False
 
 
-def handle_header(info, node, out=None):
-  level = node.attributes.get(outline_level, None)
-  if level is None:
-    dump_node_exit(info, node, 'Header missing outline-level!')
+preheader_re = re.compile(r"PreHeader (\d+)")
+
+def get_preface_level(info, node):
+  if not info.in_preface:
+    return None
+  if node.nodeType != element.Node.ELEMENT_NODE or node.qname[1] != 'p':
+    return None
+  m = node_has_style(node, preheader_re)
+  if not m:
+    return None
+  return int(m.group(1))
+
+
+def handle_header(info, node, out=None, preface_level=None):
+  if preface_level is None:
+    if info.in_preface:
+      info.in_preface = False
+    level = node.attributes.get(outline_level, None)
+    if level is None:
+      dump_node_exit(info, node, 'Unexpected node passed to handle_header')
+  else:
+    level = preface_level
   level = int(level) - 1
   name = ''
   for child in node.childNodes:
@@ -709,7 +826,10 @@ def handle_header(info, node, out=None):
   if out: # in convert_node
     if level == 0:
       out.open(name)
+      info.prefix = Out.filename(name, ext='')
+    out.write('.. _{}:\n\n'.format(info.sections[node.opendds_section_id]['slug']))
     out.write(get_header(name, level))
+    out.write('..\n    Sect<{}>\n\n'.format(node.opendds_section_id))
 
   else: # in reference_builder
     level += 1
@@ -718,7 +838,10 @@ def handle_header(info, node, out=None):
     section_id = info.get('section_id', ignore_last=False)
     if level > section_level:
       if section_number > 0:
-        section_id += str(section_number) + "."
+        display_section_number = section_number
+        if level == 2:
+          display_section_number -= 1
+        section_id += str(display_section_number) + "."
       section_number = 1
       info.push(section_level=level, section_id=section_id, section_number=section_number)
     elif level < section_level:
@@ -729,11 +852,22 @@ def handle_header(info, node, out=None):
     else:
       section_number = info.get('section_number', ignore_last=False) + 1
       info.set(section_number=section_number)
-    section_id = info.get('section_id', ignore_last=False) + str(section_number)
+    display_section_number = section_number
+    if level == 1:
+      display_section_number -= 1
+    section_id = info.get('section_id', ignore_last=False) + str(display_section_number)
     if level == 1:
       info.set(section_filename=Out.filename(name, ext=''))
-    info.sections[section_id] = dict(
-      name=name, filename=info.get('section_filename', ignore_last=False))
+    filename = info.get('section_filename', ignore_last=False)
+    slug = prefixed_ref(filename, name)
+    if slug in info.section_slugs:
+      print(section_id, 'slug', repr(slug), 'was already used')
+      info.section_slugs[slug] += 1
+      slug += '-' + str(info.section_slugs[slug])
+    else:
+      info.section_slugs[slug] = 0
+    node.opendds_section_id = section_id
+    info.sections[section_id] = dict(slug=slug, filename=filename)
 
 
 def reference_builder(info, node):
@@ -741,8 +875,25 @@ def reference_builder(info, node):
     return
   if node.nodeType == element.Node.ELEMENT_NODE:
     kind = node.qname[1]
-    if kind == 'h':
-      handle_header(info, node)
+
+    preface_level = get_preface_level(info, node)
+    if kind == 'h' or preface_level is not None:
+      handle_header(info, node, preface_level=preface_level)
+
+    elif kind == 'bookmark-start':
+      name = must_get_attr(info, node, text_attr('name'))
+      if name in info.references:
+        dump_node_exit(info, node, 'bookmark already in references: ' + kind)
+      prefix = info.get('section_filename', ignore_last=False)
+      info.references[name] = prefixed_ref(prefix, name)
+
+    elif kind == 'sequence':
+      odf_ref_name = node.attributes[text_attr('ref-name')]
+      if odf_ref_name in info.references:
+        dump_node_exit(info, node, 'sequence defintion already in references: ' + kind)
+      prefix = info.get('section_filename', ignore_last=False)
+      info.references[odf_ref_name] = prefixed_ref(prefix, odf_ref_name)
+
     for child_node in node.childNodes:
       reference_builder(info, child_node)
 
@@ -751,18 +902,21 @@ def convert_node(info, node, out):
   if node is None:
     return
   info.push_node_info(node)
-  style = info.style()
+  preface_level = get_preface_level(info, node)
+  style = info.style() if preface_level is None else None
   inline = style.inline if style is not None else None
   real_out = out
   if inline:
     out = Out()
     out.open()
+    info.push(in_inline=real_out)
+  non_inline_out = info.getany('in_inline', otherwise=out)
 
   if node.nodeType == element.Node.ELEMENT_NODE:
     kind = node.qname[1]
 
-    if kind == 'h':
-      handle_header(info, node, out)
+    if kind == 'h' or preface_level is not None:
+      handle_header(info, node, out, preface_level=preface_level)
 
     elif kind == 's':
       # <text:s/>
@@ -776,18 +930,18 @@ def convert_node(info, node, out):
     #   out.writeln('')
 
     elif kind == 'p' and style is None:
-      if style_name(node) == 'Footnote':
+      style_name = get_style_name(node)
+      if style_name == 'Footnote':
         # TODO this needs to be written outside a table
         pass
       else:
-        dump_node_exit(info, node,
-          'Paragraph style is None, style name: ' + repr(style_name(node)))
+        dump_node_exit(info, node, 'Paragraph style is None, style name: ' + repr(style_name))
 
     elif kind == 'p' and style.name != "Figure":
       raw_text = get_text(info, node)
       if raw_text != 'Note':
         indent = ''
-        if style.name == 'Note':
+        if style.name == 'Note' and not info.get('in_table', False, ignore_last=False):
           if 'ecurity/certs/identity/identity_ca_openssl.cnf' in raw_text:
             raw_text = '  ' + raw_text
           else:
@@ -805,12 +959,12 @@ def convert_node(info, node, out):
       if text == link:
         out.write(link)
       else:
-        out.write('`{} <{}>`_'.format(text, link))
+        out.write('`{} <{}>`__'.format(text, link))
       info.pop()
 
     elif kind == 'image':
       mime = node.attributes.get(
-        ('urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0', 'mime-type'), None)
+        ('urn:oasis:names:tc:opendocument:xmlns:drawing:1.0', 'mime-type'), None)
       href = node.attributes.get(('http://www.w3.org/1999/xlink', 'href'), None)
       path = Path('images') / Path(href).name
       if mime == 'image/png' and href:
@@ -834,32 +988,39 @@ def convert_node(info, node, out):
     elif kind == 'list-item':
       convert_child_nodes(info, node, out)
 
-    elif kind in ('bookmark-start'):
-      name = node.attributes[('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'name')]
-      if not name.startswith('__RefHeading'): # Ignore Heading
-        if name in info.bookmarks:
-          dump_node_exit(info, node, 'bookmark already in bookmarks: ' + kind)
-        info.bookmarks[name] = '_bookmark' + name
+    elif kind == 'bookmark-start':
+      name = must_get_attr(info, node, text_attr('name'))
+      non_inline_out.write('.. _{}:\n\n'.format(info.references[name]))
+
+    elif kind == 'sequence':
+      odf_ref_name = node.attributes[text_attr('ref-name')]
+      non_inline_out.write('.. _{}:\n\n'.format(info.references[odf_ref_name]))
 
     elif kind in ('bookmark-ref', 'sequence-ref', 'reference-ref'):
-      reference_format_attr = ('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'reference-format')
+      reference_format_attr = text_attr('reference-format')
       reference_formats = ("category-and-value", "chapter", "number", "number-all-superior", "page", "text")
       reference_format = node.attributes.get(reference_format_attr, None)
       value = get_text(info, node)
       if not value.isspace():
         value = value.strip()
       if value:
-        if kind in ('bookmark-ref', 'reference-ref') and reference_format in ('chapter', 'number'):
-          odf_ref_name = node.attributes[('urn:oasis:names:tc:opendocument:xmlns:text:1.0', 'ref-name')]
+        if kind in ('bookmark-ref', 'reference-ref', 'sequence-ref') and \
+            reference_format in ('chapter', 'number', 'number-all-superior', 'text'):
+          odf_ref_name = node.attributes[text_attr('ref-name')]
           # print(kind, reference_format, value, odf_ref_name)
-          if reference_format == 'chapter' or odf_ref_name.startswith('__RefHeading'):
+          if reference_format == 'chapter' or \
+              (odf_ref_name.startswith('__RefHeading') and reference_format != 'text'):
+            if value.lower().startswith('chapter '):
+              value = value[8:]
             section_info = info.sections[value.strip()]
-            out.write(':ref:`{}`'.format(section_info['name']))
+            out.write(':ref:`{}`'.format(section_info['slug']))
           else:
-            out.write(':ref:`{} <{}>`'.format(value, info.bookmarks[odf_ref_name]))
+            out.write(':ref:`{} <{}>`'.format(value, info.references[odf_ref_name]))
+        elif kind == 'sequence-ref' and reference_format == 'category-and-value':
+          odf_ref_name = node.attributes[text_attr('ref-name')]
+          out.write(':ref:`{} <{}>`'.format(value, info.references[odf_ref_name]))
         else:
-          # print(kind, reference_format, value)
-          convert_child_nodes(info, node, out)
+          dump_node_exit(info, node, 'Unexpected reference ' + kind)
 
     else:
       passthrough = {
@@ -870,7 +1031,6 @@ def convert_node(info, node, out):
         # TODO: Handle?
         'bookmark-end',
         'frame',
-        'sequence',
         'note',
         'tab',
         'note-citation',
@@ -901,7 +1061,9 @@ def convert_node(info, node, out):
     out.close()
     real_out.write(rv)
 
-  info.pop()
+  if inline:
+    info.pop() # info.push(in_inline=True)
+  info.pop() # info.push_node_info(node)
 
 from odf.office import Body
 body = doc.getElementsByType(Body)[0]
@@ -912,10 +1074,10 @@ ref_info = Info(doc)
 reference_builder(ref_info, section)
 with (dump_path / 'sections').open('w') as f:
   for section_id, section_info in ref_info.sections.items():
-    print(section_id, repr(section_info['name']), repr(section_info['filename']), file=f)
+    print(section_id, repr(section_info['slug']), repr(section_info['filename']), file=f)
 
 out = Out()
-info = Info(doc, ref_info.sections)
+info = Info(doc, ref_info)
 convert_node(info, section, out)
 out.close()
 out.write_index()
