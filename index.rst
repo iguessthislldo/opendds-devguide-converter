@@ -12,8 +12,6 @@ Welcome to OpenDDS's documentation!
 
   devguide/index
 
-
-
 Indices and tables
 ==================
 

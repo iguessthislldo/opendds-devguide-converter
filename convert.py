@@ -104,9 +104,10 @@ def write_code(out, lines):
   else:
     out.writeln('.. code-block:: {}\n'.format(name))
   for line in lines:
-    if line:
-      out.write('   ', line)
-    out.write('\n')
+    for subline in line.split('\n'):
+      if subline:
+        out.write('   ', subline)
+      out.write('\n')
 
   out.writeln('')
 
@@ -184,7 +185,7 @@ def fix_monospace(raw_string, last_char_arg=None):
   return string
 
 
-def write_table(rows, out):
+def write_grid_table(rows, out):
   new_rows = []
   for row in rows:
     new_row = []
@@ -245,10 +246,10 @@ def write_table(rows, out):
   out.writeln('')
 
 
-def write_list(list_info, out):
-  bullet = '#. ' if list_info['numbered'] else '* '
+def write_list(out, bullet, items, final_newline=True):
+  bullet += ' '
   indent = ' ' * len(bullet)
-  for item in list_info['items']:
+  for item in items:
     if item:
       out.writeln(bullet + item[0])
       for line in item[1:]:
@@ -256,7 +257,36 @@ def write_list(list_info, out):
           out.write(indent)
         out.writeln(line)
       out.writeln('')
-  out.writeln('')
+  if final_newline:
+    out.writeln('')
+
+
+def write_list_table(rows, out):
+  list_out = Out()
+  list_out.open()
+  row_lists = []
+  for row in rows:
+    row_out = Out()
+    row_out.open()
+    write_list(row_out, '-', [i.split('\n') for i in row], final_newline=False)
+    row_lists.append(row_out.close())
+  write_list(list_out, '*', [i.split('\n') for i in row_lists])
+  out.write_directive('list-table::', list_out.close(), {'header-rows': 1})
+
+
+def write_table(rows, out):
+  # grid_out = Out()
+  # grid_out.open()
+  # write_grid_table(rows, grid_out)
+  # grid_rst = grid_out.close()
+  # max_len = 0
+  # for line in grid_rst.split('\n'):
+  #   max_len = max(max_len, len(line))
+  # if max_len >= 100:
+  #   write_list_table(rows, out)
+  # else:
+  #   out.write(grid_rst)
+  write_list_table(rows, out)
 
 
 def inline_markup(string, what):
@@ -477,6 +507,8 @@ for k, v in doc.Pictures.items():
   if path.suffixes == ['.png']:
     path.write_bytes(v[1])
 
+trailing_whitespace_re = re.compile(r"[^\S\n]+\n")
+
 class Out:
   def __init__(self):
     self.out = None
@@ -500,7 +532,7 @@ class Out:
       rv += c.lower()
     return rv + ext
 
-  def open(self, name = None):
+  def open(self, name=None):
     self.close()
     if name is None:
       self.out = io.StringIO()
@@ -578,28 +610,46 @@ class Out:
 
       if string:
         self.last_char = string[-1]
-      print(string, end='', file=self.out)
+
+      # indent = kwargs.get('indent', None)
+      # if indent is not None:
+      #   string = indent + re.sub(r'\n', r'\n' + indent, string)
+
+      print(trailing_whitespace_re.sub(r'\n', string), end='', file=self.out)
 
   def writeln(self, *args, **kwargs):
     self.write(*args, **kwargs, end='\n')
 
   def close(self):
+    rv = None
     if self.out is not None:
+      if self.path is None:
+        rv = self.out.getvalue()
       self.out.close()
-    self.out = None
+      self.out = None
     self.path = None
+    return rv
+
+  def write_directive(self, name, contents, options={}):
+    indent = '   '
+    self.writeln('..', name)
+    for name, value in options.items():
+      self.writeln(indent + ':{}: {}'.format(name, value))
+    self.writeln()
+    for line in contents.split('\n'):
+      self.writeln(indent + line)
 
   def write_index(self):
     with (export_path / 'index.rst').open('w') as f:
       print('''\
-#################
-Developer's Guide
-#################
+#########################
+OpenDDS Developer's Guide
+#########################
 
 .. toctree::
 ''', file=f)
       for name, filename in self.pages:
-        print('  {}'.format(filename), file=f)
+        print('   {}'.format(filename), file=f)
 
   def __repr__(self):
     return '<Out: ' + (str(self.path) if self.path is not None else 'BUFFER') + '>'
@@ -620,6 +670,7 @@ class Info:
       self.sections = copy_from.sections
       self.references = copy_from.references
     self.prefix = None
+    self.footnotes = {}
 
   def push(self, **kwargs):
     self.data.append(dict(**kwargs))
@@ -680,7 +731,7 @@ def convert_child_nodes(info, node, out):
   for child in node.childNodes:
     if child.nodeType == element.Node.ELEMENT_NODE and \
         child.qname[1] == 'p' and Style(info, child).inline == 'monospace':
-      info.push(ignore_style=True)
+      info.push(ignore_style=True, in_code=True)
       indent = None
       for grandchild in child.childNodes:
         if grandchild.nodeType == element.Node.ELEMENT_NODE and \
@@ -827,6 +878,11 @@ def handle_header(info, node, out=None, preface_level=None):
 
   if out: # in convert_node
     if level == 0:
+      if info.footnotes:
+        out.write('.. rubric:: Footnotes\n\n')
+        for key, text in info.footnotes.items():
+          out.write_directive('[#{}]'.format(key), text)
+        info.footnotes = {}
       out.open(name)
       info.prefix = Out.filename(name, ext='')
     out.write('.. _{}:\n\n'.format(info.sections[node.opendds_section_id]['slug']))
@@ -926,18 +982,11 @@ def convert_node(info, node, out):
       # Use it?
       out.write(' ')
 
-    # TODO: One of the problems with this is "Table 7-7 [datawriterqos/*] Configuration Options"
-    # Can inserts newlines into monospaced lines
-    # elif kind == 'line-break':
-    #   out.writeln('')
+    elif kind == 'line-break':
+      out.write('\n' if info.getany('in_code') else '\n\n')
 
     elif kind == 'p' and style is None:
-      style_name = get_style_name(node)
-      if style_name == 'Footnote':
-        # TODO this needs to be written outside a table
-        pass
-      else:
-        dump_node_exit(info, node, 'Paragraph style is None, style name: ' + repr(style_name))
+      dump_node_exit(info, node, 'paragraph style is None')
 
     elif kind == 'p' and style.name != "Figure":
       raw_text = get_text(info, node)
@@ -953,6 +1002,14 @@ def convert_node(info, node, out):
         if not inline:
           text = paragraph_break(text)
         out.write(text)
+
+    elif kind == 'note':
+      key = 'footnote{}'.format(len(info.footnotes) + 1)
+      non_inline_out.write(' [#{}]_'.format(key))
+      info.footnotes[key] = get_text(info, node)
+
+    elif kind == 'note-citation':
+      pass # This is the footnote number, ignore because we will use our own
 
     elif kind == 'a':
       info.push(ignore_style=True)
@@ -985,7 +1042,9 @@ def convert_node(info, node, out):
         convert_child_nodes(info, node, out)
       else:
         # Normal Lists
-        write_list(gather_list_items(info, node), out)
+        list_info = gather_list_items(info, node)
+        bullet = '#.' if list_info['numbered'] else '*'
+        write_list(out, bullet, list_info['items'])
 
     elif kind == 'list-item':
       convert_child_nodes(info, node, out)
@@ -1015,12 +1074,12 @@ def convert_node(info, node, out):
             if value.lower().startswith('chapter '):
               value = value[8:]
             section_info = info.sections[value.strip()]
-            out.write(':ref:`{}`'.format(section_info['slug']))
+            non_inline_out.write(':ref:`{}`'.format(section_info['slug']))
           else:
-            out.write(':ref:`{} <{}>`'.format(value, info.references[odf_ref_name]))
+            non_inline_out.write(':ref:`{} <{}>`'.format(value, info.references[odf_ref_name]))
         elif kind == 'sequence-ref' and reference_format == 'category-and-value':
           odf_ref_name = node.attributes[text_attr('ref-name')]
-          out.write(':ref:`{} <{}>`'.format(value, info.references[odf_ref_name]))
+          non_inline_out.write(':ref:`{} <{}>`'.format(value, info.references[odf_ref_name]))
         else:
           dump_node_exit(info, node, 'Unexpected reference ' + kind)
 
@@ -1028,12 +1087,10 @@ def convert_node(info, node, out):
       passthrough = {
         'section', # ROOT OF CONTENT, VERY IMPORTANT!
         'list-header',
-        'line-break', # TODO, see above
 
         # TODO: Handle?
         'bookmark-end',
         'frame',
-        'note',
         'tab',
         'note-citation',
         'bookmark',
